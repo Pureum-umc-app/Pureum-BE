@@ -2,6 +2,7 @@ package com.umc.pureum.domain.sentence.entity;
 
 import com.sun.istack.NotNull;
 import com.umc.pureum.global.entity.BaseTimeEntity;
+import com.umc.pureum.global.entity.User;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
