@@ -1,6 +1,7 @@
 package com.umc.pureum.domain.sentence.entity;
 
 import com.sun.istack.NotNull;
+import com.umc.pureum.global.entity.User;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ public class SentenceLike {
     private String status;
 
     @Builder
-    public Sentence(Long id, User user, Sentence sentence, Keyword word, String status) {
+    public SentenceLike(Long id, User user, Sentence sentence, String status) {
         this.id = id;
         this.user = user;
         this.sentence = sentence;
