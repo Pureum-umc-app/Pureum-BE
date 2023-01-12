@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "한 문장 챌린지")
 @RequestMapping("/sentences")
 public class SentenceController {
-    private final SentenceController sentenceController;
+    private final SentenceProvider sentenceProvider;
     private final SentenceService sentenceService;
     private final JwtService jwtService;
 
