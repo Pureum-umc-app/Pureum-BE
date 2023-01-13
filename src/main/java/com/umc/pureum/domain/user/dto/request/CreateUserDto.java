@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+/**
+ * 유저 생성 DTO
+ */
 public class CreateUserDto {
     String nickname;
     String profile_photo;
