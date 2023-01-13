@@ -1,11 +1,13 @@
 package com.umc.pureum.domain.user.service;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.umc.pureum.domain.user.dto.AccessTokenInfoDto;
+import com.umc.pureum.global.config.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -63,5 +65,54 @@ public class KakaoService {
             e.printStackTrace();
         }
         return token;
+    }
+
+    public AccessTokenInfoDto getUserInfoByKakaoToken(String token) throws BaseException {
+
+        String reqURL = "https://kapi.kakao.com/v2/user/me";
+
+        //access_token을 이용하여 사용자 정보 조회
+        AccessTokenInfoDto accessTokenInfoDto = null;
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Authorization", "Bearer " + token); //전송할 header 작성, access_token전송
+
+            //결과 코드가 200이라면 성공
+            int responseCode = conn.getResponseCode();
+
+            //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line = "";
+            String result = "";
+
+            while ((line = br.readLine()) != null) {
+                result += line;
+            }
+
+            //Gson 라이브러리로 JSON파싱
+            JsonElement element = JsonParser.parseString(result);
+            //accesstoken 정보 Dto에 빌드
+            accessTokenInfoDto = AccessTokenInfoDto.builder()
+                    .profile_nickname_needs_agreement(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("profile_nickname_needs_agreement").getAsBoolean())
+                    .is_email_verified(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("is_email_verified").getAsBoolean())
+                    .nickname(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("profile").getAsJsonObject().get("nickname").getAsString())
+                    .email_needs_agreement(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email_needs_agreement").getAsBoolean())
+                    .has_email(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean())
+                    .is_email_valid(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("is_email_valid").getAsBoolean())
+                    .profile_image_needs_agreement(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("profile_image_needs_agreement").getAsBoolean())
+                    .is_default_image(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("profile").getAsJsonObject().get("is_default_image").getAsBoolean())
+                    .email(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString())
+                    .profile_image_url(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("profile").getAsJsonObject().get("profile_image_url").getAsString())
+                    .build();
+            br.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return accessTokenInfoDto;
     }
 }
