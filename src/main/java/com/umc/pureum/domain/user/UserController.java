@@ -27,19 +27,32 @@ public class UserController {
     private final KakaoService kakaoService;
     private final UserService userService;
 
+    /**
+     * 서버에서만 사용할 API
+     * 인가코드로 access token, refresh token 발급
+     *
+     * @param code // 인가코드
+     * @throws IOException // 카카오 서버 접속 오류 예외처리
+     */
     @GetMapping("/kakao/auth")
     public void getCodeAndToken(@RequestParam String code) throws IOException {
         System.out.println(code);
         kakaoService.getToken(code);
     }
 
+    /**
+     * 회원가입 API
+     *
+     * @param createUserDto // 유저 생성 DTO
+     * @return // 회원가입 성공시 success 출력
+     * @throws BaseException // DB 에러 등등
+     */
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestBody CreateUserDto createUserDto) throws BaseException {
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
-        System.out.println(accessToken);
         try {
             userService.createUser(accessToken, createUserDto);
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse("success"));
