@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     // 어노테이션
-    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'org.jetbrains:annotations:23.1.0'
 
     // Lombok
     implementation 'org.projectlombok:lombok'
@@ -42,8 +42,6 @@ dependencies {
     // Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // Security, Authentication
-    //implementation 'org.springframework.boot:spring-boot-starter-security'
     // jwt
     implementation(group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2')
     implementation(group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2')
