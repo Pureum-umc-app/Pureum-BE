@@ -11,6 +11,10 @@ import org.hibernate.annotations.DynamicInsert;
 import javax.persistence.*;
 
 import static lombok.AccessLevel.PROTECTED;
+
+/**
+ * 유저 entity
+ */
 @DynamicInsert
 @Entity
 @Getter
@@ -24,7 +28,7 @@ public class UserAccount extends BaseEntity {
     private String nickname;
     private String introduction;
     private String email;
-    private int grade;
-    private String image;
+    private int grade; //학년
+    private String image; // 프로필 사진
     private String status; // A:active D:delete
 }

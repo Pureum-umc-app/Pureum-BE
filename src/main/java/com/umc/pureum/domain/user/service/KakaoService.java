@@ -18,6 +18,12 @@ import java.net.URL;
 @RequiredArgsConstructor
 @Service
 public class KakaoService {
+    /**
+     * 인가코드로 토큰 받기
+     * @param code 인가코드
+     * @return access token 리턴
+     * @throws IOException // 카카오서버 접속 오류
+     */
     public String getToken(String code) throws IOException {
         // 인가코드로 토큰받기
         String host = "https://kauth.kakao.com/oauth/token";
@@ -67,7 +73,13 @@ public class KakaoService {
         return token;
     }
 
-    public AccessTokenInfoDto getUserInfoByKakaoToken(String token) throws BaseException {
+    /**
+     * access token으로 유저 정보 가져오기
+     * @param token //access token
+     * @return // 유저 정보 AccessTokenInfoDto 형태로 리턴
+     * @throws BaseException // DB 접속 오류 등등
+     */
+    public AccessTokenInfoDto getUserInfoByKakaoToken(String token) {
 
         String reqURL = "https://kapi.kakao.com/v2/user/me";
 
@@ -113,6 +125,7 @@ public class KakaoService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //access token으로 받은 유저정보 return
         return accessTokenInfoDto;
     }
 }
