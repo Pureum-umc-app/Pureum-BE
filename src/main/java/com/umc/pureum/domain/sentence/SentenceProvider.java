@@ -1,12 +1,13 @@
-package com.umc.pureum.domain.user;
+package com.umc.pureum.domain.sentence;
 
+import com.umc.pureum.domain.home.HomeDao;
 import com.umc.pureum.global.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class UserProvider {
-    private final UserDao userDao;
+public class SentenceProvider {
+    private final SentenceDao sentenceDao;
     private final JwtService jwtService;
 }
