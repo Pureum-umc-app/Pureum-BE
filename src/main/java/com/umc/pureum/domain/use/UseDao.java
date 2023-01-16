@@ -13,10 +13,15 @@ import javax.persistence.EntityManager;
 public class UseDao {
     private final EntityManager em;
 
-    // 유저 사용 테이블 단건 조회
-    public Use findOne(Long user_id){
-        return em.find(Use.class,user_id);
+    // 사용 테이블 단건 조회
+    public Use findOne(Long id){
+        return em.find(Use.class, id);
     }
 
-
-}
+    // 사용자의 외래키를 통한 사용 테이블 단건 조회
+    public Use findOneByFk(Long user_id){
+        return em.createQuery("select u from Use u where u.user.id = :user_id", Use.class)
+                .setParameter("user_id",user_id)
+                .getSingleResult();
+    }
+ }

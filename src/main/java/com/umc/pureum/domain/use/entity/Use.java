@@ -1,7 +1,7 @@
 package com.umc.pureum.domain.use.entity;
 
 import com.umc.pureum.domain.user.entity.User;
-import com.umc.pureum.global.entity.BaseTimeEntity;
+import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Use extends BaseTimeEntity {
+public class Use extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "use_id")
