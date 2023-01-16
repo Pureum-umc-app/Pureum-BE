@@ -18,7 +18,7 @@ public class UseService {
     @Transactional
     public PostUseTimeAndCountRes saveTimeAndCount(PostUseTimeAndCountReq postUseTimeAndCountReq){
         Long user_id = postUseTimeAndCountReq.getUser_id();
-        Use use = useDao.findOne(user_id);
+        Use use = useDao.findOneByFk(user_id);
         use.builder().use_time(use.getUse_time()).count(use.getCount());
         return new PostUseTimeAndCountRes(use.getId());
     }
