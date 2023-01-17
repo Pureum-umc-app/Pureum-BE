@@ -1,18 +1,18 @@
 package com.umc.pureum.domain.use.entity;
 
-import com.umc.pureum.domain.user.entity.User;
+import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.sql.Time;
-import java.sql.Timestamp;
 
 @Entity
 @Getter
+@SuperBuilder
 @NoArgsConstructor
 public class Use extends BaseEntity {
 
@@ -21,7 +21,7 @@ public class Use extends BaseEntity {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserAccount user;
 
     private Time use_time;
 
@@ -37,7 +37,7 @@ public class Use extends BaseEntity {
 
     // use 정보 업데이트
     @Builder
-    public Use(Long id, User user, Time use_time, int count, UseStatus purpose_time_status, Time purpose_time, UseStatus status ){
+    public Use(Long id, UserAccount user, Time use_time, int count, UseStatus purpose_time_status, Time purpose_time, UseStatus status ){
         this.id = id;
         this.user = user;
         this.use_time = use_time;
