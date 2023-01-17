@@ -1,6 +1,6 @@
 package com.umc.pureum.domain.user.entity;
 
-import com.umc.pureum.global.entity.BaseTimeEntity;
+import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
-public class User extends BaseTimeEntity {
+public class User extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "user_id")
