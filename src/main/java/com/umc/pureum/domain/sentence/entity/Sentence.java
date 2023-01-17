@@ -13,8 +13,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 public class Sentence extends BaseEntity {
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
     @ManyToOne @JoinColumn(name = "user_id")
     private User user;
     @NotNull
@@ -25,8 +23,7 @@ public class Sentence extends BaseEntity {
     private String status;
 
     @Builder
-    public Sentence(Long id, User user, String sentence, Keyword word, String status) {
-        this.id = id;
+    public Sentence(User user, String sentence, Keyword word, String status) {
         this.user = user;
         this.sentence = sentence;
         this.keyword = word;
