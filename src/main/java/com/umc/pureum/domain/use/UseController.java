@@ -6,6 +6,7 @@ import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import com.umc.pureum.global.utils.JwtService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 
 @RestController
 @RequiredArgsConstructor
+@Api(tags = "홈")
 @RequestMapping("/uses")
 public class UseController {
     private final UseProvider useProvider;
@@ -46,4 +48,5 @@ public class UseController {
      * 캘린더에 O, X로 표시되고 한달 기준으로 반환함
      * [GET] /uses/goals/result
      */
+//    public
 }
