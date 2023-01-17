@@ -1,8 +1,10 @@
 package com.umc.pureum.domain.use.entity;
 
 import com.umc.pureum.domain.user.entity.User;
-import com.umc.pureum.global.entity.BaseTimeEntity;
+import com.umc.pureum.global.entity.BaseEntity;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -11,8 +13,8 @@ import java.sql.Timestamp;
 
 @Entity
 @Getter
-@Setter
-public class Use extends BaseTimeEntity {
+@NoArgsConstructor
+public class Use extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "use_id")
@@ -32,5 +34,17 @@ public class Use extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private UseStatus status;
+
+    // use 정보 업데이트
+    @Builder
+    public Use(Long id, User user, Time use_time, int count, UseStatus purpose_time_status, Time purpose_time, UseStatus status ){
+        this.id = id;
+        this.user = user;
+        this.use_time = use_time;
+        this.count = count;
+        this.purpose_time_status = purpose_time_status;
+        this.purpose_time = purpose_time;
+        this.status = status;
+    }
 
 }
