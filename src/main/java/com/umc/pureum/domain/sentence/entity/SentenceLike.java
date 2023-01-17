@@ -1,6 +1,7 @@
 package com.umc.pureum.domain.sentence.entity;
 
 import com.sun.istack.NotNull;
+import com.umc.pureum.global.entity.BaseEntity;
 import com.umc.pureum.global.entity.User;
 import lombok.Builder;
 import lombok.Data;
@@ -11,10 +12,7 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @Entity
-public class SentenceLike {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class SentenceLike extends BaseEntity {
     @ManyToOne @JoinColumn(name = "user_id")
     private User user;
     @ManyToOne @JoinColumn(name = "sentence_id")
@@ -22,8 +20,7 @@ public class SentenceLike {
     private String status;
 
     @Builder
-    public SentenceLike(Long id, User user, Sentence sentence, String status) {
-        this.id = id;
+    public SentenceLike(User user, Sentence sentence, String status) {
         this.user = user;
         this.sentence = sentence;
         this.status = status;
