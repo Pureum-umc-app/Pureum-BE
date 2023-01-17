@@ -40,4 +40,10 @@ public class UseController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 목표 달성 여부 반환 API
+     * 캘린더에 O, X로 표시되고 한달 기준으로 반환함
+     * [GET] /uses/goals/result
+     */
 }
