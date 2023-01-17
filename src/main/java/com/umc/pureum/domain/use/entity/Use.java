@@ -15,10 +15,6 @@ import java.sql.Time;
 @SuperBuilder
 @NoArgsConstructor
 public class Use extends BaseEntity {
-
-    @Id @GeneratedValue
-    @Column(name = "use_id")
-    private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserAccount user;
@@ -37,8 +33,7 @@ public class Use extends BaseEntity {
 
     // use 정보 업데이트
     @Builder
-    public Use(Long id, UserAccount user, Time use_time, int count, UseStatus purpose_time_status, Time purpose_time, UseStatus status ){
-        this.id = id;
+    public Use(UserAccount user, Time use_time, int count, UseStatus purpose_time_status, Time purpose_time, UseStatus status ){
         this.user = user;
         this.use_time = use_time;
         this.count = count;
