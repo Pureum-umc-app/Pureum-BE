@@ -5,10 +5,12 @@ import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
 
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @Entity
 public class Keyword extends BaseEntity {
