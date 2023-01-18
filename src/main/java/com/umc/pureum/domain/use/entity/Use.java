@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -27,23 +28,29 @@ public class Use extends BaseEntity {
 
     private int count;
 
+    private Time purpose_time;
+
     @Enumerated(EnumType.STRING)
     private UseStatus purpose_time_status;
 
-    private Time purpose_time;
+    private LocalDateTime created_at;
+
+    private LocalDateTime updated_at;
 
     @Enumerated(EnumType.STRING)
     private UseStatus status;
 
     // use 정보 업데이트
     @Builder
-    public Use(Long id, User user, Time use_time, int count, UseStatus purpose_time_status, Time purpose_time, UseStatus status ){
+    public Use(Long id, User user, Time use_time, int count, Time purpose_time, UseStatus purpose_time_status, LocalDateTime created_at, LocalDateTime updated_at, UseStatus status ){
         this.id = id;
         this.user = user;
         this.use_time = use_time;
         this.count = count;
-        this.purpose_time_status = purpose_time_status;
         this.purpose_time = purpose_time;
+        this.purpose_time_status = purpose_time_status;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
         this.status = status;
     }
 

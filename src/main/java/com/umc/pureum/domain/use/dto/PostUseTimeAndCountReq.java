@@ -11,6 +11,6 @@ import java.sql.Time;
 public class PostUseTimeAndCountReq {
     private Long user_id;
     private Time use_time; // 일일 사용시간
-    private Time count; // 화면 킨 횟수
+    private int count; // 화면 킨 횟수
 
 }
