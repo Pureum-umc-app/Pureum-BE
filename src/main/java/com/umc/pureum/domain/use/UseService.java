@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -19,7 +21,10 @@ public class UseService {
     public PostUseTimeAndCountRes saveTimeAndCount(PostUseTimeAndCountReq postUseTimeAndCountReq){
         Long user_id = postUseTimeAndCountReq.getUser_id();
         Use use = useDao.findOneByFk(user_id);
-        use.builder().use_time(use.getUse_time()).count(use.getCount());
+        use.builder()
+                .use_time(postUseTimeAndCountReq.getUse_time())
+                .count(postUseTimeAndCountReq.getCount())
+                .updated_at(LocalDateTime.now());  // 테이블 수정 시간 등록
         return new PostUseTimeAndCountRes(use.getId());
     }
 }
