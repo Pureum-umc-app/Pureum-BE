@@ -36,7 +36,7 @@ public class UseController {
     // postUseTimeAndCountRes 를 안 만들고 String 을 넣은 이유! -> 자동적으로 저장되는 거다보니 결과를 보내는 것보다는 성공했다는 상태 코드(& 메세지)만 보내주면 될 것 같다 판단!
     public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq){
         try{
-            int userIdx = jwtService.getUserIdx();
+            Long userIdx = jwtService.getUserIdx();
             if(userIdx != postUseTimeAndCountReq.getUser_id()){
                 return new BaseResponse<>(INVALID_JWT);
             }
