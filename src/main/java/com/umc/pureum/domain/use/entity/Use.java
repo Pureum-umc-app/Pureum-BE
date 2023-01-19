@@ -23,9 +23,6 @@ public class Use extends BaseEntity {
 
     private int count;
 
-    @Enumerated(EnumType.STRING)
-    private UseStatus purpose_time_status;
-
     private Time purpose_time;
 
     @Enumerated(EnumType.STRING)
@@ -37,7 +34,6 @@ public class Use extends BaseEntity {
         this.user = user;
         this.use_time = use_time;
         this.count = count;
-        this.purpose_time_status = purpose_time_status;
         this.purpose_time = purpose_time;
         this.status = status;
     }
