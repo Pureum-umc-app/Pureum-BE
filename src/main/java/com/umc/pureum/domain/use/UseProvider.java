@@ -3,8 +3,10 @@ package com.umc.pureum.domain.use;
 
 import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
 import com.umc.pureum.domain.use.entity.UsePhone;
-import com.umc.pureum.domain.use.entity.UseStatus;
-import com.umc.pureum.domain.user.entity.UserStatus;
+import com.umc.pureum.domain.user.UserRepository;
+import com.umc.pureum.domain.user.entity.UserAccount;
+import com.umc.pureum.global.config.BaseException;
+import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,11 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,14 +26,17 @@ import java.util.stream.Collectors;
 public class UseProvider {
     private final UseDao useDao;
     private final UseRepository useRepository;
+    private final UserRepository userRepository;
 
     /** API **/
 
     /* 목표 달성 여부 반환 API */
-    public List<GetGoalResultsRes> getGoalResults(Long userIdx) {
-        Date now = new Date();
-        Timestamp timestamp = new Timestamp(now.getTime());
+    public List<GetGoalResultsRes> getGoalResults(Long userIdx) throws BaseException {
+        // 존재하는 회원인지 검사
+        Optional<UserAccount> user = userRepository.findByIdAndStatus(userIdx);
+        if(user.isEmpty()) throw new BaseException(BaseResponseStatus.INVALID_USER);
 
+        // 사용 기록을 받아옴
         List<UsePhone> uses = useRepository.findAllByConditions(userIdx, getNextDay());
 
         return uses.stream()
