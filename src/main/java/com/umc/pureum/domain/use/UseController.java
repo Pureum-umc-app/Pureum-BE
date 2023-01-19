@@ -27,14 +27,9 @@ public class UseController {
     @PostMapping("/useTimeAndCount")
     public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq){
         try{
-            int userIdx = jwtService.getUserIdx();
-            if(userIdx != postUseTimeAndCountReq.getUser_id()){
-                return new BaseResponse<>(INVALID_JWT);
-            }
-            else{
-                PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(postUseTimeAndCountReq);
+            Long user_id = jwtService.getUserIdx();
+            PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(user_id, postUseTimeAndCountReq);
                 return new BaseResponse<>(postUseTimeAndCountRes);
-            }
         }catch(BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
