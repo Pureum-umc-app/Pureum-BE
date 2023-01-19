@@ -9,11 +9,11 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Time;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Use extends BaseEntity {
 
@@ -40,7 +40,7 @@ public class Use extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UseStatus status;
 
-    // use 정보 업데이트
+    // 생성 메소드
     @Builder
     public Use(Long id, User user, Time use_time, int count, Time purpose_time, UseStatus purpose_time_status, LocalDateTime created_at, LocalDateTime updated_at, UseStatus status ){
         this.id = id;
