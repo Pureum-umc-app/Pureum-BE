@@ -22,10 +22,10 @@ public class Keyword extends BaseEntity {
     @NotNull
     private String status;
 
-    @Builder
-    public Keyword(Long id, String word, String status) {
-        this.id = id;
-        this.word = word;
-        this.status = status;
-    }
+//    @Builder
+//    public Keyword(Long id, String word, String status) {
+//        this.id = id;
+//        this.word = word;
+//        this.status = status;
+//    }
 }
