@@ -26,9 +26,10 @@ public class UseDao {
                 .getSingleResult();
     }
 
-    // 사용 테이블 모두 조회
-    public List<Use> findAll() {
-        return em.createQuery("select u from Use u", Use.class)
+    // 사용 테이블의 외래키를 통한 사용 테이블 모두 조회
+    public List<Use> findAll(Long user_id){
+        return em.createQuery("select u from Use u where u.user.id = :user_id", Use.class)
+                .setParameter("user_id",user_id)
                 .getResultList();
     }
 
