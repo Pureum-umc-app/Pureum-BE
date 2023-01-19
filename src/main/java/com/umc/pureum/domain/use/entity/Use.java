@@ -24,6 +24,7 @@ public class Use extends BaseEntity {
     private int count;
 
     private Time purpose_time;
+    
 
     @Enumerated(EnumType.STRING)
     private UseStatus status;
