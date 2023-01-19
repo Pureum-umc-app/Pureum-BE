@@ -37,21 +37,18 @@ public class AttendanceController {
     @ResponseBody
     @GetMapping("/{userIdx}")
     public BaseResponse<GetStampRes> getStamps(@PathVariable Long userIdx) {
-//        try{
-//            Long userIdxByJwt = jwtService.getUserIdx();
-//            if(!Objects.equals(userIdx, userIdxByJwt)){
-//                return new BaseResponse<>(INVALID_JWT);
-//            }
-//            else{
-//                GetStampRes getStampRes = attendanceProvider.getStamps(userIdx);
-//                return new BaseResponse<>(getStampRes);
-//            }
-//        }catch(BaseException e){
-//            return new BaseResponse<>(e.getStatus());
-//        }
-
-        GetStampRes getStampRes = attendanceProvider.getStamps(userIdx);
-        return new BaseResponse<>(getStampRes);
+        try{
+            Long userIdxByJwt = jwtService.getUserIdx();
+            if(!Objects.equals(userIdx, userIdxByJwt)){
+                return new BaseResponse<>(INVALID_JWT);
+            }
+            else{
+                GetStampRes getStampRes = attendanceProvider.getStamps(userIdx);
+                return new BaseResponse<>(getStampRes);
+            }
+        } catch(BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 
 }
