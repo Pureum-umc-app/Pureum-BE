@@ -1,7 +1,7 @@
 package com.umc.pureum.domain.sentence.entity;
 
 import com.sun.istack.NotNull;
-import com.umc.pureum.global.entity.BaseTimeEntity;
+import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import javax.persistence.Id;
 @Data
 @NoArgsConstructor
 @Entity
-public class Keyword extends BaseTimeEntity {
+public class Keyword extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NotNull
