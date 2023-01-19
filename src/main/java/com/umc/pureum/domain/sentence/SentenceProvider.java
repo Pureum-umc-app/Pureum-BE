@@ -1,6 +1,5 @@
 package com.umc.pureum.domain.sentence;
 
-import com.umc.pureum.domain.home.HomeDao;
 import com.umc.pureum.global.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
