@@ -1,10 +1,10 @@
 package com.umc.pureum.domain.use;
 
-
 import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
+import com.umc.pureum.domain.user.entity.UserStatus;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class UseProvider {
     /* 목표 달성 여부 반환 API */
     public List<GetGoalResultsRes> getGoalResults(Long userIdx) throws BaseException {
         // 존재하는 회원인지 검사
-        Optional<UserAccount> user = userRepository.findByIdAndStatus(userIdx);
+        Optional<UserAccount> user = userRepository.findByIdAndStatus(userIdx, "A");
         if(user.isEmpty()) throw new BaseException(BaseResponseStatus.INVALID_USER);
 
         // 사용 기록을 받아옴
