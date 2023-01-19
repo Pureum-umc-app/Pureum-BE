@@ -1,6 +1,5 @@
 package com.umc.pureum.domain.sentence.entity;
 
-import com.umc.pureum.domain.user.entity.User;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Builder;

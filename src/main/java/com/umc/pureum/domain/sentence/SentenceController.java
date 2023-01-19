@@ -1,7 +1,5 @@
 package com.umc.pureum.domain.sentence;
 
-import com.umc.pureum.domain.home.HomeProvider;
-import com.umc.pureum.domain.home.HomeService;
 import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
