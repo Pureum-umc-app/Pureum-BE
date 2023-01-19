@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
 
@@ -57,19 +58,17 @@ public class UseController {
     @ResponseBody
     @GetMapping("/{user_idx}/goals/result")
     public BaseResponse<List<GetGoalResultsRes>> getGoalResults(@PathVariable Long user_idx) {
-//        try{
-//            int userIdxByJwt = jwtService.getUserIdx();
-//            if(user_idx != userIdxByJwt){
-//                return new BaseResponse<>(INVALID_JWT);
-//            }
-//            else{
-//                List<GetGoalResultsRes> getGoalResultsRes = useProvider.getGoalResults(user_idx);
-//                return new BaseResponse<>(getGoalResultsRes);
-//            }
-//        }catch(BaseException e){
-//            return new BaseResponse<>(e.getStatus());
-//        }
-        List<GetGoalResultsRes> getGoalResultsRes = useProvider.getGoalResults(user_idx);
-        return new BaseResponse<>(getGoalResultsRes);
+        try{
+            Long userIdxByJwt = jwtService.getUserIdx();
+            if(!Objects.equals(user_idx, userIdxByJwt)){
+                return new BaseResponse<>(INVALID_JWT);
+            }
+            else{
+                List<GetGoalResultsRes> getGoalResultsRes = useProvider.getGoalResults(user_idx);
+                return new BaseResponse<>(getGoalResultsRes);
+            }
+        } catch(BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 }
