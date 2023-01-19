@@ -27,7 +27,7 @@ public class UseProvider {
 
     /* 목표 달성 여부 반환 API */
 //    public List<GetGoalResultsRes> getGoalResults(int userIdx) {
-//        Date now = new Date();
+//        Date now = new Date(
 //        Timestamp timestamp = new Timestamp(now.getTime());
 //
 ////        List<Use> uses = useRepository.findAllByUser(userIdx);
