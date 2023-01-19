@@ -14,28 +14,27 @@ import java.sql.Time;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-public class Use extends BaseEntity {
+public class UsePhone extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserAccount user;
 
-    private Time use_time;
+    private Time useTime;
 
     private int count;
 
-    private Time purpose_time;
-    
+    private Time purposeTime;
 
     @Enumerated(EnumType.STRING)
     private UseStatus status;
 
     // use 정보 업데이트
     @Builder
-    public Use(UserAccount user, Time use_time, int count, UseStatus purpose_time_status, Time purpose_time, UseStatus status ){
+    public UsePhone(UserAccount user, Time use_time, int count, Time purpose_time, UseStatus status ){
         this.user = user;
-        this.use_time = use_time;
+        this.useTime = use_time;
         this.count = count;
-        this.purpose_time = purpose_time;
+        this.purposeTime = purpose_time;
         this.status = status;
     }
 
