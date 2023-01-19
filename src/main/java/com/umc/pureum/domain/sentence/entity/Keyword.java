@@ -5,27 +5,24 @@ import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @Entity
 public class Keyword extends BaseEntity {
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
     @NotNull
     private String word;
     @NotNull
     private String status;
 
-//    @Builder
-//    public Keyword(Long id, String word, String status) {
-//        this.id = id;
-//        this.word = word;
-//        this.status = status;
-//    }
+    @Builder
+    public Keyword(String word, String status) {
+        this.word = word;
+        this.status = status;
+    }
 }
+

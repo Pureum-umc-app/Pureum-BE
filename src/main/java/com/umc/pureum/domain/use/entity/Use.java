@@ -1,36 +1,42 @@
 package com.umc.pureum.domain.use.entity;
 
-import com.umc.pureum.domain.user.entity.User;
+import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+<<<<<<< HEAD
 import lombok.Setter;
+=======
+>>>>>>> caf7cab2eca6b311f9881f08bff27d544c05613f
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.sql.Time;
+<<<<<<< HEAD
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
+=======
+
+@Entity
+@Getter
+>>>>>>> caf7cab2eca6b311f9881f08bff27d544c05613f
 @SuperBuilder
 @NoArgsConstructor
 public class Use extends BaseEntity {
-
-    @Id @GeneratedValue
-    @Column(name = "use_id")
-    private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserAccount user;
 
     private Time use_time;
 
     private int count;
 
     private Time purpose_time;
+<<<<<<< HEAD
 
     @Enumerated(EnumType.STRING)
     private UseStatus purpose_time_status;
@@ -38,14 +44,20 @@ public class Use extends BaseEntity {
     private LocalDateTime created_at;
 
     private LocalDateTime updated_at;
+=======
+>>>>>>> caf7cab2eca6b311f9881f08bff27d544c05613f
 
     @Enumerated(EnumType.STRING)
     private UseStatus status;
 
     // 생성 메소드
     @Builder
+<<<<<<< HEAD
     public Use(Long id, User user, Time use_time, int count, Time purpose_time, UseStatus purpose_time_status, LocalDateTime created_at, LocalDateTime updated_at, UseStatus status ){
         this.id = id;
+=======
+    public Use(UserAccount user, Time use_time, int count, UseStatus purpose_time_status, Time purpose_time, UseStatus status ){
+>>>>>>> caf7cab2eca6b311f9881f08bff27d544c05613f
         this.user = user;
         this.use_time = use_time;
         this.count = count;
