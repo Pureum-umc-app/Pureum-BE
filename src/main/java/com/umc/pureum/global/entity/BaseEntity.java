@@ -2,6 +2,7 @@ package com.umc.pureum.global.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,6 +17,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
+@Setter
 @SuperBuilder
 @MappedSuperclass
 @NoArgsConstructor(access = PROTECTED)
