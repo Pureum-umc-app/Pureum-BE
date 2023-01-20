@@ -18,5 +18,5 @@ public interface UseRepository extends JpaRepository<Use, Long> {
      * 목표 달성 여부 반환
      * updated_at이 현재 날짜랑 같은 데이터까지 반환
      **/
-    //List<Use> findAllByUserAndUpdated_atBefore(int id);
+    //List<Use> findAllByUserAndUpdatedAtBefore(int id);
 }
