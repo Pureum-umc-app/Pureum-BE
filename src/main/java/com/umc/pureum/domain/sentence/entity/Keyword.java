@@ -25,4 +25,3 @@ public class Keyword extends BaseEntity {
         this.status = status;
     }
 }
-
