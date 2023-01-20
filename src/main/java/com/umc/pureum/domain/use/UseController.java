@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
 
@@ -47,27 +48,27 @@ public class UseController {
      * 목표 달성 여부 반환 API
      * 캘린더에 O, X로 표시되고 회원가입 이후의 모든 여부를 반환
      * [GET] /uses/{user_idx}/goals/result
+     * String date = updated_at - 1
+     * int isSuccess = 0, 1
      */
-//    @ApiOperation("목표 달성 여부 반환")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
-//    })
-//    @ResponseBody
-//    @GetMapping("/{user_idx}/goals/result")
-//    public BaseResponse<List<GetGoalResultsRes>> getGoalResults(@PathVariable int user_idx) {
-////        try{
-////            int userIdxByJwt = jwtService.getUserIdx();
-////            if(user_idx != userIdxByJwt){
-////                return new BaseResponse<>(INVALID_JWT);
-////            }
-////            else{
-////                List<GetGoalResultsRes> getGoalResultsRes = useProvider.getGoalResults(user_idx);
-////                return new BaseResponse<>(getGoalResultsRes);
-////            }
-////        }catch(BaseException e){
-////            return new BaseResponse<>(e.getStatus());
-////        }
-////        List<GetGoalResultsRes> getGoalResultsRes = useProvider.getGoalResults(user_idx);
-////        return new BaseResponse<>(getGoalResultsRes);
-//    }
+    @ApiOperation("목표 달성 여부 반환")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
+    })
+    @ResponseBody
+    @GetMapping("/{user_idx}/goals/result")
+    public BaseResponse<List<GetGoalResultsRes>> getGoalResults(@PathVariable Long user_idx) {
+        try{
+            Long userIdxByJwt = jwtService.getUserIdx();
+            if(!Objects.equals(user_idx, userIdxByJwt)){
+                return new BaseResponse<>(INVALID_JWT);
+            }
+            else{
+                List<GetGoalResultsRes> getGoalResultsRes = useProvider.getGoalResults(user_idx);
+                return new BaseResponse<>(getGoalResultsRes);
+            }
+        } catch(BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

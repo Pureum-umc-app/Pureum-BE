@@ -64,11 +64,7 @@ public class JwtService {
 //        System.out.println(exp);
 
         // 3. userIdx 추출
-<<<<<<< HEAD
-        return claims.getBody().get("userIdx", Long.class);  // jwt 에서 userIdx를 추출합니다.
-=======
         return claims.getBody().get("userIdx",Long.class);  // jwt 에서 userIdx를 추출합니다.
->>>>>>> caf7cab2eca6b311f9881f08bff27d544c05613f
     }
 
     /* 이 부분은 개인적으로 refresh token 공부하면서 추가했던 부분인데 아직은 신경 안 쓰셔도 될 거 같아요..!
