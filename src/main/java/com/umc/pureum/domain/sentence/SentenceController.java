@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.home;
+package com.umc.pureum.domain.sentence;
 
 import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Api(tags = "홈")
-@RequestMapping("/homes")
-public class HomeController {
-    private final HomeProvider homeProvider;
-    private final HomeService homeService;
+@Api(tags = "한 문장 챌린지")
+@RequestMapping("/sentences")
+public class SentenceController {
+    private final SentenceProvider sentenceProvider;
+    private final SentenceService sentenceService;
     private final JwtService jwtService;
 
     // @RequiredArgsConstructor 있어서 @Autowired나 생성자는 안 써도 괜찮아요!
