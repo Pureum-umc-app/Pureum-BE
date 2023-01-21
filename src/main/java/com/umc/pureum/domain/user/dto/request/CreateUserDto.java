@@ -1,11 +1,10 @@
 package com.umc.pureum.domain.user.dto.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,6 +13,6 @@ import lombok.NoArgsConstructor;
  */
 public class CreateUserDto {
     String nickname;
-    String profile_photo_url;
+    MultipartFile profile_photo;
     int grade;
 }
