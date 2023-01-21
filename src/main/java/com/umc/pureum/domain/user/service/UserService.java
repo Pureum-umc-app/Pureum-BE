@@ -5,6 +5,7 @@ import com.umc.pureum.domain.user.dto.AccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
+import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,12 +30,17 @@ public class UserService {
         AccessTokenInfoDto accessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(accessToken);
         //유저 정보 빌더 하여 저장
         UserAccount userAccount = UserAccount.builder()
-                .name(accessTokenInfoDto.getNickname())
+                .name(null)
+                .id(accessTokenInfoDto.getId())
                 .email(accessTokenInfoDto.has_email ? accessTokenInfoDto.getEmail() : null)
-                .image(createUserDto.getProfile_photo())
+                .image(createUserDto.getProfile_photo_url())
                 .grade(createUserDto.getGrade())
                 .nickname(createUserDto.getNickname())
+                .kakaoId(accessTokenInfoDto.getId())
                 .build();
             userRepository.save(userAccount);
+    }
+    public boolean validationDuplicateUserNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 }
