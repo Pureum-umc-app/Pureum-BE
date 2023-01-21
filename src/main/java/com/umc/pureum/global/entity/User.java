@@ -17,7 +17,6 @@ public class User {
     @Id @GeneratedValue
     @Column(name = "user_id")
     private Long id;
-
     private String name;
     private String nickname;
     private String introduction;
@@ -27,5 +26,4 @@ public class User {
     private Timestamp create_id;
     private Timestamp update_id;
     private String status; // A:active D:delete
-
 }
