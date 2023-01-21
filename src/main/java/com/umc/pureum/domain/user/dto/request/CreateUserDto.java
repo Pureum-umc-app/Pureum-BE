@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
  */
 public class CreateUserDto {
     String nickname;
-    String profile_photo_url;
+    String profile_photo;
     int grade;
 }
