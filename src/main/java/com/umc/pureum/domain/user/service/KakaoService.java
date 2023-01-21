@@ -20,6 +20,7 @@ import java.net.URL;
 public class KakaoService {
     /**
      * 인가코드로 토큰 받기
+     *
      * @param code 인가코드
      * @return access token 리턴
      * @throws IOException // 카카오서버 접속 오류
@@ -75,6 +76,7 @@ public class KakaoService {
 
     /**
      * access token으로 유저 정보 가져오기
+     *
      * @param token //access token
      * @return // 유저 정보 AccessTokenInfoDto 형태로 리턴
      * @throws BaseException // DB 접속 오류 등등
@@ -109,16 +111,12 @@ public class KakaoService {
             JsonElement element = JsonParser.parseString(result);
             //accesstoken 정보 Dto에 빌드
             accessTokenInfoDto = AccessTokenInfoDto.builder()
-                    .profile_nickname_needs_agreement(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("profile_nickname_needs_agreement").getAsBoolean())
+                    .id(element.getAsJsonObject().get("id").getAsLong())
                     .is_email_verified(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("is_email_verified").getAsBoolean())
-                    .nickname(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("profile").getAsJsonObject().get("nickname").getAsString())
                     .email_needs_agreement(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email_needs_agreement").getAsBoolean())
                     .has_email(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean())
                     .is_email_valid(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("is_email_valid").getAsBoolean())
-                    .profile_image_needs_agreement(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("profile_image_needs_agreement").getAsBoolean())
-                    .is_default_image(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("profile").getAsJsonObject().get("is_default_image").getAsBoolean())
                     .email(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString())
-                    .profile_image_url(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("profile").getAsJsonObject().get("profile_image_url").getAsString())
                     .build();
             br.close();
 
