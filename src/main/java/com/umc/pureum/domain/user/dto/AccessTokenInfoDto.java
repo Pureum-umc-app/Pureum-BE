@@ -14,7 +14,7 @@ import lombok.ToString;
  * 일단 회원가입에 사용
  */
 public class AccessTokenInfoDto {
-
+    public Long id;
     public Boolean profile_nickname_needs_agreement;
     public Boolean profile_image_needs_agreement;
     public Boolean has_email;
