@@ -5,7 +5,6 @@ import com.umc.pureum.domain.user.dto.AccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

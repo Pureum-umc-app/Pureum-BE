@@ -1,21 +1,20 @@
 package com.umc.pureum.domain.user;
 
-import com.sun.net.httpserver.Authenticator;
 import com.umc.pureum.domain.user.dto.AccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
 import com.umc.pureum.domain.user.service.KakaoService;
 import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import com.umc.pureum.global.config.BaseResponseStatus.*;
 import io.swagger.annotations.*;
-import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -45,7 +44,7 @@ public class UserController {
      */
     // kauth.kakao.com/oauth/authorize?client_id=633bdb4f088357e5fe5cde61b4543053&redirect_uri=http://localhost:9000/user/kakao/auth&response_type=code
     //위의 링크로 접속하면 console 창에 토큰 정보 나오는데 그거 사용하면 됩니다.
-    @ApiOperation("(서버전용)인가 코드로 토큰 받아오는 API ")
+//    @ApiOperation("(서버전용)인가 코드로 토큰 받아오는 API ")
     @GetMapping("/kakao/auth")
     public void getCodeAndToken(@RequestParam String code) throws IOException {
         System.out.println(code);
@@ -59,18 +58,17 @@ public class UserController {
      * @return // 회원가입 성공시 success 출력
      * @throws BaseException // DB 에러 등등
      */
-    @ApiOperation("회원가입 API")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "nickname",dataType = "String",value = "닉네임"),
-            @ApiImplicitParam(name = "grade",dataType = "int",value = "학년"),
-            @ApiImplicitParam(name = "image",dataType = "imageFile",value = "프로필 이미지")
-    })
-    @ApiResponses({
-            @ApiResponse(code = 1000,message = "요청에 성공하였습니다."),
-            @ApiResponse(code = 2031,message = "중복된 닉네임입니다."),
-            @ApiResponse(code = 2033,message = "이미 가입된 회원입니다.")
-    })
-    @Transactional
+//    @ApiOperation("회원가입 API")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "nickname",paramType = "formData",value = "닉네임"),
+//            @ApiImplicitParam(name = "grade",paramType = "formData",value = "학년"),
+//            @ApiImplicitParam(name = "image",paramType = "formData",value = "프로필 이미지")
+//    })
+//    @ApiResponses({
+//            @ApiResponse(code = 1000,message = "요청에 성공하였습니다."),
+//            @ApiResponse(code = 2031,message = "중복된 닉네임입니다."),
+//            @ApiResponse(code = 2033,message = "이미 가입된 회원입니다.")
+//    })
     @CrossOrigin
     @PostMapping(value="/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(HttpServletRequest request, @RequestParam(value="image") MultipartFile image, CreateUserDto createUserDto) throws BaseException {
@@ -90,5 +88,10 @@ public class UserController {
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+    @ResponseBody
+    @GetMapping("/auth")
+    public Authentication auth(){
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 }
