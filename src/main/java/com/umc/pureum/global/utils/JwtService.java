@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.swagger.models.auth.In;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -22,7 +23,7 @@ public class JwtService {
     private final long REFRESH_TOKEN_VALID_TIME = 1000L * 60 * 60 * 24 * 365;  // 1년
 
     /* Access Token 생성 */
-    public static String createAccessToken(int userIdx) {
+    public static String createAccessToken(Long userIdx) {
         Date now = new Date();
 
         return Jwts.builder()
@@ -41,7 +42,7 @@ public class JwtService {
     }
 
     /* JWT에서 userIdx 추출 */
-    public int getUserIdx() throws BaseException {
+    public Long getUserIdx() throws BaseException {
         // 1. JWT 추출
         String accessToken = getJwt();
         if(accessToken == null || accessToken.length() == 0){
@@ -63,7 +64,7 @@ public class JwtService {
 //        System.out.println(exp);
 
         // 3. userIdx 추출
-        return claims.getBody().get("userIdx",Integer.class);  // jwt 에서 userIdx를 추출합니다.
+        return claims.getBody().get("userIdx",Long.class);  // jwt 에서 userIdx를 추출합니다.
     }
 
     /* 이 부분은 개인적으로 refresh token 공부하면서 추가했던 부분인데 아직은 신경 안 쓰셔도 될 거 같아요..!
@@ -71,7 +72,7 @@ public class JwtService {
      */
 
     /* Refresh Token 생성 */
-    public String createRefreshToken(int userIdx) {
+    public String createRefreshToken(Long userIdx) {
         Date now = new Date();
         return Jwts.builder()
                 .setHeaderParam("type","jwt")
