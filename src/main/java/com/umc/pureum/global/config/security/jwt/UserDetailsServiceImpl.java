@@ -1,4 +1,4 @@
-package com.umc.pureum.global.config.SecurityConfig.jwt;
+package com.umc.pureum.global.config.security.jwt;
 
 
 import com.umc.pureum.domain.user.UserRepository;
