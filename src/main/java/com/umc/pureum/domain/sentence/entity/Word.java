@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Data
 @SuperBuilder
@@ -17,9 +19,8 @@ import javax.persistence.Entity;
 public class Word extends BaseEntity {
     @NotNull
     private String word;
-    @NotNull
     private String meaning;
-    @NotNull
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @Builder
