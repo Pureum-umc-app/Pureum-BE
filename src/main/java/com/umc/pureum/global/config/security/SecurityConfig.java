@@ -1,9 +1,9 @@
-package com.umc.pureum.global.config.SecurityConfig;
+package com.umc.pureum.global.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umc.pureum.global.config.SecurityConfig.jwt.JwtAuthenticationCheckFilter;
-import com.umc.pureum.global.config.SecurityConfig.jwt.JwtAuthenticationEntryPoint;
-import com.umc.pureum.global.config.SecurityConfig.jwt.JwtTokenProvider;
+import com.umc.pureum.global.config.security.jwt.JwtAuthenticationCheckFilter;
+import com.umc.pureum.global.config.security.jwt.JwtAuthenticationEntryPoint;
+import com.umc.pureum.global.config.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +33,7 @@ public class SecurityConfig {
             "/v2/api-docs/**",  //swagger
             "/swagger-ui/**", //swagger
             "/swagger-resources/**", //swagger
+            "/user/nickname/{nickname}/validation"
     };
 
     @Bean
@@ -99,7 +100,8 @@ public class SecurityConfig {
                         "/user/kakao/auth", //토큰받는 api
                         "/v2/api-docs/**",  //swagger
                         "/swagger-ui/**", //swagger
-                        "/swagger-resources/**" //swagger
+                        "/swagger-resources/**", //swagger
+                        "/user/nickname/{nickname}/validation"
                 );
     }
 }
