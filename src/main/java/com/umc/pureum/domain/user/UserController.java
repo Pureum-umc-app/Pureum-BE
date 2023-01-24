@@ -2,6 +2,7 @@ package com.umc.pureum.domain.user;
 
 import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
+import com.umc.pureum.domain.user.dto.response.GetProfileResponseDto;
 import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.service.KakaoService;
 import com.umc.pureum.domain.user.service.UserService;
@@ -13,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -58,14 +61,14 @@ public class UserController {
      */
     @ApiOperation("회원가입 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "nickname",paramType = "formData",value = "닉네임"),
-            @ApiImplicitParam(name = "grade",paramType = "formData",value = "학년"),
-            @ApiImplicitParam(name = "image",paramType = "formData",value = "프로필 이미지")
+            @ApiImplicitParam(name = "nickname", paramType = "formData", value = "닉네임"),
+            @ApiImplicitParam(name = "grade", paramType = "formData", value = "학년"),
+            @ApiImplicitParam(name = "image", paramType = "formData", value = "프로필 이미지")
     })
     @ApiResponses({
-            @ApiResponse(code = 1000,message = "요청에 성공하였습니다."),
-            @ApiResponse(code = 2031,message = "중복된 닉네임입니다."),
-            @ApiResponse(code = 2033,message = "이미 가입된 회원입니다.")
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2031, message = "중복된 닉네임입니다."),
+            @ApiResponse(code = 2033, message = "이미 가입된 회원입니다.")
     })
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -90,16 +93,17 @@ public class UserController {
 
     /**
      * 로그인 API
+     *
      * @return jwt token
      */
     @ApiOperation("로그인 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN",paramType = "header",value = "kakao-access token"),
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", paramType = "header", value = "kakao-access token"),
     })
     @ApiResponses({
-            @ApiResponse(code = 1000,message = "요청에 성공하였습니다.",response = LogInResponseDto.class),
-            @ApiResponse(code = 2022,message = "유효하지 않은 JWT입니다."),
-            @ApiResponse(code = 2034,message = "존재하지 않는 회원입니다.")
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = LogInResponseDto.class),
+            @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다.")
     })
     @PostMapping(value = "/signin")
     public ResponseEntity<BaseResponse<LogInResponseDto>> userLogIn() {
@@ -112,21 +116,40 @@ public class UserController {
         LogInResponseDto logInResponseDto = userService.userLogIn(id);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse(logInResponseDto));
     }
+
     @ApiOperation("닉네임 유효성 체크 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "nickname",paramType = "path",value = "닉네임"),
+            @ApiImplicitParam(name = "nickname", paramType = "path", value = "닉네임"),
     })
     @ApiResponses({
-            @ApiResponse(code = 1000,message = "요청에 성공하였습니다.",response = String.class),
-            @ApiResponse(code = 2031,message = "중복된 닉네임입니다."),
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
+            @ApiResponse(code = 2031, message = "중복된 닉네임입니다."),
     })
-    @GetMapping(value="/nickname/{nickname}/validation")
-    public ResponseEntity<BaseResponse<String>>ValidationUserNickName(@PathVariable String nickname) throws BaseException {
+    @GetMapping(value = "/nickname/{nickname}/validation")
+    public ResponseEntity<BaseResponse<String>> ValidationUserNickName(@PathVariable String nickname) throws BaseException {
         try {
             if (userService.validationDuplicateUserNickname(nickname)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(POST_USERS_EXISTS_NICKNAME));
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse("유효한 닉네임입니다."));
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+    @ApiOperation("프로필 조회 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization baer-token", paramType = "header", value = "서비스 자체 jwt 토큰"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = GetProfileResponseDto.class),
+    })
+    @GetMapping(value = "/profile")
+    public ResponseEntity<BaseResponse<GetProfileResponseDto>> GetProfile() throws BaseException {
+        try {
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Long id = Long.parseLong(principal.getUsername());
+            GetProfileResponseDto getProfileResponseDto = userService.GetProfile(id);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(getProfileResponseDto));
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
