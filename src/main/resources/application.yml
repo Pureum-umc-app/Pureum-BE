@@ -2,6 +2,11 @@ server:
   port: 9000
 
 spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
   application:
     name: demo
   servlet:
