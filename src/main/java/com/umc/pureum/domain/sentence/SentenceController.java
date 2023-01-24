@@ -1,5 +1,10 @@
 package com.umc.pureum.domain.sentence;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.pureum.domain.sentence.dto.GetBeforeKeywordRes;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
@@ -21,11 +26,14 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataInput;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 
 @RestController
@@ -69,10 +77,18 @@ public class SentenceController {
             }
 
             JSONObject jsonObject = XML.toJSONObject(result.toString());
-            System.out.println(jsonObject);
+
+            ObjectMapper mapper = new ObjectMapper().configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+            mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+
+            GetMeansRes getMeansRes = mapper.readValue(jsonObject.toString(), GetMeansRes.class);
+
+            System.out.println(getMeansRes);
 
             return new BaseResponse<>("성공");
         } catch (Exception exception) {
+            System.out.println(exception.getMessage());
             return new BaseResponse<>(exception.getMessage());
         }
     }
