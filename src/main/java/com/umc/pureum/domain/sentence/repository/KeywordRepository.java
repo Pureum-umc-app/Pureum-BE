@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.sentence;
+package com.umc.pureum.domain.sentence.repository;
 
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import org.springframework.data.jpa.repository.JpaRepository;
