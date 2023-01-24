@@ -55,19 +55,19 @@ public class UseController {
      */
     @ApiOperation("목표 달성 여부 반환")
     @ResponseBody
-    @GetMapping("/{user_idx}/goals/result")
-    public BaseResponse<List<GetGoalResultsRes>> getGoalResults(@PathVariable Long user_idx) {
+    @GetMapping("/{userIdx}/goals/result")
+    public BaseResponse<List<GetGoalResultsRes>> getGoalResults(@PathVariable Long userIdx) {
         try{
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
             Long userId = Long.parseLong(user);
 
-            if(!Objects.equals(user_idx, userId)){
+            if(!Objects.equals(userIdx, userId)){
                 return new BaseResponse<>(INVALID_JWT);
             }
             else{
-                List<GetGoalResultsRes> getGoalResultsRes = useProvider.getGoalResults(user_idx);
+                List<GetGoalResultsRes> getGoalResultsRes = useProvider.getGoalResults(userIdx);
                 return new BaseResponse<>(getGoalResultsRes);
             }
         } catch(BaseException e){
