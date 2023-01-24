@@ -1,34 +1,44 @@
 package com.umc.pureum.global.config.SecurityConfig;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.umc.pureum.global.config.SecurityConfig.jwt.JwtAuthenticationCheckFilter;
+import com.umc.pureum.global.config.SecurityConfig.jwt.JwtAuthenticationEntryPoint;
+import com.umc.pureum.global.config.SecurityConfig.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.authentication.AuthenticationManagerFactoryBean;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 public class SecurityConfig {
-    private final  CustomAuthDeatils customAuthDeatils;
     private static final String[] POST_PERMITTED_URLS = {
-            "/user/signup",
-            "/user/kakao/auth",
-            "/v2/api-docs/**",
-            "/swagger-ui/**",
-            "/swagger-resources/**",
-            "/user/auth"
+            "/user/signin",//로그인
+            "/user/signup", //회원가입
+            "/user/kakao/auth", //토큰받는 api
+            "/v2/api-docs/**",  //swagger
+            "/swagger-ui/**", //swagger
+            "/swagger-resources/**", //swagger
     };
 
     @Bean
     public SecurityFilterChain filterChain(
-            HttpSecurity http) throws Exception {
+            HttpSecurity http, JwtAuthenticationCheckFilter jwtAuthenticationCheckFilter,
+            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) throws Exception {
         http
                 .cors()//CORS 허용 정책(Front , Back 사이에 도메인이 달라지는 경우)
                 .and()
@@ -38,6 +48,10 @@ public class SecurityConfig {
                 .and()
                 .formLogin().disable()  // 서버에서  View를 배포하지 않으므로 disable
                 .httpBasic().disable() // JWT 인증 방식을 사용하기에 httpBasic을 이용한 인증방식 사용 안함
+                .addFilterAfter(jwtAuthenticationCheckFilter, UsernamePasswordAuthenticationFilter.class)//필터 추가
+                .exceptionHandling(config -> config
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
                 .authorizeRequests(ant -> ant
                         .antMatchers(POST_PERMITTED_URLS).permitAll() // 해당 문자열 배열에 저장된 uri 요청은 제외
                         .anyRequest().authenticated() // 모든 요청은 Auth 받아야함
@@ -45,8 +59,47 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // CORS 허용 적용
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(ApplicationContext context) throws Exception {
+        AuthenticationManagerFactoryBean authenticationManagerFactoryBean = new AuthenticationManagerFactoryBean();
+        authenticationManagerFactoryBean.setBeanFactory(context);
+        return authenticationManagerFactoryBean.getObject();
+    }
+
+    @Bean
+    public JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint(ObjectMapper objectMapper) {
+        return new JwtAuthenticationEntryPoint(objectMapper);
+    }
+
+    @Bean
+    public JwtAuthenticationCheckFilter jwtAuthenticationCheckFilter(JwtTokenProvider jwtTokenProvider) {
+        return new JwtAuthenticationCheckFilter(jwtTokenProvider);
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web
+                .ignoring().antMatchers(
+                        "/user/signin",//로그인
+                        "/user/signup", //회원가입
+                        "/user/kakao/auth", //토큰받는 api
+                        "/v2/api-docs/**",  //swagger
+                        "/swagger-ui/**", //swagger
+                        "/swagger-resources/**" //swagger
+                );
     }
 }
