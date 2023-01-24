@@ -3,10 +3,14 @@ package com.umc.pureum.domain.use;
 
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
-import com.umc.pureum.domain.use.entity.Use;
+import com.umc.pureum.domain.use.entity.UsePhone;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -16,10 +20,11 @@ public class UseService {
 
     // 일일 사용시간 & 화면 킨 횟수 등록
     @Transactional
-    public PostUseTimeAndCountRes saveTimeAndCount(PostUseTimeAndCountReq postUseTimeAndCountReq){
-        Long user_id = postUseTimeAndCountReq.getUser_id();
-        Use use = useDao.findOneByFk(user_id);
-        use.builder().use_time(use.getUse_time()).count(use.getCount());
+    public PostUseTimeAndCountRes saveTimeAndCount(Long user_id,PostUseTimeAndCountReq postUseTimeAndCountReq){
+        UsePhone use = useDao.findOneByFk(user_id);
+        use.setUseTime(postUseTimeAndCountReq.getUse_time());
+        use.setCount(postUseTimeAndCountReq.getCount());
+        use.setUpdatedAt(new Timestamp(new Date().getTime()));
         return new PostUseTimeAndCountRes(use.getId());
     }
 }
