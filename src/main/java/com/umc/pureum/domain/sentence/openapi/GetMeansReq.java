@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.sentence.dto;
+package com.umc.pureum.domain.sentence.openapi;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

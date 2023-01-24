@@ -1,8 +1,8 @@
 package com.umc.pureum.domain.sentence;
 
-import com.umc.pureum.domain.attendance.dto.GetStampRes;
 import com.umc.pureum.domain.sentence.dto.GetBeforeKeywordRes;
-import com.umc.pureum.domain.sentence.dto.GetMeansReq;
+import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
+import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import com.umc.pureum.global.utils.JwtService;
@@ -10,9 +10,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.models.media.XML;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,9 +26,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,15 +61,15 @@ public class SentenceController {
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "UTF-8"));
-
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(urlConnection.getInputStream());
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(bufferedInputStream, StandardCharsets.UTF_8));
             String returnLine;
-            result.append("<xmp>");
             while((returnLine = bufferedReader.readLine()) != null) {
-                result.append(returnLine).append("\n");
+                result.append(returnLine);
             }
 
-            System.out.println(result);
+            JSONObject jsonObject = XML.toJSONObject(result.toString());
+            System.out.println(jsonObject);
 
             return new BaseResponse<>("성공");
         } catch (Exception exception) {
