@@ -1,14 +1,15 @@
 package com.umc.pureum.domain.use.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.sql.Time;
-
 @Data
 @AllArgsConstructor
-public class GetUseTimeAndCountRes {
+public class GetUserAccountDto {
 
-    private Time use_time;
-    private int count;
+    private String nickname;
+    private String image;
+    private String useTime;
+
 }

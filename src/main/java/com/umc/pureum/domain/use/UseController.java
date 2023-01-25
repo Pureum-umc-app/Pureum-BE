@@ -30,7 +30,7 @@ public class UseController {
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
-     * [POST] /uses/useTimeAndCount <- 작명 추천 좀...
+     * [POST] /uses/useTimeAndCount
      */
     @ResponseBody
     @PostMapping("/useTimeAndCount")
@@ -71,4 +71,5 @@ public class UseController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 }
