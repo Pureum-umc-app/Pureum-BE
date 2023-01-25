@@ -3,11 +3,12 @@ package com.umc.pureum.domain.user.service;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
+import com.umc.pureum.domain.user.dto.response.GetProfileResponseDto;
 import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
+import com.umc.pureum.domain.user.entity.mapping.UserProfileMapping;
 import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.global.config.SecurityConfig.jwt.JwtTokenProvider;
-import com.umc.pureum.global.entity.User;
+import com.umc.pureum.global.config.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,18 +45,25 @@ public class UserService {
     }
 
     public boolean validationDuplicateUserNickname(String nickname) {
-        return userRepository.existsByNickname(nickname);
+        return userRepository.existsByNicknameAndStatus(nickname,"A");
     }
 
     public boolean validationDuplicateKakaoId(Long kakaoId) {
-        return userRepository.existsByKakaoId(kakaoId);
+        return userRepository.existsByKakaoIdAndStatus(kakaoId,"A");
     }
 
     public Long getUserId(Long kakaoId) {
-        return userRepository.findByKakaoId(kakaoId).getId();
+        return userRepository.findByKakaoIdAndStatus(kakaoId,"A").getId();
     }
     public LogInResponseDto userLogIn(Long id) {
         String jwt = jwtTokenProvider.createAccessToken(Long.toString(id));
         return new LogInResponseDto(jwt);
+    }
+
+    public GetProfileResponseDto GetProfile(Long id) {
+        log.info("id = "+id);
+        UserProfileMapping userProfileMapping = userRepository.findUserProfile(id,"A");
+        GetProfileResponseDto getProfileResponseDto = new GetProfileResponseDto(userProfileMapping);
+        return getProfileResponseDto;
     }
 }
