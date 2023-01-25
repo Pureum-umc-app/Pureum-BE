@@ -1,28 +1,37 @@
 package com.umc.pureum.domain.user;
 
+import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
+import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.service.KakaoService;
 import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import io.swagger.annotations.Api;
+import com.umc.pureum.global.config.SecurityConfig.jwt.JwtTokenProvider;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.umc.pureum.global.config.BaseResponseStatus.*;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "유저")
 @RequestMapping("/user")
+
 public class UserController {
     private final KakaoService kakaoService;
     private final UserService userService;
@@ -34,6 +43,9 @@ public class UserController {
      * @param code // 인가코드
      * @throws IOException // 카카오 서버 접속 오류 예외처리
      */
+    // kauth.kakao.com/oauth/authorize?client_id=633bdb4f088357e5fe5cde61b4543053&redirect_uri=http://localhost:9000/user/kakao/auth&response_type=code
+    //위의 링크로 접속하면 console 창에 토큰 정보 나오는데 그거 사용하면 됩니다.
+    @ApiOperation("(서버전용)인가 코드로 토큰 받아오는 API ")
     @GetMapping("/kakao/auth")
     public void getCodeAndToken(@RequestParam String code) throws IOException {
         System.out.println(code);
@@ -47,15 +59,48 @@ public class UserController {
      * @return // 회원가입 성공시 success 출력
      * @throws BaseException // DB 에러 등등
      */
-    @PostMapping("/signup")
-    public ResponseEntity<BaseResponse<String>> SignUp(@RequestBody CreateUserDto createUserDto) throws BaseException {
+    @ApiOperation("회원가입 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "nickname",paramType = "formData",value = "닉네임"),
+            @ApiImplicitParam(name = "grade",paramType = "formData",value = "학년"),
+            @ApiImplicitParam(name = "image",paramType = "formData",value = "프로필 이미지")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000,message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2031,message = "중복된 닉네임입니다."),
+            @ApiResponse(code = 2033,message = "이미 가입된 회원입니다.")
+    })
+    @CrossOrigin
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BaseResponse<String>> SignUp(HttpServletRequest request, @RequestParam(value = "image") MultipartFile image, CreateUserDto createUserDto) throws BaseException {
+        createUserDto.setProfile_photo(image);
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         try {
-            userService.createUser(accessToken, createUserDto);
-        } catch (Exception e) {
+            if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(POST_USERS_EXISTS_NICKNAME));
+            }
+            //accessToken로 user 정보 가져오기
+            KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(accessToken);
+            if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(POST_USERS_EXISTS));
+            }
+            userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse("회원가입완료"));
+        } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse("success"));
     }
 
+
+    @PostMapping(value = "/signin")
+    public ResponseEntity<BaseResponse<LogInResponseDto>> userLogIn() {
+        String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
+        KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(accessToken);
+        if (!userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(POST_USERS_NO_EXISTS_USER));
+        }
+        Long id = userService.getUserId(kakaoAccessTokenInfoDto.getId());
+        LogInResponseDto logInResponseDto = userService.userLogIn(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse(logInResponseDto));
+    }
 }
