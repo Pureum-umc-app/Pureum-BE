@@ -32,6 +32,6 @@ public class AttendanceProvider {
         // 출석 개수를 받아옴
         List<AttendanceCheck> attendanceChecks = attendanceRepository.findALLByUserIdAndStatus(userIdx, AttendanceStatus.A);
 
-        return new GetStampRes(attendanceChecks.size(), attendanceChecks.size() % 30);
+        return new GetStampRes(attendanceChecks.size(), attendanceChecks.size() % 12);
     }
 }
