@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class GetKeywordRes {
+    @ApiModelProperty(example = "1")
+    private Long keywordId;
     @ApiModelProperty(example = "2023-01-22")
     private String date;
     @ApiModelProperty(example = "5")
@@ -16,7 +18,8 @@ public class GetKeywordRes {
     private String meaning;
 
     @Builder
-    public GetKeywordRes(String date, String keyword, String meaning) {
+    public GetKeywordRes(Long keywordId, String date, String keyword, String meaning) {
+        this.keywordId = keywordId;
         this.date = date;
         this.keyword = keyword;
         this.meaning = keyword;
