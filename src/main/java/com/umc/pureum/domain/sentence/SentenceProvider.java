@@ -54,16 +54,17 @@ public class SentenceProvider {
     }
 
     /* 오늘의 작성 완료 단어 받아오기 */
-    public List<GetKeywordRes> getCompleteKeyword(Long id) throws BaseException {
-        if(userRepository.findByIdAndStatus(id, "A").isEmpty()) {
+    public List<GetKeywordRes> getCompleteKeyword(Long userId) throws BaseException {
+        if(userRepository.findByIdAndStatus(userId, "A").isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
         // 오늘의 작성 완료 단어 받아오기
-        List<Keyword> getWords = keywordRepository.findCompleteKeyword(new Date(), id);
+        List<Keyword> getWords = keywordRepository.findCompleteKeyword(new Date(), userId);
 
         return getWords.stream()
                 .map(d -> GetKeywordRes.builder()
+                        .userId(userId)
                         .keywordId(d.getId())
                         .date(useProvider.getToday(d.getCreatedAt()))
                         .keyword(d.getWord().getWord())

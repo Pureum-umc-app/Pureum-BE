@@ -108,12 +108,12 @@ public class SentenceController {
         }
     }
 
-
     /**
      * 오늘의 작성 전 단어 반환 API
      * 작성 전 단어 리스트 반환
      * [GET] /sentences/incomplete
      */
+    @ApiIgnore
     @ApiOperation("오늘의 작성 전 단어 반환 API")
     @ResponseBody
     @GetMapping("/incomplete/{userIdx}")
@@ -141,6 +141,7 @@ public class SentenceController {
      * 작성 완료 단어 리스트 반환
      * [GET] /sentences/complete
      */
+    @ApiIgnore
     @ApiOperation("오늘의 작성 완료 단어 반환 API")
     @ResponseBody
     @GetMapping("/complete/{userIdx}")
