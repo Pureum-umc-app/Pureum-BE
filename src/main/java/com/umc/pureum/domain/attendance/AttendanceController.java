@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,15 +33,16 @@ public class AttendanceController {
      * [GET] /attendances/{userIdx}
      */
     @ApiOperation("도장 개수 반환 API")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
-    })
     @ResponseBody
     @GetMapping("/{userIdx}")
     public BaseResponse<GetStampRes> getStamps(@PathVariable Long userIdx) {
         try{
-            Long userIdxByJwt = jwtService.getUserIdx();
-            if(!Objects.equals(userIdx, userIdxByJwt)){
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String user = principal.getUsername();
+
+            Long userId = Long.parseLong(user);
+
+            if(!Objects.equals(userIdx, userId)){
                 return new BaseResponse<>(INVALID_JWT);
             }
             else{
