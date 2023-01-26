@@ -59,9 +59,10 @@ public class UserController {
      */
     @ApiOperation("회원가입 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "nickname", paramType = "formData", value = "닉네임"),
-            @ApiImplicitParam(name = "grade", paramType = "formData", value = "학년"),
-            @ApiImplicitParam(name = "image", paramType = "formData", value = "프로필 이미지")
+            @ApiImplicitParam(name="kakao-ACCESS-TOKEN", paramType = "header",value = "kakao-ACCESS-TOKEN"),
+            @ApiImplicitParam(name = "nickname", paramType = "formData", value = "nickname"),
+            @ApiImplicitParam(name = "grade", paramType = "formData", value = "grade"),
+            @ApiImplicitParam(name = "image", paramType = "formData", value = "image")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -71,8 +72,9 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestParam(value = "image", required = false) MultipartFile image, CreateUserDto createUserDto) throws BaseException {
-        if (!image.isEmpty()) createUserDto.setProfile_photo(image);
-        else createUserDto.setProfile_photo(null);
+        System.out.println("image= ");
+        if (!image.isEmpty()) createUserDto.setImage(image);
+        else createUserDto.setImage(null);
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         try {
             if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
@@ -136,5 +138,3 @@ public class UserController {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
-}
