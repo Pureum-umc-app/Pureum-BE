@@ -1,4 +1,4 @@
-package com.umc.pureum.global.config.AWS;
+package com.umc.pureum.global.config.aws;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
