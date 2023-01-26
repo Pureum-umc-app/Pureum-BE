@@ -33,13 +33,13 @@ public class UseProvider {
     /** API **/
 
     /* 목표 달성 여부 반환 API */
-    public List<GetGoalResultsRes> getGoalResults(Long userIdx) throws BaseException {
+    public List<GetGoalResultsRes> getGoalResults(Long userId) throws BaseException {
         // 존재하는 회원인지 검사
-        Optional<UserAccount> user = userRepository.findByIdAndStatus(userIdx, "A");
+        Optional<UserAccount> user = userRepository.findByIdAndStatus(userId, "A");
         if(user.isEmpty()) throw new BaseException(BaseResponseStatus.INVALID_USER);
 
         // 사용 기록을 받아옴
-        List<UsePhone> uses = useRepository.findAllByConditions(userIdx, getNextDay());
+        List<UsePhone> uses = useRepository.findAllByConditions(userId, getNextDay());
 
         return uses.stream()
                 .map(d -> GetGoalResultsRes.builder()
