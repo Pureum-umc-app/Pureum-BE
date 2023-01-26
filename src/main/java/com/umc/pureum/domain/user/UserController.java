@@ -2,7 +2,6 @@ package com.umc.pureum.domain.user;
 
 import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
-import com.umc.pureum.domain.user.dto.response.GetProfileResponseDto;
 import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.service.KakaoService;
 import com.umc.pureum.domain.user.service.UserService;
@@ -14,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -140,22 +137,4 @@ public class UserController {
         }
     }
 
-    @ApiOperation("프로필 조회 API")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization baer-token", paramType = "header", value = "서비스 자체 jwt 토큰"),
-    })
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = GetProfileResponseDto.class),
-    })
-    @GetMapping(value = "/profile")
-    public ResponseEntity<BaseResponse<GetProfileResponseDto>> GetProfile() throws BaseException {
-        try {
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Long id = Long.parseLong(principal.getUsername());
-            GetProfileResponseDto getProfileResponseDto = userService.GetProfile(id);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(getProfileResponseDto));
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
 }
