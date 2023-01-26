@@ -1,9 +1,9 @@
-package com.umc.pureum.global.config.SecurityConfig;
+package com.umc.pureum.global.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umc.pureum.global.config.SecurityConfig.jwt.JwtAuthenticationCheckFilter;
-import com.umc.pureum.global.config.SecurityConfig.jwt.JwtAuthenticationEntryPoint;
-import com.umc.pureum.global.config.SecurityConfig.jwt.JwtTokenProvider;
+import com.umc.pureum.global.config.security.jwt.JwtAuthenticationCheckFilter;
+import com.umc.pureum.global.config.security.jwt.JwtAuthenticationEntryPoint;
+import com.umc.pureum.global.config.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -26,13 +26,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private static final String[] POST_PERMITTED_URLS = {
+    private static final String[] PERMITTED_URLS = {
             "/user/signin",//로그인
             "/user/signup", //회원가입
             "/user/kakao/auth", //토큰받는 api
             "/v2/api-docs/**",  //swagger
             "/swagger-ui/**", //swagger
             "/swagger-resources/**", //swagger
+            "/user/nickname/{nickname}/validation"
     };
 
     @Bean
@@ -53,7 +54,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .authorizeRequests(ant -> ant
-                        .antMatchers(POST_PERMITTED_URLS).permitAll() // 해당 문자열 배열에 저장된 uri 요청은 제외
+                        .antMatchers(PERMITTED_URLS).permitAll() // 해당 문자열 배열에 저장된 uri 요청은 제외
                         .anyRequest().authenticated() // 모든 요청은 Auth 받아야함
                 );
         return http.build();
@@ -94,12 +95,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web
                 .ignoring().antMatchers(
-                        "/user/signin",//로그인
-                        "/user/signup", //회원가입
-                        "/user/kakao/auth", //토큰받는 api
-                        "/v2/api-docs/**",  //swagger
-                        "/swagger-ui/**", //swagger
-                        "/swagger-resources/**" //swagger
+                        PERMITTED_URLS
                 );
     }
 }

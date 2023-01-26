@@ -2,13 +2,14 @@ package com.umc.pureum.domain.mypage;
 
 import com.umc.pureum.domain.mypage.dto.GetMySentencesRes;
 import com.umc.pureum.domain.mypage.dto.PostUpdateSentenceReq;
+import com.umc.pureum.domain.mypage.dto.reponse.GetProfileResponseDto;
+import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 public class MyPageController {
     private final MyPageProvider myPageProvider;
     private final MyPageService myPageService;
+    private final UserService userService;
 
     /**
      * 나의 문장 리스트 반환 API
@@ -101,5 +103,22 @@ public class MyPageController {
             throw new BaseException(DATABASE_ERROR);
         }
     }
-
+    @ApiOperation("프로필 조회 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization baer-token", paramType = "header", value = "서비스 자체 jwt 토큰"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = GetProfileResponseDto.class),
+    })
+    @GetMapping(value = "")
+    public ResponseEntity<BaseResponse<GetProfileResponseDto>> GetProfile() throws BaseException {
+        try {
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Long id = Long.parseLong(principal.getUsername());
+            GetProfileResponseDto getProfileResponseDto = userService.GetProfile(id);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(getProfileResponseDto));
+        } catch (Exception exception) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
