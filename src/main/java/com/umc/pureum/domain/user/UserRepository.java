@@ -2,12 +2,10 @@ package com.umc.pureum.domain.user;
 
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.entity.mapping.UserProfileMapping;
-import org.hibernate.criterion.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserAccount, Long> {
