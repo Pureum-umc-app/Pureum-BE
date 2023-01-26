@@ -12,6 +12,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,17 +32,27 @@ public class UseController {
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
-     * [POST] /uses/useTimeAndCount
+     * [POST] /uses/{user_id}/useTimeAndCount
      */
+    @ApiOperation("일일 사용 시간, 휴대폰 켠 횟수 저장")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
+            @ApiImplicitParam(name = "use_time",paramType = "formData",value = "일일 사용 시간"),
+            @ApiImplicitParam(name = "count",paramType = "formData",value = "휴대폰 켠 횟수"),
+    })
     @ResponseBody
-    @PostMapping("/useTimeAndCount")
-    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq){
-        try{
-            Long user_id = jwtService.getUserIdx();
-            PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(user_id, postUseTimeAndCountReq);
+    @PostMapping("/{user_idx}/useTimeAndCount")
+    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long user_idx, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq){
+        // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userId = Long.parseLong(springSecurityUserId);
+        if(userId != user_idx){
+            return new BaseResponse<>(INVALID_JWT);
+        }
+        else{
+            PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(user_idx, postUseTimeAndCountReq);
             return new BaseResponse<>(postUseTimeAndCountRes);
-        }catch(BaseException e){
-            return new BaseResponse<>(e.getStatus());
         }
     }
 
