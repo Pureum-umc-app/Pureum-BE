@@ -18,7 +18,6 @@ public interface UseRepository extends JpaRepository<UsePhone, Long> {
      * 목표 달성 여부 반환
      * updated_at이 현재 날짜랑 같은 데이터까지 반환
      **/
-
     @Query("select u from UsePhone u where u.user.id = :id " +
             "and u.updatedAt <= :today " +
             "and u.status = 'A'")
