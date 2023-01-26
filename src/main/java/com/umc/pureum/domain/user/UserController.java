@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -45,6 +46,7 @@ public class UserController {
      */
     // kauth.kakao.com/oauth/authorize?client_id=633bdb4f088357e5fe5cde61b4543053&redirect_uri=http://localhost:9000/user/kakao/auth&response_type=code
     //위의 링크로 접속하면 console 창에 토큰 정보 나오는데 그거 사용하면 됩니다.
+    @ApiIgnore
     @ApiOperation("(서버전용)인가 코드로 토큰 받아오는 API ")
     @GetMapping("/kakao/auth")
     public void getCodeAndToken(@RequestParam String code) throws IOException {
