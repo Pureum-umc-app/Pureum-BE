@@ -34,19 +34,19 @@ public class AttendanceController {
      */
     @ApiOperation("도장 개수 반환 API")
     @ResponseBody
-    @GetMapping("/{userIdx}")
-    public BaseResponse<GetStampRes> getStamps(@PathVariable Long userIdx) {
+    @GetMapping("/{userId}")
+    public BaseResponse<GetStampRes> getStamps(@PathVariable Long userId) {
         try{
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
-            Long userId = Long.parseLong(user);
+            Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(userIdx, userId)){
+            if(!Objects.equals(userId, userIdByAuth)){
                 return new BaseResponse<>(INVALID_JWT);
             }
             else{
-                GetStampRes getStampRes = attendanceProvider.getStamps(userIdx);
+                GetStampRes getStampRes = attendanceProvider.getStamps(userId);
                 return new BaseResponse<>(getStampRes);
             }
         } catch(BaseException e){
