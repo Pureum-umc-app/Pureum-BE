@@ -4,25 +4,30 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
 import com.umc.pureum.domain.sentence.dto.GetBeforeKeywordRes;
+import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
+import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
+import com.umc.pureum.global.entity.User;
 import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.json.XML;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.BufferedInputStream;
@@ -130,4 +135,25 @@ public class SentenceController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 문장 작성 API
+     * [POST] /sentences/write
+     */
+    @PostMapping("/write")
+    public BaseResponse<Long> writeSentence(@RequestBody CreateSentenceReq request) {
+
+//        Sentence get = request.getSentence();
+
+
+
+        Sentence sentence = new Sentence(null, request.getSentence(), request.getKeyword(), "500");
+
+
+        Long sentence_id = sentenceService.write(sentence);
+        return new BaseResponse(sentence_id);
+    }
+
+
+
 }
