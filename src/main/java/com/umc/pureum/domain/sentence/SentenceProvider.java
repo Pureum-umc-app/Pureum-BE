@@ -11,6 +11,9 @@ import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.security.Key;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,12 +32,21 @@ public class SentenceProvider {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
+        // 오늘의 단어 받아오기
+        // List<Keyword> getWords = keywordRepository.findByCreatedAt(new Date());
+
+        List<Keyword> getWords = keywordRepository.findByCreatedAtAfter(new Timestamp(new Date().getTime()));
         // 오늘의 작성 전 단어 받아오기
-        List<Keyword> getWords = keywordRepository.findCompleteKeyword(new Date(), id);
-        System.out.println(new Date());
+        List<Keyword> getCompletes = keywordRepository.findCompleteKeyword(new Date(), id);
+
+        // 결과 리스트
+//        for (Keyword getComplete : getCompletes) {
+//            getWords.remove(getComplete);
+//        }
 
         return getWords.stream()
                 .map(d -> GetKeywordRes.builder()
+                        .keywordId(d.getId())
                         .date(useProvider.getToday(d.getCreatedAt()))
                         .keyword(d.getWord().getWord())
                         .meaning(d.getWord().getMeaning()).build())
@@ -49,10 +61,10 @@ public class SentenceProvider {
 
         // 오늘의 작성 완료 단어 받아오기
         List<Keyword> getWords = keywordRepository.findCompleteKeyword(new Date(), id);
-        System.out.println(new Date());
 
         return getWords.stream()
                 .map(d -> GetKeywordRes.builder()
+                        .keywordId(d.getId())
                         .date(useProvider.getToday(d.getCreatedAt()))
                         .keyword(d.getWord().getWord())
                         .meaning(d.getWord().getMeaning()).build())
