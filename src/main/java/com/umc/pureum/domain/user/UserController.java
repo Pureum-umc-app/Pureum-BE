@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
@@ -45,6 +45,7 @@ public class UserController {
      */
     // kauth.kakao.com/oauth/authorize?client_id=633bdb4f088357e5fe5cde61b4543053&redirect_uri=http://localhost:9000/user/kakao/auth&response_type=code
     //위의 링크로 접속하면 console 창에 토큰 정보 나오는데 그거 사용하면 됩니다.
+    @ApiIgnore
     @ApiOperation("(서버전용)인가 코드로 토큰 받아오는 API ")
     @GetMapping("/kakao/auth")
     public void getCodeAndToken(@RequestParam String code) throws IOException {
@@ -72,20 +73,22 @@ public class UserController {
     })
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<BaseResponse<String>> SignUp(HttpServletRequest request, @RequestParam(value = "image") MultipartFile image, CreateUserDto createUserDto) throws BaseException {
-        createUserDto.setProfile_photo(image);
+    public ResponseEntity<BaseResponse<String>> SignUp(@RequestParam(value = "image", required = false) MultipartFile image, CreateUserDto createUserDto) throws BaseException {
+        if (!image.isEmpty()) createUserDto.setProfile_photo(image);
+        else createUserDto.setProfile_photo(null);
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         try {
             if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(POST_USERS_EXISTS_NICKNAME));
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
             }
             //accessToken로 user 정보 가져오기
             KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(accessToken);
             if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(POST_USERS_EXISTS));
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
             }
+            System.out.println(kakaoAccessTokenInfoDto+"\n"+createUserDto);
             userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse("회원가입완료"));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
@@ -110,11 +113,11 @@ public class UserController {
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(accessToken);
         if (!userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(POST_USERS_NO_EXISTS_USER));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
         }
         Long id = userService.getUserId(kakaoAccessTokenInfoDto.getId());
         LogInResponseDto logInResponseDto = userService.userLogIn(id);
-        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse(logInResponseDto));
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(logInResponseDto));
     }
 
     @ApiOperation("닉네임 유효성 체크 API")
@@ -129,13 +132,14 @@ public class UserController {
     public ResponseEntity<BaseResponse<String>> ValidationUserNickName(@PathVariable String nickname) throws BaseException {
         try {
             if (userService.validationDuplicateUserNickname(nickname)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(POST_USERS_EXISTS_NICKNAME));
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse("유효한 닉네임입니다."));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("유효한 닉네임입니다."));
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
     @ApiOperation("프로필 조회 API")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization baer-token", paramType = "header", value = "서비스 자체 jwt 토큰"),
@@ -149,7 +153,7 @@ public class UserController {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Long id = Long.parseLong(principal.getUsername());
             GetProfileResponseDto getProfileResponseDto = userService.GetProfile(id);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(getProfileResponseDto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(getProfileResponseDto));
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
