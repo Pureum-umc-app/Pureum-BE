@@ -3,7 +3,7 @@ package com.umc.pureum.domain.user.service;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
-import com.umc.pureum.domain.user.dto.response.GetProfileResponseDto;
+import com.umc.pureum.domain.mypage.dto.reponse.GetProfileResponseDto;
 import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.entity.mapping.UserProfileMapping;
