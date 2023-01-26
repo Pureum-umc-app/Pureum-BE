@@ -1,10 +1,10 @@
 package com.umc.pureum.domain.use;
 
-import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.*;
 import com.umc.pureum.domain.use.entity.UsePhone;
+import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
-import com.umc.pureum.domain.user.entity.UserStatus;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UseProvider {
+
+    private final UserDao userDao;
     private final UseDao useDao;
     private final UseRepository useRepository;
     private final UserRepository userRepository;
@@ -69,6 +71,7 @@ public class UseProvider {
 
         return format.format(cal.getTime());
     }
+
 
     /* 성공 여부 계산 */
     public int getSuccess(Time use_time, Time purpose_time) {
