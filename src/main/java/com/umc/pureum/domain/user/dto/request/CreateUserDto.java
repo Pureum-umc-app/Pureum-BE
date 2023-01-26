@@ -8,11 +8,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-/**
- * 유저 생성 DTO
+@ToString
+/*
+  유저 생성 DTO
  */
 public class CreateUserDto {
     String nickname;
-    MultipartFile profile_photo;
+    MultipartFile image;
     int grade;
 }
