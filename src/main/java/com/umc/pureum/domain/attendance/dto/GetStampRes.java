@@ -13,7 +13,7 @@ public class GetStampRes {
     private Long userId;
     @ApiModelProperty(example = "50")
     private int accumulatedCnt;
-    @ApiModelProperty(example = "5")
+    @ApiModelProperty(example = "20")
     private int currentCnt;
 
     @Builder
