@@ -37,7 +37,7 @@ public class SentenceProvider {
 
         List<Keyword> getWords = keywordRepository.findByCreatedAtAfter(new Timestamp(new Date().getTime()));
         // 오늘의 작성 전 단어 받아오기
-        List<Keyword> getCompletes = keywordRepository.findCompleteKeyword(new Date(), id);
+        List<Keyword> getCompletes = keywordRepository.findCompleteKeyword(id);
 
         // 결과 리스트
 //        for (Keyword getComplete : getCompletes) {
@@ -47,7 +47,7 @@ public class SentenceProvider {
         return getWords.stream()
                 .map(d -> GetKeywordRes.builder()
                         .keywordId(d.getId())
-                        .date(useProvider.getToday(d.getCreatedAt()))
+                        .date(useProvider.getToday(d.getCreatedAt()) + " " + new Date())
                         .keyword(d.getWord().getWord())
                         .meaning(d.getWord().getMeaning()).build())
                 .collect(Collectors.toList());
@@ -60,13 +60,14 @@ public class SentenceProvider {
         }
 
         // 오늘의 작성 완료 단어 받아오기
-        List<Keyword> getWords = keywordRepository.findCompleteKeyword(new Date(), userId);
+        List<Keyword> getWords = keywordRepository.findCompleteKeyword(userId);
 
         return getWords.stream()
                 .map(d -> GetKeywordRes.builder()
                         .userId(userId)
                         .keywordId(d.getId())
-                        .date(useProvider.getToday(d.getCreatedAt()))
+                        .date(new Date(d.getCreatedAt().getTime()) + " " + new Date())
+                        // .date(useProvider.getToday(d.getCreatedAt()) + " " + new Date())
                         .keyword(d.getWord().getWord())
                         .meaning(d.getWord().getMeaning()).build())
                 .collect(Collectors.toList());
