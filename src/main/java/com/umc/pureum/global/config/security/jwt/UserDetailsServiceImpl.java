@@ -1,4 +1,4 @@
-package com.umc.pureum.global.config.SecurityConfig.jwt;
+package com.umc.pureum.global.config.security.jwt;
 
 
 import com.umc.pureum.domain.user.UserRepository;
@@ -25,7 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         //유저 ID 값
         return User.withUsername(username)
                 //유저 비밀번호(우리는 비밀번호가 없어서 일단 image 주소값을 넣었습니다. 나중에 자체 로그인구현하게되면 이부분 수정
-                .password(userAccount.get().getImage())
+                .password(userAccount.get().getId().toString())
                 //우리는 권한설정을 따로 하지 않았기에 NO_AUTHORITIES를 사용
                 .authorities(AuthorityUtils.NO_AUTHORITIES)
                 .build();
