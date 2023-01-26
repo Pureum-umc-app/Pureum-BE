@@ -1,10 +1,10 @@
-package com.umc.pureum.domain.user;
+package com.umc.pureum.domain.sentence;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class UserService {
-    private final UserDao userDao;
+public class SentenceService {
+    private final SentenceDao sentenceDao;
 }
