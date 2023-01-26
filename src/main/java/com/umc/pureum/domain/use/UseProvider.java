@@ -41,7 +41,7 @@ public class UseProvider {
 
         return uses.stream()
                 .map(d -> GetGoalResultsRes.builder()
-                        .date(getDate(d.getUpdatedAt()))
+                        .date(getYesterday(d.getUpdatedAt()))
                         .isSuccess(getSuccess(d.getUseTime(), d.getPurposeTime())).build())
                 .collect(Collectors.toList());
     }
@@ -57,8 +57,8 @@ public class UseProvider {
         return new Timestamp(cal.getTime().getTime());
     }
 
-    /* 날짜 계산 */
-    public String getDate(Timestamp updated_at) {
+    /* 전 날 구하기 */
+    public String getYesterday(Timestamp updated_at) {
         Date date = new Date(updated_at.getTime());
         Calendar cal = Calendar.getInstance();
 
@@ -68,6 +68,14 @@ public class UseProvider {
         SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-DD");
 
         return format.format(cal.getTime());
+    }
+
+    /* 날짜 계산 */
+    public String getToday(Timestamp updated_at) {
+        Date date = new Date(updated_at.getTime());
+        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-DD");
+
+        return format.format(date);
     }
 
     /* 성공 여부 계산 */
