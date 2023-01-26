@@ -73,8 +73,9 @@ public class UserController {
     })
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<BaseResponse<String>> SignUp(@RequestParam(value = "image") MultipartFile image, CreateUserDto createUserDto) throws BaseException {
-        createUserDto.setProfile_photo(image);
+    public ResponseEntity<BaseResponse<String>> SignUp(@RequestParam(value = "image", required = false) MultipartFile image, CreateUserDto createUserDto) throws BaseException {
+        if (!image.isEmpty()) createUserDto.setProfile_photo(image);
+        else createUserDto.setProfile_photo(null);
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         try {
             if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
@@ -85,6 +86,7 @@ public class UserController {
             if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
             }
+            System.out.println(kakaoAccessTokenInfoDto+"\n"+createUserDto);
             userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
         } catch (Exception exception) {
