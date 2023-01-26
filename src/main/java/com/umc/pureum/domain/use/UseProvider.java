@@ -82,26 +82,6 @@ public class UseProvider {
         }
     }
 
-    // 홈 화면 리스트 반환(날짜,일일 사용시간, 목표시간, )
-//    public List<GetHomeListRes> getHomeList(Long user_id){
-//        List<UsePhone> useAll = useDao.findAll(user_id);
-//        return useAll.stream().map(u -> GetHomeListRes.builder()
-//                        .date(getDate(u.getUpdatedAt()))
-//                        .useTime(u.getUseTime())
-//                        .count(u.getCount())
-//                        .purposeTime(u.getPurposeTime())
-//                        .rank(getRankList(u.getUpdatedAt()))
-//                                .build())
-//                .collect(Collectors.toList());
-//    }
-
-    // ranker 정보 반환
-//    public List<GetRankInformationDto> getRankList(Timestamp updated_at){
-//        List<UserAccount> userAll = userDao.findAll();
-//        List<GetUserIdDto> collect = userAll.stream().map(u -> GetUserIdDto.builder().id(u.getId()).build()).collect(Collectors.toList());
-//
-//
-//    }
 
     /** 유효성 검사 **/
 }
