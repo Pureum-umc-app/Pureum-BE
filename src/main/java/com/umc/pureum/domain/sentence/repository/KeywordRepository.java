@@ -18,11 +18,19 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
     /* 중복 검사 */
     Optional<Keyword> findByWordId(Long id);
 
+    /* 오늘의 단어 반환 API */
+    @Query("select k from Keyword as k \n" +
+            "where date(k.createdAt) = :today \n " +
+            "   and k.status = 'A'")
+    List<Keyword> findByCreatedAt(@Param("today") Date today);
+
+    List<Keyword> findByCreatedAtAfter(Timestamp createdAt);
+
     /* 오늘의 작성 완료 단어 반환 API */
     @Query("select k from Keyword as k \n" +
             "   left join Sentence as s on s.keyword.id = k.id and s.user.id= :userIdx \n" +
             "where date(k.createdAt) = :today \n" +
             "   and k.status = 'A' \n" +
-            "   and s.status = 'O'")
+            "   and s.status = 'O' or s.status = 'P'")
     List<Keyword> findCompleteKeyword(@Param("today") Date today, @Param("userIdx") Long userIdx);
 }
