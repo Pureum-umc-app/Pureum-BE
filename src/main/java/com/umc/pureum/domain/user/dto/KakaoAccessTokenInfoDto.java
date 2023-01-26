@@ -9,9 +9,9 @@ import lombok.ToString;
 @Getter
 @Builder
 @Setter
-/**
- * access token으로 가져온 유저 정보 저장할 dto
- * 일단 회원가입에 사용
+/*
+  access token으로 가져온 유저 정보 저장할 dto
+  일단 회원가입에 사용
  */
 public class KakaoAccessTokenInfoDto {
     public Long id;
