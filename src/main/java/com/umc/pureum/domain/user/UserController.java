@@ -59,7 +59,7 @@ public class UserController {
      */
     @ApiOperation("회원가입 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name="kakao-ACCESS-TOKEN", paramType = "header",value = "kakao-ACCESS-TOKEN"),
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", paramType = "header", value = "kakao-ACCESS-TOKEN"),
             @ApiImplicitParam(name = "nickname", paramType = "formData", value = "nickname"),
             @ApiImplicitParam(name = "grade", paramType = "formData", value = "grade"),
             @ApiImplicitParam(name = "image", paramType = "formData", value = "image")
@@ -72,7 +72,6 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestParam(value = "image", required = false) MultipartFile image, CreateUserDto createUserDto) throws BaseException {
-        System.out.println("image= ");
         if (!image.isEmpty()) createUserDto.setImage(image);
         else createUserDto.setImage(null);
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
@@ -85,7 +84,6 @@ public class UserController {
             if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
             }
-            System.out.println(kakaoAccessTokenInfoDto+"\n"+createUserDto);
             userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
         } catch (Exception exception) {
@@ -138,3 +136,4 @@ public class UserController {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+}
