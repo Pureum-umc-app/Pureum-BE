@@ -55,7 +55,7 @@ public class MyPageController {
             @ApiImplicitParam(name = "sentence",paramType = "formData",value = "문장")
     })
     @ResponseBody
-    @PostMapping("/sentence/{sentenceId}/edit")
+    @PutMapping("/sentence/{sentenceId}/edit")
     public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId, @RequestBody PostUpdateSentenceReq postUpdateSentenceReq) throws BaseException {
         // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
         try{
@@ -83,7 +83,7 @@ public class MyPageController {
             @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header")
     })
     @ResponseBody
-    @PostMapping("/sentence/{sentenceId}/delete")
+    @PutMapping("/sentence/{sentenceId}/delete")
     public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId) throws BaseException{
         try{
             // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
