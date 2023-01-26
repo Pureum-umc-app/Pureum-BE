@@ -34,6 +34,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         log.info("JWT Authentication Entry Point {}", response);
+
         //실제 반환될 response 값
         objectMapper.writeValue(response.getWriter(), new BaseResponse<>(INVALID_JWT));
     }
