@@ -4,7 +4,6 @@ import com.umc.pureum.domain.mypage.dto.GetMySentencesRes;
 import com.umc.pureum.domain.mypage.dto.PostUpdateSentenceReq;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
