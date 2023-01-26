@@ -34,7 +34,7 @@ public class UserService {
         UserAccount userAccount = UserAccount.builder()
                 .name(null)
                 .email(kakaoAccessTokenInfoDto.has_email ? kakaoAccessTokenInfoDto.getEmail() : null)
-                .image(s3Service.uploadFile(createUserDto.getProfile_photo()))
+                .image(createUserDto.getProfile_photo()==null?null : s3Service.uploadFile(createUserDto.getProfile_photo()))
                 .grade(createUserDto.getGrade())
                 .nickname(createUserDto.getNickname())
                 .kakaoId(kakaoAccessTokenInfoDto.getId())
