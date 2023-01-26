@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 /*
   유저 생성 DTO
  */
