@@ -1,4 +1,4 @@
-package com.umc.pureum.global.config.SecurityConfig.jwt;
+package com.umc.pureum.global.config.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -34,8 +34,7 @@ public class JwtTokenProvider {
     private final JwtParser jwtParser;
     //토큰 정보 지정
     public JwtTokenProvider(
-            //
-            @Value("24") long accessTokenValidity,
+            @Value("720") long accessTokenValidity,
             @Value("ORt1VUoUmimqnQq1DsCaZLfEd5hZYq82P1OShNwIaos") String secret,
             UserDetailsService userDetailsService) {
         //토큰 암호화 방식 지정

@@ -7,10 +7,12 @@ import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 
+@Setter
 @Data
 @SuperBuilder
 @NoArgsConstructor
@@ -25,11 +27,4 @@ public class Sentence extends BaseEntity {
     @NotNull
     private String status;
 
-    @Builder
-    public Sentence(UserAccount user, String sentence, Keyword word, String status) {
-        this.user = user;
-        this.sentence = sentence;
-        this.keyword = word;
-        this.status = status;
-    }
 }
