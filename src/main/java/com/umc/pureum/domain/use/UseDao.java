@@ -13,9 +13,9 @@ import java.util.List;
 public class UseDao {
     private final EntityManager em;
 
-    // 사용 테이블 단건 조회
-    public UsePhone findOne(Long id){
-        return em.find(UsePhone.class, id);
+    // 사용 테이블 등록
+    public void save(UsePhone use){
+        em.persist(use);
     }
 
     // 사용 테이블의 외래키를 통한 최근에 생성된 사용 테이블 단건 조회
@@ -31,7 +31,5 @@ public class UseDao {
                 .setParameter("user_id",user_id)
                 .getResultList();
     }
-
-    //
 
  }
