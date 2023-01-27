@@ -4,17 +4,18 @@ package com.umc.pureum.domain.use;
 import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
+import com.umc.pureum.domain.use.dto.request.SetUsageTimeReq;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Time;
 import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
@@ -82,4 +83,28 @@ public class UseController {
         }
     }
 
+    @ApiOperation("목표 사용 시간 설정 api")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "SetUsageTimeReq", paramType = "body",value = "목표사용시간")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
+            @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2051, message = "이미 목표시간을 설정하였습니다.")
+    })
+    @ResponseBody
+    @PostMapping("/{userId}/set_usage_time")
+    public ResponseEntity<BaseResponse<String>> setUsageTime(@PathVariable Long userId, @RequestBody SetUsageTimeReq setUsageTimeReq) throws BaseException {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String user = principal.getUsername();
+        long id = Long.parseLong(user);
+        if(id!=userId)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
+        if(useService.existUsageTime(userId))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(POST_USE_EXISTS_USAGE_TIME));
+        useService.setUsageTime(userId,setUsageTimeReq);
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("설정하다"));
+    }
 }
