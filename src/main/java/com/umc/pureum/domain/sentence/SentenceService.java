@@ -2,6 +2,7 @@ package com.umc.pureum.domain.sentence;
 
 import antlr.StringUtils;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
+import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.Word;
@@ -12,6 +13,9 @@ import com.umc.pureum.domain.sentence.repository.KeywordRepository;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
+import com.umc.pureum.global.config.BaseException;
+import com.umc.pureum.global.config.BaseResponse;
+import com.umc.pureum.global.config.BaseResponseStatus;
 import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,6 +29,8 @@ import java.util.Random;
 
 import java.util.List;
 
+import static com.umc.pureum.global.config.BaseResponseStatus.*;
+
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
@@ -36,7 +42,7 @@ public class SentenceService {
 
     // write : 작성한 문장 DB 에 저장
     @Transactional
-    public Long write(CreateSentenceReq request) {
+    public CreateSentenceRes write(CreateSentenceReq request) throws BaseException{
 
         String writingSentence = request.getSentence();
         Long userId = request.getUserId();
@@ -48,11 +54,17 @@ public class SentenceService {
         Word word = keyword.getWord();
         String writingWord = word.getWord();
 
+        // 작성한 문장 존재 여부 확인
+        if(writingSentence == ""){
+            throw new BaseException(POST_SENTENCE_EMPTY);
+        }
 
         // 작성할 문장에 단어 포함 여부 확인
         if(!isExist(writingSentence , writingWord)){
-            throw new IllegalStateException("키워드가 포함되어있지 않습니다");
+            throw new BaseException(POST_SENTENCE_NO_EXISTS_KEYWORD);
         }
+
+
 
         // request 로 받은 userId 로 userAccount 찾기
         UserAccount userAccount = userRepository.findById(userId).get();
@@ -60,8 +72,9 @@ public class SentenceService {
         Sentence sentence = new Sentence(userAccount, request.getSentence(), keyword , sentenceStatus);
         sentenceDao.save(sentence);
 
-        return sentence.getId();
+        return new CreateSentenceRes(sentence.getId());
     }
+
 
     /* Sentence 내에 Keyword 존재여부 검사*/
     // isExist : 문장에 키워드가 포함되어있는지 확인하는 함수
