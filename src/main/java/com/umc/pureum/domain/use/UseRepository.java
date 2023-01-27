@@ -22,4 +22,5 @@ public interface UseRepository extends JpaRepository<UsePhone, Long> {
             "and u.updatedAt <= :today " +
             "and u.status = 'A'")
     List<UsePhone> findAllByConditions(@Param("id") Long id, @Param("today") Timestamp today);
+
 }
