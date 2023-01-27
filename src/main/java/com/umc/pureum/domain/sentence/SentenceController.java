@@ -4,19 +4,26 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
+import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
+import com.umc.pureum.domain.sentence.dto.GetBeforeKeywordRes;
 import com.umc.pureum.domain.sentence.dto.GetKeywordRes;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
+import com.umc.pureum.domain.user.service.KakaoService;
+import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.json.JSONObject;
 import org.json.XML;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +51,8 @@ public class SentenceController {
     private final SentenceService sentenceService;
     private final JwtService jwtService;
     private final WordRepository wordRepository;
+    private final KakaoService kakaoService;
+    private final UserService userService;
 
     /**
      * 한국어 기초 사전 API 연동
@@ -161,4 +170,30 @@ public class SentenceController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 문장 작성 API
+     * [POST] /sentences/write
+     */
+    @ApiOperation("문장 작성 API")
+    @ResponseBody
+    @PostMapping("/write")
+    public BaseResponse<CreateSentenceRes> writeSentence(@RequestBody CreateSentenceReq request) {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        Long userId = Long.parseLong(UserId);
+
+        try{
+            CreateSentenceRes write = sentenceService.write(userId , request);
+            return new BaseResponse<>(write);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
+
+
 }
