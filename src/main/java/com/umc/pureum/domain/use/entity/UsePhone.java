@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.sql.Time;
+import java.sql.Timestamp;
 
 @Entity
 @Getter
@@ -29,15 +30,5 @@ public class UsePhone extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private UseStatus status;
-
-    // use 정보 업데이트
-    @Builder
-    public UsePhone(UserAccount user, Time use_time, int count, Time purpose_time, UseStatus status){
-        this.user = user;
-        this.useTime = use_time;
-        this.count = count;
-        this.purposeTime = purpose_time;
-        this.status = status;
-    }
 
 }
