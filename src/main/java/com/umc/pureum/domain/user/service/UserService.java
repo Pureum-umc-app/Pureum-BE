@@ -3,7 +3,7 @@ package com.umc.pureum.domain.user.service;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
-import com.umc.pureum.domain.user.dto.response.GetProfileResponseDto;
+import com.umc.pureum.domain.mypage.dto.reponse.GetProfileResponseDto;
 import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.entity.mapping.UserProfileMapping;
@@ -34,7 +34,7 @@ public class UserService {
         UserAccount userAccount = UserAccount.builder()
                 .name(null)
                 .email(kakaoAccessTokenInfoDto.has_email ? kakaoAccessTokenInfoDto.getEmail() : null)
-                .image(createUserDto.getProfile_photo()==null?null : s3Service.uploadFile(createUserDto.getProfile_photo()))
+                .image(createUserDto.getImage()==null?null : s3Service.uploadFile(createUserDto.getImage()))
                 .grade(createUserDto.getGrade())
                 .nickname(createUserDto.getNickname())
                 .kakaoId(kakaoAccessTokenInfoDto.getId())

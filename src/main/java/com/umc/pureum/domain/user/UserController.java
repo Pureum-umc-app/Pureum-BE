@@ -2,7 +2,6 @@ package com.umc.pureum.domain.user;
 
 import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
-import com.umc.pureum.domain.user.dto.response.GetProfileResponseDto;
 import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.service.KakaoService;
 import com.umc.pureum.domain.user.service.UserService;
@@ -14,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -62,9 +59,10 @@ public class UserController {
      */
     @ApiOperation("회원가입 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "nickname", paramType = "formData", value = "닉네임"),
-            @ApiImplicitParam(name = "grade", paramType = "formData", value = "학년"),
-            @ApiImplicitParam(name = "image", paramType = "formData", value = "프로필 이미지")
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", paramType = "header", value = "kakao-ACCESS-TOKEN"),
+            @ApiImplicitParam(name = "nickname", paramType = "formData", value = "nickname"),
+            @ApiImplicitParam(name = "grade", paramType = "formData", value = "grade"),
+            @ApiImplicitParam(name = "image", paramType = "formData", value = "image")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -74,8 +72,8 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestParam(value = "image", required = false) MultipartFile image, CreateUserDto createUserDto) throws BaseException {
-        if (!image.isEmpty()) createUserDto.setProfile_photo(image);
-        else createUserDto.setProfile_photo(null);
+        if (!image.isEmpty()) createUserDto.setImage(image);
+        else createUserDto.setImage(null);
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         try {
             if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
@@ -86,7 +84,6 @@ public class UserController {
             if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
             }
-            System.out.println(kakaoAccessTokenInfoDto+"\n"+createUserDto);
             userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
         } catch (Exception exception) {
@@ -135,25 +132,6 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("유효한 닉네임입니다."));
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    @ApiOperation("프로필 조회 API")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization baer-token", paramType = "header", value = "서비스 자체 jwt 토큰"),
-    })
-    @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = GetProfileResponseDto.class),
-    })
-    @GetMapping(value = "/profile")
-    public ResponseEntity<BaseResponse<GetProfileResponseDto>> GetProfile() throws BaseException {
-        try {
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Long id = Long.parseLong(principal.getUsername());
-            GetProfileResponseDto getProfileResponseDto = userService.GetProfile(id);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(getProfileResponseDto));
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
         }
