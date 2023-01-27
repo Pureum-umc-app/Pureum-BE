@@ -1,22 +1,15 @@
 package com.umc.pureum.domain.sentence;
 
-import antlr.StringUtils;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.repository.KeywordRepository;
-import com.umc.pureum.domain.sentence.entity.Keyword;
-import com.umc.pureum.domain.sentence.entity.Word;
-import com.umc.pureum.domain.sentence.repository.KeywordRepository;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.global.config.BaseResponse;
-import com.umc.pureum.global.config.BaseResponseStatus;
-import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -27,9 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import java.util.List;
-
-import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_EMPTY;
+import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_EXISTS_KEYWORD;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
