@@ -77,14 +77,9 @@ public class UseProvider {
     /* 날짜 계산 (-9시간) */
     public String getToday(Timestamp createdAt) {
         Date date = new Date(createdAt.getTime());
-        Calendar cal = Calendar.getInstance();
-
-        cal.setTime(date);
-        cal.add(Calendar.HOUR, -9);
-
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-        return format.format(cal.getTime());
+        return format.format(date);
     }
 
     /* 성공 여부 계산 */
