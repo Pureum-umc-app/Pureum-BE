@@ -32,17 +32,27 @@ public class UseController {
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
-     * [POST] /uses/useTimeAndCount <- 작명 추천 좀...
+     * [POST] /uses/{user_id}/useTimeAndCount
      */
+    @ApiOperation("일일 사용 시간, 휴대폰 켠 횟수 저장")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
+            @ApiImplicitParam(name = "use_time",paramType = "formData",value = "일일 사용 시간"),
+            @ApiImplicitParam(name = "count",paramType = "formData",value = "휴대폰 켠 횟수"),
+    })
     @ResponseBody
-    @PostMapping("/useTimeAndCount")
-    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq){
-        try{
-            Long user_id = jwtService.getUserIdx();
-            PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(user_id, postUseTimeAndCountReq);
+    @PostMapping("/{user_idx}/useTimeAndCount")
+    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long user_idx, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq){
+        // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userId = Long.parseLong(springSecurityUserId);
+        if(userId != user_idx){
+            return new BaseResponse<>(INVALID_JWT);
+        }
+        else{
+            PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(user_idx, postUseTimeAndCountReq);
             return new BaseResponse<>(postUseTimeAndCountRes);
-        }catch(BaseException e){
-            return new BaseResponse<>(e.getStatus());
         }
     }
 
@@ -55,23 +65,24 @@ public class UseController {
      */
     @ApiOperation("목표 달성 여부 반환")
     @ResponseBody
-    @GetMapping("/{userIdx}/goals/result")
-    public BaseResponse<List<GetGoalResultsRes>> getGoalResults(@PathVariable Long userIdx) {
+    @GetMapping("/{userId}/goals/result")
+    public BaseResponse<GetGoalResultsRes> getGoalResults(@PathVariable Long userId) {
         try{
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
-            Long userId = Long.parseLong(user);
+            Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(userIdx, userId)){
+            if(!Objects.equals(userId, userIdByAuth)){
                 return new BaseResponse<>(INVALID_JWT);
             }
             else{
-                List<GetGoalResultsRes> getGoalResultsRes = useProvider.getGoalResults(userIdx);
+                GetGoalResultsRes getGoalResultsRes = useProvider.getGoalResults(userId);
                 return new BaseResponse<>(getGoalResultsRes);
             }
         } catch(BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 }
