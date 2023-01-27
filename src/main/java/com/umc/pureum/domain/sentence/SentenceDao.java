@@ -16,6 +16,7 @@ public class SentenceDao {
 
     //문장 저장
     public void save(Sentence sentence) {
+        Long word_id = sentence.getKeyword().getWord().getId();
         em.persist(sentence);
     }
 
