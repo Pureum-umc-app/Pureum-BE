@@ -106,15 +106,18 @@ public class MyPageController {
     @ApiOperation("프로필 조회 API")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name="userId",paramType = "path",value = "유저 인덱스")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = GetProfileResponseDto.class),
     })
-    @GetMapping(value = "")
-    public ResponseEntity<BaseResponse<GetProfileResponseDto>> GetProfile() throws BaseException {
+    @GetMapping(value = "/{userId}")
+    public ResponseEntity<BaseResponse<GetProfileResponseDto>> GetProfile(@PathVariable long userId) throws BaseException {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Long id = Long.parseLong(principal.getUsername());
+            long id = Long.parseLong(principal.getUsername());
+            if(id!=userId)
+                return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
             GetProfileResponseDto getProfileResponseDto = userService.GetProfile(id);
             return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>(getProfileResponseDto));
         } catch (Exception exception) {
