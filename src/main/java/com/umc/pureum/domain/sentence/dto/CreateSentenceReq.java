@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CreateSentenceReq {
-    private Long userId;
+
     private Long keywordId;
     private String sentence;
     private String status;
