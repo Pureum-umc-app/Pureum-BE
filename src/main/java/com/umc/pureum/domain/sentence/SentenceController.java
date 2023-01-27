@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
 import com.umc.pureum.domain.sentence.dto.GetBeforeKeywordRes;
+import com.umc.pureum.domain.sentence.dto.GetKeywordRes;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
@@ -17,8 +18,6 @@ import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
@@ -26,6 +25,7 @@ import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -36,8 +36,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
 
 
 @RestController
@@ -115,22 +117,55 @@ public class SentenceController {
         }
     }
 
-
     /**
      * 오늘의 작성 전 단어 반환 API
      * 작성 전 단어 리스트 반환
-     * [GET] /sentences/before
+     * [GET] /sentences/incomplete
      */
     @ApiOperation("오늘의 작성 전 단어 반환 API")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
-    })
     @ResponseBody
-    @GetMapping("/before")
-    public BaseResponse<List<GetBeforeKeywordRes>> getBeforeKeywords() {
+    @GetMapping("/incomplete/{userId}")
+    public BaseResponse<List<GetKeywordRes>> getIncompleteKeyWords(@PathVariable Long userId) {
         try{
-            List<GetBeforeKeywordRes> getBeforeKeywordRes = sentenceProvider.getBeforeKeyword(jwtService.getUserIdx());
-            return new BaseResponse<>(getBeforeKeywordRes);
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String user = principal.getUsername();
+
+            Long userIdByAuth = Long.parseLong(user);
+
+            if(!Objects.equals(userId, userIdByAuth)){
+                return new BaseResponse<>(INVALID_JWT);
+            }
+            else{
+                List<GetKeywordRes> getKeywordRes = sentenceProvider.getInCompleteKeyword(userId);
+                return new BaseResponse<>(getKeywordRes);
+            }
+        } catch(BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 오늘의 작성 완료 단어 반환 API
+     * 작성 완료 단어 리스트 반환
+     * [GET] /sentences/complete
+     */
+    @ApiOperation("오늘의 작성 완료 단어 반환 API")
+    @ResponseBody
+    @GetMapping("/complete/{userId}")
+    public BaseResponse<List<GetKeywordRes>> getCompleteKeywords(@PathVariable Long userId) {
+        try{
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String user = principal.getUsername();
+
+            Long userIdByAuth = Long.parseLong(user);
+
+            if(!Objects.equals(userId, userIdByAuth)){
+                return new BaseResponse<>(INVALID_JWT);
+            }
+            else{
+                List<GetKeywordRes> getKeywordRes = sentenceProvider.getCompleteKeyword(userId);
+                return new BaseResponse<>(getKeywordRes);
+            }
         } catch(BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
