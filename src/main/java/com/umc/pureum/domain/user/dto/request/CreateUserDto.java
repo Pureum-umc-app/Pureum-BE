@@ -14,6 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public class CreateUserDto {
     String nickname;
-    MultipartFile profile_photo;
+    MultipartFile image;
     int grade;
 }
