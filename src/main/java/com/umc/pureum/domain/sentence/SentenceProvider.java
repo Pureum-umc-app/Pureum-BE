@@ -33,21 +33,20 @@ public class SentenceProvider {
         }
 
         // 오늘의 단어 받아오기
-        // List<Keyword> getWords = keywordRepository.findByCreatedAt(new Date());
+        List<Keyword> getWords = keywordRepository.findByCreatedAt();
 
-        List<Keyword> getWords = keywordRepository.findByCreatedAtAfter(new Timestamp(new Date().getTime()));
         // 오늘의 작성 전 단어 받아오기
         List<Keyword> getCompletes = keywordRepository.findCompleteKeyword(id);
 
         // 결과 리스트
-//        for (Keyword getComplete : getCompletes) {
-//            getWords.remove(getComplete);
-//        }
+        for (Keyword getComplete : getCompletes) {
+            getWords.remove(getComplete);
+        }
 
         return getWords.stream()
                 .map(d -> GetKeywordRes.builder()
                         .keywordId(d.getId())
-                        .date(useProvider.getToday(d.getCreatedAt()) + " " + new Date())
+                        .date(new Date(d.getCreatedAt().getTime()) + " " + new Date())
                         .keyword(d.getWord().getWord())
                         .meaning(d.getWord().getMeaning()).build())
                 .collect(Collectors.toList());

@@ -21,7 +21,7 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
 
     /* 오늘의 단어 반환 API */
     @Query("select k from Keyword as k \n" +
-            "where date(k.createdAt) = date(current_timestamp) \n " +
+            "where date(addtime(k.createdAt, -9)) = date(addtime(current_timestamp, -9)) \n " +
             "   and k.status = 'A'")
     List<Keyword> findByCreatedAt();
 
@@ -30,7 +30,7 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
     /* 오늘의 작성 완료 단어 반환 API */
     @Query("select k from Keyword as k \n" +
             "   left join Sentence as s on s.keyword.id = k.id and s.user.id= :userIdx \n" +
-            "where date(s.createdAt) = date(current_timestamp) \n" +
+            "where date(addtime(k.createdAt, -18)) = date(current_timestamp) \n" +
             "   and k.status = 'A' \n" +
             "   and s.status = 'O' or s.status = 'P'")
     List<Keyword> findCompleteKeyword(@Param("userIdx") Long userIdx);
