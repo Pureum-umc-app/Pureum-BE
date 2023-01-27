@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<UserAccount, Long> {
     UserProfileMapping findUserProfile(
             @Param("id")Long id,
             @Param("status") String status);
+
+    boolean existsByIdAndStatus(Long id, String status);
 }
