@@ -16,6 +16,8 @@ import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
@@ -119,6 +121,9 @@ public class SentenceController {
      * [GET] /sentences/incomplete
      */
     @ApiOperation("오늘의 작성 전 단어 반환 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
     @ResponseBody
     @GetMapping("/incomplete/{userId}")
     public BaseResponse<List<GetKeywordRes>> getIncompleteKeyWords(@PathVariable Long userId) {
@@ -146,6 +151,9 @@ public class SentenceController {
      * [GET] /sentences/complete
      */
     @ApiOperation("오늘의 작성 완료 단어 반환 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
     @ResponseBody
     @GetMapping("/complete/{userId}")
     public BaseResponse<List<GetKeywordRes>> getCompleteKeywords(@PathVariable Long userId) {
