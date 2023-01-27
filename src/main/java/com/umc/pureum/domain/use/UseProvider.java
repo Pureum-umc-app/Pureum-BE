@@ -1,6 +1,7 @@
 package com.umc.pureum.domain.use;
 
 import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.GoalResult;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
@@ -31,7 +32,7 @@ public class UseProvider {
     /** API **/
 
     /* 목표 달성 여부 반환 API */
-    public List<GetGoalResultsRes> getGoalResults(Long userId) throws BaseException {
+    public GetGoalResultsRes getGoalResults(Long userId) throws BaseException {
         // 존재하는 회원인지 검사
         Optional<UserAccount> user = userRepository.findByIdAndStatus(userId, "A");
         if(user.isEmpty()) throw new BaseException(BaseResponseStatus.INVALID_USER);
@@ -39,11 +40,14 @@ public class UseProvider {
         // 사용 기록을 받아옴
         List<UsePhone> uses = useRepository.findAllByConditions(userId, getNextDay());
 
-        return uses.stream()
-                .map(d -> GetGoalResultsRes.builder()
-                        .date(getDate(d.getUpdatedAt()))
+        // 결과 매핑
+        GetGoalResultsRes goalResultsRes = new GetGoalResultsRes(userId, uses.stream()
+                .map(d -> GoalResult.builder()
+                        .date(getYesterday(d.getUpdatedAt()))
                         .isSuccess(getSuccess(d.getUseTime(), d.getPurposeTime())).build())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
+
+        return goalResultsRes;
     }
 
     /* 다음 날 구하기 */
@@ -57,8 +61,8 @@ public class UseProvider {
         return new Timestamp(cal.getTime().getTime());
     }
 
-    /* 날짜 계산 */
-    public String getDate(Timestamp updated_at) {
+    /* 전 날 구하기 */
+    public String getYesterday(Timestamp updated_at) {
         Date date = new Date(updated_at.getTime());
         Calendar cal = Calendar.getInstance();
 
@@ -68,6 +72,14 @@ public class UseProvider {
         SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-DD");
 
         return format.format(cal.getTime());
+    }
+
+    /* 날짜 계산 (-9시간) */
+    public String getToday(Timestamp createdAt) {
+        Date date = new Date(createdAt.getTime());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+        return format.format(date);
     }
 
     /* 성공 여부 계산 */
