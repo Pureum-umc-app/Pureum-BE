@@ -74,12 +74,17 @@ public class UseProvider {
         return format.format(cal.getTime());
     }
 
-    /* 날짜 계산 */
-    public String getToday(Timestamp updated_at) {
-        Date date = new Date(updated_at.getTime());
-        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-DD");
+    /* 날짜 계산 (-9시간) */
+    public String getToday(Timestamp createdAt) {
+        Date date = new Date(createdAt.getTime());
+        Calendar cal = Calendar.getInstance();
 
-        return format.format(date);
+        cal.setTime(date);
+        cal.add(Calendar.HOUR, -9);
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+        return format.format(cal.getTime());
     }
 
     /* 성공 여부 계산 */
