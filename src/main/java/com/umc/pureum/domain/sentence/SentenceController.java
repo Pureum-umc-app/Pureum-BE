@@ -5,38 +5,31 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
+import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
 import com.umc.pureum.domain.sentence.dto.GetBeforeKeywordRes;
-import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
-import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
-import com.umc.pureum.domain.user.dto.response.GetProfileResponseDto;
-import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.service.KakaoService;
 import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import com.umc.pureum.global.entity.User;
 import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.DataInput;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -146,12 +139,27 @@ public class SentenceController {
      * 문장 작성 API
      * [POST] /sentences/write
      */
+    @ApiOperation("문장 작성 API")
+    @ResponseBody
     @PostMapping("/write")
-    public BaseResponse<Long> writeSentence(@RequestBody CreateSentenceReq request) {
-        Long sentence_id = sentenceService.write(request);
-        return new BaseResponse(sentence_id);
-    }
+    public BaseResponse<CreateSentenceRes> writeSentence(@RequestBody CreateSentenceReq request) {
 
+        // 질문
+//        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        String UserId = principal.getUsername();
+//
+//        Long userId = Long.parseLong(UserId);
+//
+//        request.setUserId(userId);
+
+        try{
+            CreateSentenceRes write = sentenceService.write(request);
+            return new BaseResponse<>(write);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
 
 
 }
