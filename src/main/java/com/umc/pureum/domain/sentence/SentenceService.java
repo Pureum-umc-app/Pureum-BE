@@ -42,10 +42,9 @@ public class SentenceService {
 
     // write : 작성한 문장 DB 에 저장
     @Transactional
-    public CreateSentenceRes write(CreateSentenceReq request) throws BaseException{
+    public CreateSentenceRes write(Long userId , CreateSentenceReq request) throws BaseException{
 
         String writingSentence = request.getSentence();
-        Long userId = request.getUserId();
         Long keywordId = request.getKeywordId();
         String sentenceStatus = request.getStatus();
 
