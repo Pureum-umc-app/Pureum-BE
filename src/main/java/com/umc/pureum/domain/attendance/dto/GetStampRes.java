@@ -7,14 +7,18 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@Builder
 public class GetStampRes {
+    @ApiModelProperty(example = "1")
+    private Long userId;
     @ApiModelProperty(example = "50")
     private int accumulatedCnt;
-    @ApiModelProperty(example = "5")
+    @ApiModelProperty(example = "20")
     private int currentCnt;
 
     @Builder
-    public GetStampRes(int accumulatedCnt, int currentCnt) {
+    public GetStampRes(Long userId, int accumulatedCnt, int currentCnt) {
+        this.userId = userId;
         this.accumulatedCnt = accumulatedCnt;
         this.currentCnt = currentCnt;
     }
