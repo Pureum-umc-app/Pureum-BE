@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.json.JSONObject;
 import org.json.XML;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -144,22 +145,20 @@ public class SentenceController {
     @PostMapping("/write")
     public BaseResponse<CreateSentenceRes> writeSentence(@RequestBody CreateSentenceReq request) {
 
-        // 질문
-//        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        String UserId = principal.getUsername();
-//
-//        Long userId = Long.parseLong(UserId);
-//
-//        request.setUserId(userId);
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        Long userId = Long.parseLong(UserId);
 
         try{
-            CreateSentenceRes write = sentenceService.write(request);
+            CreateSentenceRes write = sentenceService.write(userId , request);
             return new BaseResponse<>(write);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
 
     }
+
 
 
 }
