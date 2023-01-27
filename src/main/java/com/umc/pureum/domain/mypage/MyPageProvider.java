@@ -3,7 +3,6 @@ package com.umc.pureum.domain.mypage;
 import com.umc.pureum.domain.mypage.dto.GetMySentencesRes;
 import com.umc.pureum.domain.mypage.dto.MySentenceDto;
 import com.umc.pureum.domain.sentence.entity.Sentence;
-import com.umc.pureum.global.utils.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
