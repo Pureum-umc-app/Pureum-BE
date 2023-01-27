@@ -94,7 +94,7 @@ public class SentenceService {
 
             if(word.isPresent()) {
                 // 단어가 존재하면 keyword에 존재하는지 검사
-                Optional<Keyword> keyword = keywordRepository.findByWordId(id);
+                Optional<Keyword> keyword = keywordRepository.findByWordIdAndStatus(id, "A");
 
                 if(keyword.isEmpty()) {
                     // Keyword 테이블에 존재하는지 검사 후 없으면 넣기
