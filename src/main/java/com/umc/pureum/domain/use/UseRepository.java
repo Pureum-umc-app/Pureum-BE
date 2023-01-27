@@ -1,7 +1,7 @@
 package com.umc.pureum.domain.use;
 
 import com.umc.pureum.domain.use.entity.UsePhone;
-import com.umc.pureum.domain.use.entity.UseStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -22,5 +22,10 @@ public interface UseRepository extends JpaRepository<UsePhone, Long> {
             "and u.updatedAt <= :today " +
             "and u.status = 'A'")
     List<UsePhone> findAllByConditions(@Param("id") Long id, @Param("today") Timestamp today);
+    @Query(value = "select u from UsePhone u " +
+            "where date(u.createdAt) = current_date " +
+            "and u.user.id = :id " +
+            "and u.status = 'A'")
+    List<UsePhone> existUsageTime(@Param("id")Long id, Pageable limitOne);
 
 }
