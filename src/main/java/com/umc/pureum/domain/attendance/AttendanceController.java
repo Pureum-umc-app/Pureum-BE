@@ -3,15 +3,13 @@ package com.umc.pureum.domain.attendance;
 import com.umc.pureum.domain.attendance.dto.GetStampRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
@@ -23,7 +21,6 @@ import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
 public class AttendanceController {
     private final AttendanceProvider attendanceProvider;
     private final AttendanceService attendanceService;
-    private final JwtService jwtService;
 
     /**
      * 도장 개수 반환 API
@@ -31,19 +28,20 @@ public class AttendanceController {
      * [GET] /attendances/{userIdx}
      */
     @ApiOperation("도장 개수 반환 API")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
-    })
     @ResponseBody
-    @GetMapping("/{userIdx}")
-    public BaseResponse<GetStampRes> getStamps(@PathVariable Long userIdx) {
+    @GetMapping("/{userId}")
+    public BaseResponse<GetStampRes> getStamps(@PathVariable Long userId) {
         try{
-            Long userIdxByJwt = jwtService.getUserIdx();
-            if(!Objects.equals(userIdx, userIdxByJwt)){
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String user = principal.getUsername();
+
+            Long userIdByAuth = Long.parseLong(user);
+
+            if(!Objects.equals(userId, userIdByAuth)){
                 return new BaseResponse<>(INVALID_JWT);
             }
             else{
-                GetStampRes getStampRes = attendanceProvider.getStamps(userIdx);
+                GetStampRes getStampRes = attendanceProvider.getStamps(userId);
                 return new BaseResponse<>(getStampRes);
             }
         } catch(BaseException e){

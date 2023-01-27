@@ -4,37 +4,39 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umc.pureum.domain.sentence.dto.GetBeforeKeywordRes;
+import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
+import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
+import com.umc.pureum.domain.sentence.dto.GetKeywordRes;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
+import com.umc.pureum.domain.user.service.KakaoService;
+import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.json.JSONObject;
 import org.json.XML;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.DataInput;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
 
 
 @RestController
@@ -44,8 +46,9 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 public class SentenceController {
     private final SentenceProvider sentenceProvider;
     private final SentenceService sentenceService;
-    private final JwtService jwtService;
     private final WordRepository wordRepository;
+    private final KakaoService kakaoService;
+    private final UserService userService;
 
     /**
      * 한국어 기초 사전 API 연동
@@ -110,24 +113,83 @@ public class SentenceController {
         }
     }
 
-
     /**
      * 오늘의 작성 전 단어 반환 API
      * 작성 전 단어 리스트 반환
-     * [GET] /sentences/before
+     * [GET] /sentences/incomplete
      */
     @ApiOperation("오늘의 작성 전 단어 반환 API")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
-    })
     @ResponseBody
-    @GetMapping("/before")
-    public BaseResponse<List<GetBeforeKeywordRes>> getBeforeKeywords() {
+    @GetMapping("/incomplete/{userId}")
+    public BaseResponse<List<GetKeywordRes>> getIncompleteKeyWords(@PathVariable Long userId) {
         try{
-            List<GetBeforeKeywordRes> getBeforeKeywordRes = sentenceProvider.getBeforeKeyword(jwtService.getUserIdx());
-            return new BaseResponse<>(getBeforeKeywordRes);
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String user = principal.getUsername();
+
+            Long userIdByAuth = Long.parseLong(user);
+
+            if(!Objects.equals(userId, userIdByAuth)){
+                return new BaseResponse<>(INVALID_JWT);
+            }
+            else{
+                List<GetKeywordRes> getKeywordRes = sentenceProvider.getInCompleteKeyword(userId);
+                return new BaseResponse<>(getKeywordRes);
+            }
         } catch(BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    /**
+     * 오늘의 작성 완료 단어 반환 API
+     * 작성 완료 단어 리스트 반환
+     * [GET] /sentences/complete
+     */
+    @ApiOperation("오늘의 작성 완료 단어 반환 API")
+    @ResponseBody
+    @GetMapping("/complete/{userId}")
+    public BaseResponse<List<GetKeywordRes>> getCompleteKeywords(@PathVariable Long userId) {
+        try{
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String user = principal.getUsername();
+
+            Long userIdByAuth = Long.parseLong(user);
+
+            if(!Objects.equals(userId, userIdByAuth)){
+                return new BaseResponse<>(INVALID_JWT);
+            }
+            else{
+                List<GetKeywordRes> getKeywordRes = sentenceProvider.getCompleteKeyword(userId);
+                return new BaseResponse<>(getKeywordRes);
+            }
+        } catch(BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 문장 작성 API
+     * [POST] /sentences/write
+     */
+    @ApiOperation("문장 작성 API")
+    @ResponseBody
+    @PostMapping("/write")
+    public BaseResponse<CreateSentenceRes> writeSentence(@RequestBody CreateSentenceReq request) {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        Long userId = Long.parseLong(UserId);
+
+        try{
+            CreateSentenceRes write = sentenceService.write(userId , request);
+            return new BaseResponse<>(write);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
+
+
 }
