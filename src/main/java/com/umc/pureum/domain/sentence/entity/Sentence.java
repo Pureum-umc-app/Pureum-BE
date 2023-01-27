@@ -27,4 +27,10 @@ public class Sentence extends BaseEntity {
     @NotNull
     private String status;
 
+    public Sentence(UserAccount userAccount, String sentence, Keyword keyword, String sentenceStatus) {
+        this.user = userAccount;
+        this.sentence = sentence;
+        this.keyword = keyword;
+        this.status = sentenceStatus;
+    }
 }
