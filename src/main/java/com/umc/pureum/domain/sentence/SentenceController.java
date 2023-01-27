@@ -11,7 +11,11 @@ import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
+import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
+import com.umc.pureum.domain.user.dto.response.GetProfileResponseDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
+import com.umc.pureum.domain.user.service.KakaoService;
+import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import com.umc.pureum.global.entity.User;
@@ -51,6 +55,8 @@ public class SentenceController {
     private final SentenceService sentenceService;
     private final JwtService jwtService;
     private final WordRepository wordRepository;
+    private final KakaoService kakaoService;
+    private final UserService userService;
 
     /**
      * 한국어 기초 사전 API 연동
@@ -142,15 +148,7 @@ public class SentenceController {
      */
     @PostMapping("/write")
     public BaseResponse<Long> writeSentence(@RequestBody CreateSentenceReq request) {
-
-//        Sentence get = request.getSentence();
-
-
-
-        Sentence sentence = new Sentence(null, request.getSentence(), request.getKeyword(), "500");
-
-
-        Long sentence_id = sentenceService.write(sentence);
+        Long sentence_id = sentenceService.write(request);
         return new BaseResponse(sentence_id);
     }
 
