@@ -6,7 +6,6 @@ import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -16,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
@@ -28,7 +26,6 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 public class UseController {
     private final UseProvider useProvider;
     private final UseService useService;
-    private final JwtService jwtService;
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
