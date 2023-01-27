@@ -4,6 +4,8 @@ import com.umc.pureum.domain.attendance.dto.GetStampRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +30,9 @@ public class AttendanceController {
      * [GET] /attendances/{userIdx}
      */
     @ApiOperation("도장 개수 반환 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
     @ResponseBody
     @GetMapping("/{userId}")
     public BaseResponse<GetStampRes> getStamps(@PathVariable Long userId) {
