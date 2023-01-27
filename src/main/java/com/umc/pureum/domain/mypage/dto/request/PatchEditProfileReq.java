@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.user.dto.request;
+package com.umc.pureum.domain.mypage.dto.request;
 
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,11 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-/*
-  유저 생성 DTO
- */
-public class CreateUserDto {
+public class PatchEditProfileReq {
     String nickname;
     MultipartFile image;
-    int grade;
 }
