@@ -61,6 +61,9 @@ public class UseController {
      * int isSuccess = 0, 1
      */
     @ApiOperation("목표 달성 여부 반환")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
     @ResponseBody
     @GetMapping("/{userId}/goals/result")
     public BaseResponse<GetGoalResultsRes> getGoalResults(@PathVariable Long userId) {
