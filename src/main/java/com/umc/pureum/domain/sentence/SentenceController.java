@@ -113,18 +113,17 @@ public class SentenceController {
      * 작성 전 단어 리스트 반환
      * [GET] /sentences/incomplete
      */
-    @ApiIgnore
     @ApiOperation("오늘의 작성 전 단어 반환 API")
     @ResponseBody
-    @GetMapping("/incomplete/{userIdx}")
-    public BaseResponse<List<GetKeywordRes>> getIncompleteKeyWords(@PathVariable Long userIdx) {
+    @GetMapping("/incomplete/{userId}")
+    public BaseResponse<List<GetKeywordRes>> getIncompleteKeyWords(@PathVariable Long userId) {
         try{
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
-            Long userId = Long.parseLong(user);
+            Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(userIdx, userId)){
+            if(!Objects.equals(userId, userIdByAuth)){
                 return new BaseResponse<>(INVALID_JWT);
             }
             else{
@@ -141,18 +140,17 @@ public class SentenceController {
      * 작성 완료 단어 리스트 반환
      * [GET] /sentences/complete
      */
-    @ApiIgnore
     @ApiOperation("오늘의 작성 완료 단어 반환 API")
     @ResponseBody
-    @GetMapping("/complete/{userIdx}")
-    public BaseResponse<List<GetKeywordRes>> getCompleteKeywords(@PathVariable Long userIdx) {
+    @GetMapping("/complete/{userId}")
+    public BaseResponse<List<GetKeywordRes>> getCompleteKeywords(@PathVariable Long userId) {
         try{
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
-            Long userId = Long.parseLong(user);
+            Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(userIdx, userId)){
+            if(!Objects.equals(userId, userIdByAuth)){
                 return new BaseResponse<>(INVALID_JWT);
             }
             else{
