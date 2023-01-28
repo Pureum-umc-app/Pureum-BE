@@ -1,22 +1,21 @@
 package com.umc.pureum.domain.battle;
 
 import com.umc.pureum.domain.battle.dto.PostBattleReq;
+import com.umc.pureum.domain.battle.dto.repsonse.BattleMyProfilePhotoRes;
 import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
-import static com.umc.pureum.global.config.BaseResponseStatus.POST_BATTLE_EMPTY_SENTENCE;
+import static com.umc.pureum.global.config.BaseResponseStatus.*;
 
 
 @RestController
@@ -60,5 +59,24 @@ public class BattleController {
         catch(BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
+    }
+    @ApiOperation("대결 신청할때 내사진 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = BattleMyProfilePhotoRes.class),
+            @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다."),
+    })
+    @ResponseBody
+    @GetMapping("/apply/photo/{userId}")
+    public ResponseEntity<BaseResponse<BattleMyProfilePhotoRes>> BattleMyProfilePhoto(@PathVariable long userId) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long id = Long.parseLong(principal.getUsername());
+        if (id != userId)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
+        BattleMyProfilePhotoRes battleMyProfilePhotoRes = new BattleMyProfilePhotoRes(userId,battleService.BattleMyProfilePhoto(userId));
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(battleMyProfilePhotoRes));
     }
 }
