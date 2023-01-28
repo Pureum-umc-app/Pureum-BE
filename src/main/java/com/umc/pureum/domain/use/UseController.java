@@ -6,7 +6,6 @@ import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -16,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
@@ -28,7 +26,6 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 public class UseController {
     private final UseProvider useProvider;
     private final UseService useService;
-    private final JwtService jwtService;
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
@@ -64,6 +61,9 @@ public class UseController {
      * int isSuccess = 0, 1
      */
     @ApiOperation("목표 달성 여부 반환")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
     @ResponseBody
     @GetMapping("/{userId}/goals/result")
     public BaseResponse<GetGoalResultsRes> getGoalResults(@PathVariable Long userId) {
