@@ -200,7 +200,7 @@ public class SentenceController {
 
     /**
      * 문장 좋아요 API
-     * [POST] /sentences/{setenceId}/like
+     * [POST] /sentences/like
      */
     @ApiOperation("문장 좋아요 API")
     @ResponseBody
