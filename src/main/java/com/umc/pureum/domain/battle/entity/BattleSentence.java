@@ -28,7 +28,7 @@ public class BattleSentence extends BaseEntity {
     private Status status;
 
     @Builder
-    public BattleSentence(Battle battle, UserAccount user, String sentence, BattleWord word, Status status) {
+    public BattleSentence(Battle battle, UserAccount user, @NotNull String sentence, BattleWord word, Status status) {
         this.battle = battle;
         this.user = user;
         this.sentence = sentence;
