@@ -27,25 +27,24 @@ public class SentenceProvider {
     private final UseProvider useProvider;
 
     /* 오늘의 작성 전 단어 받아오기 */
-    public List<GetKeywordRes> getInCompleteKeyword(Long id) throws BaseException {
-        if(userRepository.findByIdAndStatus(id, "A").isEmpty()) {
+    public List<GetKeywordRes> getInCompleteKeyword(Long userId) throws BaseException {
+        // 유저 검사
+        if(userRepository.findByIdAndStatus(userId, "A").isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
-        // 오늘의 단어 받아오기
-        // List<Keyword> getWords = keywordRepository.findByCreatedAt(new Date());
-
-        List<Keyword> getWords = keywordRepository.findByCreatedAtAfter(new Timestamp(new Date().getTime()));
-        // 오늘의 작성 전 단어 받아오기
-        List<Keyword> getCompletes = keywordRepository.findCompleteKeyword(new Date(), id);
+        // 오늘의 단어 & 작성 전 단어 받아오기
+        List<Keyword> getWords = keywordRepository.findByCreatedAt();
+        List<Keyword> getCompletes = keywordRepository.findCompleteKeyword(userId);
 
         // 결과 리스트
-//        for (Keyword getComplete : getCompletes) {
-//            getWords.remove(getComplete);
-//        }
+        for (Keyword getComplete : getCompletes) {
+            getWords.remove(getComplete);
+        }
 
         return getWords.stream()
                 .map(d -> GetKeywordRes.builder()
+                        .userId(userId)
                         .keywordId(d.getId())
                         .date(useProvider.getToday(d.getCreatedAt()))
                         .keyword(d.getWord().getWord())
@@ -60,7 +59,7 @@ public class SentenceProvider {
         }
 
         // 오늘의 작성 완료 단어 받아오기
-        List<Keyword> getWords = keywordRepository.findCompleteKeyword(new Date(), userId);
+        List<Keyword> getWords = keywordRepository.findCompleteKeyword(userId);
 
         return getWords.stream()
                 .map(d -> GetKeywordRes.builder()
