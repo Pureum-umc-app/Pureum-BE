@@ -3,7 +3,6 @@ package com.umc.pureum.domain.attendance;
 import com.umc.pureum.domain.attendance.dto.GetStampRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -13,7 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
@@ -25,7 +23,6 @@ import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
 public class AttendanceController {
     private final AttendanceProvider attendanceProvider;
     private final AttendanceService attendanceService;
-    private final JwtService jwtService;
 
     /**
      * 도장 개수 반환 API
@@ -33,6 +30,9 @@ public class AttendanceController {
      * [GET] /attendances/{userIdx}
      */
     @ApiOperation("도장 개수 반환 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
     @ResponseBody
     @GetMapping("/{userId}")
     public BaseResponse<GetStampRes> getStamps(@PathVariable Long userId) {
