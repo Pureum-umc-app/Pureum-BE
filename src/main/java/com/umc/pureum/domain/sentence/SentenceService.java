@@ -2,8 +2,11 @@ package com.umc.pureum.domain.sentence;
 
 import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Sentence;
+import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.repository.KeywordRepository;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
@@ -28,6 +31,7 @@ import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_E
 @Service
 public class SentenceService {
     private final SentenceDao sentenceDao;
+    private final SentenceLikeDao sentenceLikeDao;
     private final WordRepository wordRepository;
     private final KeywordRepository keywordRepository;
     private final UserRepository userRepository;
@@ -71,6 +75,25 @@ public class SentenceService {
     // isExist : 문장에 키워드가 포함되어있는지 확인하는 함수
     private boolean isExist(String writingSentence , String writingWord) {
         return writingSentence.contains(writingWord);
+    }
+
+    // like : 문장 좋아요 DB 에 저장
+    @Transactional
+    public LikeSentenceRes like(long userId , LikeSentenceReq request) {
+
+        // request 로 받은 sentenceId 로 문장 찾기
+        Sentence sentence = sentenceDao.findOne(request.getSentenceId());
+
+        // request 로 받은 status
+        String status = request.getStatus();
+
+        // request 로 받은 userId 로 userAccount 찾기
+        UserAccount userAccount = userRepository.findById(userId).get();
+
+        SentenceLike sentenceLike = new SentenceLike(userAccount, sentence, status);
+        sentenceLikeDao.save(sentenceLike);
+
+        return new LikeSentenceRes(sentenceLike.getId());
     }
 
 
