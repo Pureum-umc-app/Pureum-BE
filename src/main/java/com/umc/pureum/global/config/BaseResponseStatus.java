@@ -47,6 +47,13 @@ public enum BaseResponseStatus {
     POST_USERS_NO_EXISTS_USER(false,2034 ,"존재하지 않는 회원입니다."),
     // homes
 
+    //sentence
+    POST_SENTENCE_EMPTY(false, 2040, "문장을 입력해주세요."),
+    POST_SENTENCE_NO_EXISTS_KEYWORD(false, 2041, "키워드가 포함되어있지 않습니다."),
+
+    // battle
+    POST_BATTLE_EMPTY_SENTENCE(false, 2050, "대결 문장을 입력해야 합니다."),
+    POST_BATTLE_NO_EXIST_KEYWORD(false, 2051,"존재하지 않는 키워드입니다."),
 
 
     /**
