@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,9 +28,10 @@ public class SentenceLikeDao {
 
 
     // sentence_id 로 sentenceLike 찾기
-    public SentenceLike findBySentenceId(Long sentenceId){
-        return em.createQuery("select s from SentenceLike s where s.sentence.id= :sentenceId",SentenceLike.class)
+    public Optional<SentenceLike> findBySentenceId(Long sentenceId){
+        List<SentenceLike> sentenceLikeList = em.createQuery("select s from SentenceLike s where s.sentence.id= :sentenceId", SentenceLike.class)
                 .setParameter("sentenceId", sentenceId)
-                .getSingleResult();
+                .getResultList();
+        return sentenceLikeList.stream().findAny();
     }
 }
