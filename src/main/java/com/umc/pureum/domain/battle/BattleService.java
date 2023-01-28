@@ -60,4 +60,8 @@ public class BattleService {
 
         return savedBattle.getId();
     }
+
+    public String BattleMyProfilePhoto(long userId) {
+        return userRepository.findByIdAndStatus(userId,"A").get().getImage();
+    }
 }
