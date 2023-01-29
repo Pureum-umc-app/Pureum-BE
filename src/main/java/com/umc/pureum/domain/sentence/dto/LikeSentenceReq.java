@@ -7,7 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class LikeSentenceReq {
     private Long sentenceId;
-    private String status;
 
     public LikeSentenceReq() {
     }
