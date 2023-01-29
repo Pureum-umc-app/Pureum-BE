@@ -1,18 +1,25 @@
 package com.umc.pureum.domain.attendance;
 
+import com.umc.pureum.domain.attendance.dto.AttendanceCheckReq;
+import com.umc.pureum.domain.attendance.dto.AttendanceCheckRes;
 import com.umc.pureum.domain.attendance.dto.GetStampRes;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
+import static com.umc.pureum.global.config.BaseResponseStatus.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +28,7 @@ import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
 public class AttendanceController {
     private final AttendanceProvider attendanceProvider;
     private final AttendanceService attendanceService;
+    private final AttendanceDao attendanceDao;
 
     /**
      * 도장 개수 반환 API
@@ -28,6 +36,9 @@ public class AttendanceController {
      * [GET] /attendances/{userIdx}
      */
     @ApiOperation("도장 개수 반환 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
     @ResponseBody
     @GetMapping("/{userId}")
     public BaseResponse<GetStampRes> getStamps(@PathVariable Long userId) {
@@ -47,6 +58,37 @@ public class AttendanceController {
         } catch(BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
+    }
+
+    /**
+     * 출석 체크 API
+     * [POST] /attendances/check
+     */
+    @ApiOperation("출석 체크 API")
+    @ResponseBody
+    @PostMapping("/check")
+    public BaseResponse<AttendanceCheckRes> check(@RequestBody AttendanceCheckReq request) throws BaseException {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        long userId = Long.parseLong(UserId);
+
+        try{
+            // springsecurity 로 찾은 userId 랑 request 로 받은 sentence 에서 찾은 userId 비교
+            if(userId != request.getUserId()){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else{
+                // 출석 체크 저장
+                AttendanceCheckRes attendanceCheckRes = attendanceService.checkAttendance(request);
+                return new BaseResponse<>(attendanceCheckRes);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
+        }
+
     }
 
 }
