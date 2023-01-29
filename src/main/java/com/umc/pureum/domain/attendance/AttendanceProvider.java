@@ -24,14 +24,14 @@ public class AttendanceProvider {
     private final UserRepository userRepository;
 
     /* 도장 개수 반환 API */
-    public GetStampRes getStamps(Long userIdx) throws BaseException {
+    public GetStampRes getStamps(Long userId) throws BaseException {
         // 존재하는 회원인지 검사
-        Optional<UserAccount> user = userRepository.findByIdAndStatus(userIdx, "A");
+        Optional<UserAccount> user = userRepository.findByIdAndStatus(userId, "A");
         if(user.isEmpty()) throw new BaseException(BaseResponseStatus.INVALID_USER);
 
         // 출석 개수를 받아옴
-        List<AttendanceCheck> attendanceChecks = attendanceRepository.findALLByUserIdAndStatus(userIdx, AttendanceStatus.A);
+        List<AttendanceCheck> attendanceChecks = attendanceRepository.findALLByUserIdAndStatus(userId, AttendanceStatus.A);
 
-        return new GetStampRes(attendanceChecks.size(), attendanceChecks.size() % 30);
+        return new GetStampRes(user.get().getId(), attendanceChecks.size(), attendanceChecks.size() % 30);
     }
 }
