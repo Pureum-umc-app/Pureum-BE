@@ -79,7 +79,7 @@ public class SentenceService {
      * word에서 받아와서 keyword에 저장
      */
     @Transactional
-    @Scheduled(cron = "0 0 9 * * *")
+    // @Scheduled(cron = "0 0 9 * * *")
     public void getKeyword() {
         System.out.println("start");
         List<Word> words = new ArrayList<>();
