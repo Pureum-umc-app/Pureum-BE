@@ -43,8 +43,13 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS_EMAIL(false,2030,"중복된 이메일입니다."),
     POST_USERS_EXISTS_NICKNAME(false,2031,"중복된 닉네임입니다."),
     POST_USERS_NO_EXISTS_EMAIL(false,2032,"존재하지 않는 이메일입니다."),
-
+    POST_USERS_EXISTS(false,2033,"이미 가입된 회원입니다."),
+    POST_USERS_NO_EXISTS_USER(false,2034 ,"존재하지 않는 회원입니다."),
     // homes
+
+    //sentence
+    POST_SENTENCE_EMPTY(false, 2040, "문장을 입력해주세요."),
+    POST_SENTENCE_NO_EXISTS_KEYWORD(false, 2041, "키워드가 포함되어있지 않습니다."),
 
 
 

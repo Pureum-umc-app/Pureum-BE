@@ -6,15 +6,15 @@ import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import com.umc.pureum.global.utils.JwtService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
@@ -26,21 +26,30 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 public class UseController {
     private final UseProvider useProvider;
     private final UseService useService;
-    private final JwtService jwtService;
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
-     * [POST] /uses/useTimeAndCount <- 작명 추천 좀...
+     * [POST] /uses/{user_id}/useTimeAndCount
      */
+    @ApiOperation("일일 사용 시간, 휴대폰 켠 횟수 저장")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
+            @ApiImplicitParam(name = "use_time",paramType = "formData",value = "일일 사용 시간"),
+            @ApiImplicitParam(name = "count",paramType = "formData",value = "휴대폰 켠 횟수"),
+    })
     @ResponseBody
-    @PostMapping("/useTimeAndCount")
-    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq){
-        try{
-            Long user_id = jwtService.getUserIdx();
-            PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(user_id, postUseTimeAndCountReq);
+    @PostMapping("/{user_idx}/useTimeAndCount")
+    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long user_idx, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq){
+        // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userId = Long.parseLong(springSecurityUserId);
+        if(userId != user_idx){
+            return new BaseResponse<>(INVALID_JWT);
+        }
+        else{
+            PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(user_idx, postUseTimeAndCountReq);
             return new BaseResponse<>(postUseTimeAndCountRes);
-        }catch(BaseException e){
-            return new BaseResponse<>(e.getStatus());
         }
     }
 
@@ -53,22 +62,27 @@ public class UseController {
      */
     @ApiOperation("목표 달성 여부 반환")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
     })
     @ResponseBody
-    @GetMapping("/{user_idx}/goals/result")
-    public BaseResponse<List<GetGoalResultsRes>> getGoalResults(@PathVariable Long user_idx) {
+    @GetMapping("/{userId}/goals/result")
+    public BaseResponse<GetGoalResultsRes> getGoalResults(@PathVariable Long userId) {
         try{
-            Long userIdxByJwt = jwtService.getUserIdx();
-            if(!Objects.equals(user_idx, userIdxByJwt)){
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String user = principal.getUsername();
+
+            Long userIdByAuth = Long.parseLong(user);
+
+            if(!Objects.equals(userId, userIdByAuth)){
                 return new BaseResponse<>(INVALID_JWT);
             }
             else{
-                List<GetGoalResultsRes> getGoalResultsRes = useProvider.getGoalResults(user_idx);
+                GetGoalResultsRes getGoalResultsRes = useProvider.getGoalResults(userId);
                 return new BaseResponse<>(getGoalResultsRes);
             }
         } catch(BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 }
