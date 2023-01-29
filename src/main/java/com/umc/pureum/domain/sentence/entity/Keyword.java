@@ -8,19 +8,21 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @Entity
 public class Keyword extends BaseEntity {
-    @NotNull
-    private String word;
+    @OneToOne @JoinColumn(name = "word_id")
+    private Word word;
     @NotNull
     private String status;
 
     @Builder
-    public Keyword(String word, String status) {
+    public Keyword(Word word, String status) {
         this.word = word;
         this.status = status;
     }
