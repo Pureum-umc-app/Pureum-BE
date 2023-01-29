@@ -223,9 +223,9 @@ public class SentenceController {
                 return new BaseResponse<>(likeSentenceRes);
             }
         }catch (Exception e){
+            e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
 
     }
-
 }

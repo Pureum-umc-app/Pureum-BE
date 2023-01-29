@@ -84,16 +84,34 @@ public class SentenceService {
         // request 로 받은 sentenceId 로 문장 찾기
         Sentence sentence = sentenceDao.findOne(request.getSentenceId());
 
-        // request 로 받은 status
-        String status = request.getStatus();
-
         // request 로 받은 userId 로 userAccount 찾기
         UserAccount userAccount = userRepository.findById(userId).get();
 
-        SentenceLike sentenceLike = new SentenceLike(userAccount, sentence, status);
-        sentenceLikeDao.save(sentenceLike);
+        //request 로 받은 sentenceId 로 문장 좋아요 찾기
+        if(sentenceLikeDao.findBySentenceId(request.getSentenceId()).isPresent()){
 
-        return new LikeSentenceRes(sentenceLike.getId());
+            SentenceLike sentenceLike = sentenceLikeDao.findBySentenceId(request.getSentenceId()).get();
+
+            // 존재하는 sentence 일 경우 sentence status 확인하고 status 바꾼다 .
+            if("A".equals(sentenceLike.getStatus())){
+                sentenceLike.setStatus("D");
+            }
+            else if("D".equals(sentenceLike.getStatus())){
+                sentenceLike.setStatus("A");
+            }
+
+            return new LikeSentenceRes(sentenceLike.getId());
+
+        }
+
+        // 존재하지 않는 sentence 일 경우 sentenceLike 생성해서 저장
+        else{
+            SentenceLike sentenceLike = new SentenceLike(userAccount, sentence, "A");
+            sentenceLikeDao.save(sentenceLike);
+
+            return new LikeSentenceRes(sentenceLike.getId());
+        }
+
     }
 
 
@@ -128,3 +146,4 @@ public class SentenceService {
         }
     }
 }
+
