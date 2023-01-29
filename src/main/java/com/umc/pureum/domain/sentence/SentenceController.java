@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
-import com.umc.pureum.domain.sentence.dto.GetKeywordRes;
+import com.umc.pureum.domain.sentence.dto.*;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
@@ -16,6 +14,8 @@ import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
+import static com.umc.pureum.global.config.BaseResponseStatus.*;
 
 
 @RestController
@@ -47,6 +47,8 @@ public class SentenceController {
     private final SentenceProvider sentenceProvider;
     private final SentenceService sentenceService;
     private final WordRepository wordRepository;
+    private final SentenceDao sentenceDao;
+    private final SentenceLikeDao sentenceLikeDao;
     private final KakaoService kakaoService;
     private final UserService userService;
 
@@ -119,6 +121,9 @@ public class SentenceController {
      * [GET] /sentences/incomplete
      */
     @ApiOperation("오늘의 작성 전 단어 반환 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
     @ResponseBody
     @GetMapping("/incomplete/{userId}")
     public BaseResponse<List<GetKeywordRes>> getIncompleteKeyWords(@PathVariable Long userId) {
@@ -146,6 +151,9 @@ public class SentenceController {
      * [GET] /sentences/complete
      */
     @ApiOperation("오늘의 작성 완료 단어 반환 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
     @ResponseBody
     @GetMapping("/complete/{userId}")
     public BaseResponse<List<GetKeywordRes>> getCompleteKeywords(@PathVariable Long userId) {
@@ -179,7 +187,7 @@ public class SentenceController {
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
 
-        Long userId = Long.parseLong(UserId);
+        long userId = Long.parseLong(UserId);
 
         try{
             CreateSentenceRes write = sentenceService.write(userId , request);
@@ -190,6 +198,34 @@ public class SentenceController {
 
     }
 
+    /**
+     * 문장 좋아요 API
+     * [POST] /sentences/like
+     */
+    @ApiOperation("문장 좋아요 API")
+    @ResponseBody
+    @PostMapping("/like")
+    public BaseResponse<LikeSentenceRes> likeSentence(@RequestBody LikeSentenceReq request) throws BaseException{
 
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
 
+        long userId = Long.parseLong(UserId);
+
+        try{
+            // springsecurity 로 찾은 userId 랑 request 로 받은 sentence 에서 찾은 userId 비교
+            if(userId != sentenceDao.findOne(request.getSentenceId()).getUser().getId()){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else{
+                // 문장 좋아요 저장
+                LikeSentenceRes likeSentenceRes = sentenceService.like(userId , request);
+                return new BaseResponse<>(likeSentenceRes);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
+        }
+
+    }
 }

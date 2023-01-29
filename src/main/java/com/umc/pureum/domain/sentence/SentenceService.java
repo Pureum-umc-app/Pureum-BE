@@ -2,8 +2,11 @@ package com.umc.pureum.domain.sentence;
 
 import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Sentence;
+import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.repository.KeywordRepository;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
@@ -28,6 +31,7 @@ import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_E
 @Service
 public class SentenceService {
     private final SentenceDao sentenceDao;
+    private final SentenceLikeDao sentenceLikeDao;
     private final WordRepository wordRepository;
     private final KeywordRepository keywordRepository;
     private final UserRepository userRepository;
@@ -73,6 +77,43 @@ public class SentenceService {
         return writingSentence.contains(writingWord);
     }
 
+    // like : 문장 좋아요 DB 에 저장
+    @Transactional
+    public LikeSentenceRes like(long userId , LikeSentenceReq request) {
+
+        // request 로 받은 sentenceId 로 문장 찾기
+        Sentence sentence = sentenceDao.findOne(request.getSentenceId());
+
+        // request 로 받은 userId 로 userAccount 찾기
+        UserAccount userAccount = userRepository.findById(userId).get();
+
+        //request 로 받은 sentenceId 로 문장 좋아요 찾기
+        if(sentenceLikeDao.findBySentenceId(request.getSentenceId()).isPresent()){
+
+            SentenceLike sentenceLike = sentenceLikeDao.findBySentenceId(request.getSentenceId()).get();
+
+            // 존재하는 sentence 일 경우 sentence status 확인하고 status 바꾼다 .
+            if("A".equals(sentenceLike.getStatus())){
+                sentenceLike.setStatus("D");
+            }
+            else if("D".equals(sentenceLike.getStatus())){
+                sentenceLike.setStatus("A");
+            }
+
+            return new LikeSentenceRes(sentenceLike.getId());
+
+        }
+
+        // 존재하지 않는 sentence 일 경우 sentenceLike 생성해서 저장
+        else{
+            SentenceLike sentenceLike = new SentenceLike(userAccount, sentence, "A");
+            sentenceLikeDao.save(sentenceLike);
+
+            return new LikeSentenceRes(sentenceLike.getId());
+        }
+
+    }
+
 
     /**
      * 매일 0시에 오늘의 단어 3개를 불러옴
@@ -105,3 +146,4 @@ public class SentenceService {
         }
     }
 }
+
