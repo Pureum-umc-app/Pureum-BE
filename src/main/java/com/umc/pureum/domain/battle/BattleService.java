@@ -50,7 +50,7 @@ public class BattleService {
         }
 
         // 대결 저장
-        Battle battle = new Battle(challenger.get(), challenged.get(), postBattleReq.getDuration(), BattleStatus.W);
+        Battle battle = new Battle(challenger.get(), challenged.get(), word.get(), postBattleReq.getDuration(), BattleStatus.W);
         Battle savedBattle = battleRepository.save(battle);
 
         // 문장 저장
