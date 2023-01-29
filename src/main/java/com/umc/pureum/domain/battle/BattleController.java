@@ -92,6 +92,11 @@ public class BattleController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
     })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다.")
+    })
     @ResponseBody
     @GetMapping("/wait-list/{userId}")
     public BaseResponse<List<GetWaitBattlesRes>> getWaitBattles(@PathVariable Long userId) {
