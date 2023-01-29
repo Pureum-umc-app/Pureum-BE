@@ -16,8 +16,8 @@ public class MyPageDao {
     private final EntityManager em;
 
     // 문장 단건 조회
-    public Sentence find(Long sentenceId){
-        return em.find(Sentence.class, sentenceId);
+    public Sentence find(Long id){
+        return em.find(Sentence.class, id);
     }
 
 
