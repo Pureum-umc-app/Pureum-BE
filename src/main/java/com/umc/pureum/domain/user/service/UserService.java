@@ -7,6 +7,7 @@ import com.umc.pureum.domain.mypage.dto.reponse.GetProfileResponseDto;
 import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.entity.mapping.UserProfileMapping;
+import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,21 +15,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.Optional;
+
+import static com.umc.pureum.global.config.BaseResponseStatus.POST_USERS_NO_EXISTS_USER;
 
 @Slf4j
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final S3Service s3Service;
     private final JwtTokenProvider jwtTokenProvider;
+    private final KakaoService kakaoService;
     /**
      * access token으로 유저 정보 가져온 후 회원가입
      *
      * @param kakaoAccessTokenInfoDto // 엑세스 토큰에 담긴 유저 정보
      * @param createUserDto      // 회원가입 할 유저 추가 정보
      */
+    @Transactional
     public void createUser(KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto, CreateUserDto createUserDto) throws IOException {
         //유저 정보 빌더 하여 저장
         UserAccount userAccount = UserAccount.builder()
@@ -45,7 +51,9 @@ public class UserService {
     public boolean validationDuplicateUserNickname(String nickname) {
         return userRepository.existsByNicknameAndStatus(nickname,"A");
     }
-
+    public boolean validationDuplicateUserId(Long id){
+        return userRepository.existsByIdAndStatus(id,"A");
+    }
     public boolean validationDuplicateKakaoId(Long kakaoId) {
         return userRepository.existsByKakaoIdAndStatus(kakaoId,"A");
     }
@@ -61,5 +69,14 @@ public class UserService {
     public GetProfileResponseDto GetProfile(Long id) {
         UserProfileMapping userProfileMapping = userRepository.findUserProfile(id,"A");
         return new GetProfileResponseDto(userProfileMapping);
+    }
+    @Transactional
+    public void UserResign(long userId, String accessToken) throws BaseException {
+            Optional<UserAccount> userAccount = userRepository.findByIdAndStatus(userId, "A");
+            if (userAccount.isPresent()) {
+                userAccount.get().setStatus("D");
+            } else
+                throw new BaseException(POST_USERS_NO_EXISTS_USER);
+            kakaoService.unlink(accessToken);
     }
 }
