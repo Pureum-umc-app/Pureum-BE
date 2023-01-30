@@ -119,26 +119,29 @@ public class UseController {
 
     /**
      * 나의 학년 카테고리 반환 API
-     * [GET] /uses/grade
+     * [GET] /{userId}/uses/grade
      */
     @ApiOperation("나의 학년 카테고리 반환 API ")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
     @ResponseBody
-    @GetMapping("/grade")
-    public BaseResponse<ReturnGradeRes> myGrade(@RequestBody ReturnGradeReq request) {
+    @GetMapping("/{userId}/grade")
+    public BaseResponse<ReturnGradeRes> myGrade(@PathVariable Long userId) {
 
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
 
-        long userId = Long.parseLong(UserId);
+        long id = Long.parseLong(UserId);
 
         try{
             // springsecurity 로 찾은 userId 랑 request 에서 찾은 userId 비교
-            if(userId != request.getUserId()){
+            if(id != userId){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
             else{
                 // user 의 grade 찾기
-                ReturnGradeRes returnGradeRes = useService.returnGrade(request);
+                ReturnGradeRes returnGradeRes = useService.returnGrade(userId);
                 return new BaseResponse<>(returnGradeRes);
 
             }
