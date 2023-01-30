@@ -180,6 +180,10 @@ public class SentenceController {
      * [POST] /sentences/write
      */
     @ApiOperation("문장 작성 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "CreateSentenceReq", paramType = "body", value = "문장 작성 Request")
+    })
     @ResponseBody
     @PostMapping("/write")
     public BaseResponse<CreateSentenceRes> writeSentence(@RequestBody CreateSentenceReq request) {
@@ -203,6 +207,10 @@ public class SentenceController {
      * [POST] /sentences/like
      */
     @ApiOperation("문장 좋아요 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "LikeSentenceReq", paramType = "body", value = "문장 좋아요 Request")
+    })
     @ResponseBody
     @PostMapping("/like")
     public BaseResponse<LikeSentenceRes> likeSentence(@RequestBody LikeSentenceReq request) throws BaseException{
