@@ -18,6 +18,8 @@ public class BattleStatusRes {
 
     @Builder
     public BattleStatusRes(Long battleId , BattleStatus battleStatus){
+        this.battleId = battleId;
+        this.battleStatus = battleStatus;
     }
 
 }
