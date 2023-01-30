@@ -2,8 +2,8 @@ package com.umc.pureum.domain.battle;
 
 import com.umc.pureum.domain.battle.dto.PostBattleReq;
 import com.umc.pureum.domain.battle.dto.repsonse.BattleMyProfilePhotoRes;
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
 import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
-import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
@@ -90,6 +90,44 @@ public class BattleController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(battleMyProfilePhotoRes));
     }
 
+    /**
+     * 전체 대결 리스트 반환 (최신순)
+     * @param status
+     * @return 대기 중인 대결 리스트 or 종료된 대결 리스트
+     */
+    @ApiOperation("전체 대결 리스트 반환 (status / i: 대기 중, c: 종료)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
+            @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다."),
+            @ApiResponse(code = 2053, message = "대기 중 혹은 종료된 대결만 반환 가능합니다.")
+    })
+    @ResponseBody
+    @GetMapping("/list")
+    public BaseResponse<List<GetBattlesInterface>> getWaitBattles(@RequestParam String status) {
+        try {
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String user = principal.getUsername();
+
+            Long userIdByAuth = Long.parseLong(user);
+
+            // status 예외 처리
+            if(Objects.equals(status, "i") || Objects.equals(status, "c")) {
+                List<GetBattlesInterface> battlesRes = battleProvider.getBattles(userIdByAuth, status);
+                return new BaseResponse<>(battlesRes);
+            } else {
+                return new BaseResponse<>(GET_BATTLE_INVALID_STATUS);
+            }
+        }
+        catch(BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
     @ApiOperation("대기 중인 대결 리스트 반환")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
@@ -120,4 +158,5 @@ public class BattleController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 }
