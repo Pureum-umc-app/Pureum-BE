@@ -1,5 +1,6 @@
 package com.umc.pureum.domain.battle.repository;
 
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
 import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
@@ -22,6 +23,14 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "   and b.word.id = :wordId \n " +
             "   and b.status <> 'D'")
     Optional<Battle> findByUserIdAndWordId(@Param("userId") Long userId, @Param("wordId") Long wordId);
+
+    /* 전체 대결 리스트 반환 (진행 중 or 종료) */
+    @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
+            "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
+            "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg \n" +
+            "from Battle as b \n" +
+            "where b.status = :status")
+    List<GetBattlesInterface> findAllByStatus(@Param("status") BattleStatus status);
 
     /* 대기 중인 대결 리스트 반환 (내가 챌린저인 경우) */
     @Query("select b.id as battleId, \n" +
