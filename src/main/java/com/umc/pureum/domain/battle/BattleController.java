@@ -1,5 +1,17 @@
 package com.umc.pureum.domain.battle;
 
+
+import com.umc.pureum.domain.battle.dto.BattleStatusReq;
+import com.umc.pureum.domain.battle.dto.BattleStatusRes;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import static com.umc.pureum.global.config.BaseResponseStatus.DATABASE_ERROR;
+import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_USER_JWT;
+
 import com.umc.pureum.domain.battle.dto.PostBattleReq;
 import com.umc.pureum.domain.battle.dto.repsonse.BattleMyProfilePhotoRes;
 import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
@@ -27,6 +39,114 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 public class BattleController {
     private final BattleProvider battleProvider;
     private final BattleService battleService;
+    private final BattleDao battleDao;
+
+
+    /**
+     * 대결 수락 API
+     * [POST] /battles/accept
+     */
+    @ApiOperation("대결 수락 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "BattleStatusReq", paramType = "body", value = "대결 ID")
+    })
+    @ResponseBody
+    @PostMapping("/accept")
+    public BaseResponse<BattleStatusRes> acceptBattle(@RequestBody BattleStatusReq request) throws BaseException {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        long userId = Long.parseLong(UserId);
+
+        try{
+            // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
+            if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else{
+                // 대결 상태 저장
+                BattleStatusRes battleStatusRes = battleService.accept(request);
+                return new BaseResponse<>(battleStatusRes);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
+        }
+
+    }
+
+    /**
+     * 대결 거절 API
+     * [POST] /battles/reject
+     */
+    @ApiOperation("대결 거절 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "BattleStatusReq", paramType = "body", value = "대결 ID")
+    })
+    @ResponseBody
+    @PostMapping("/reject")
+    public BaseResponse<BattleStatusRes> rejectBattle(@RequestBody BattleStatusReq request) throws BaseException {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        long userId = Long.parseLong(UserId);
+
+        try{
+            // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
+            if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else{
+                // 대결 상태 저장
+                BattleStatusRes battleStatusRes = battleService.reject(request);
+                return new BaseResponse<>(battleStatusRes);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
+        }
+
+    }
+
+    /**
+     * 대결 취소 API
+     * [POST] /battles/cancel
+     */
+    @ApiOperation("대결 취소 API ")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "BattleStatusReq", paramType = "body", value = "대결 ID")
+    })
+    @ResponseBody
+    @PostMapping("/cancel")
+    public BaseResponse<BattleStatusRes> cancelBattle(@RequestBody BattleStatusReq request) throws BaseException {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        long userId = Long.parseLong(UserId);
+
+        try{
+            // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
+            if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId() ||
+                    userId != battleDao.findOne(request.getBattleId()).getChallenger().getId()){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else{
+                // 대결 상태 저장
+                BattleStatusRes battleStatusRes = battleService.reject(request);
+                return new BaseResponse<>(battleStatusRes);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
+        }
+
+    }
 
     /**
      * 대결 신청 API
