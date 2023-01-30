@@ -1,7 +1,9 @@
 package com.umc.pureum.domain.use;
 
 import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.GetHomeListRes;
 import com.umc.pureum.domain.use.dto.GoalResult;
+import com.umc.pureum.domain.use.dto.rank.RankerInformationDto;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
@@ -90,6 +92,24 @@ public class UseProvider {
         }
     }
 
+    // 홈 화면 리스트 반환
+    public List<GetHomeListRes> getHomeListRes(Long userId){
+        List<UsePhone> useAll = useDao.findAll(userId);
+        return useAll.stream().map(u -> GetHomeListRes.builder()
+                        .date(getYesterday(u.getUpdatedAt()))
+                        .useTime(u.getUseTime())
+                        .purposeTime(u.getPurposeTime())
+                        .rank(getRankerInformation(u.getUpdatedAt())).build())
+                .collect(Collectors.toList());
+    }
 
-    /** 유효성 검사 **/
+    // 랭킹 Top 10 사용자 정보 반환
+    public List<RankerInformationDto> getRankerInformation(Timestamp updateAt){
+        List<UsePhone> rankTopTen = useDao.findRankTopTen(updateAt);
+        return rankTopTen.stream().map(r -> RankerInformationDto.builder()
+                .nickname(r.getUser().getNickname())
+                .image(r.getUser().getImage())
+                .useTime(r.getUseTime()).build())
+                .collect(Collectors.toList());
+    }
 }
