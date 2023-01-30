@@ -5,6 +5,7 @@ import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
 import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.GetHomeListRes;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
 import com.umc.pureum.domain.use.dto.request.ReturnGradeReq;
@@ -22,6 +23,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Time;
+import java.util.List;
 import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
@@ -40,21 +42,22 @@ public class UseController {
      */
     @ApiOperation("일일 사용 시간, 휴대폰 켠 횟수 저장")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
-            @ApiImplicitParam(name = "use_time",paramType = "formData",value = "일일 사용 시간"),
-            @ApiImplicitParam(name = "count",paramType = "formData",value = "휴대폰 켠 횟수"),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "user_idx", paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "hour", paramType = "formData", value = "일일 사용 시간(시)"),
+            @ApiImplicitParam(name = "minute", paramType = "formData", value = "일일 사용 시간(분)"),
+            @ApiImplicitParam(name = "count", paramType = "formData", value = "휴대폰 켠 횟수"),
     })
     @ResponseBody
     @PostMapping("/{user_idx}/useTimeAndCount")
-    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long user_idx, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq){
+    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long user_idx, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq) {
         // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String springSecurityUserId = principal.getUsername();
         Long userId = Long.parseLong(springSecurityUserId);
-        if(userId != user_idx){
+        if (userId != user_idx) {
             return new BaseResponse<>(INVALID_JWT);
-        }
-        else{
+        } else {
             PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(user_idx, postUseTimeAndCountReq);
             return new BaseResponse<>(postUseTimeAndCountRes);
         }
@@ -74,20 +77,19 @@ public class UseController {
     @ResponseBody
     @GetMapping("/{userId}/goals/result")
     public BaseResponse<GetGoalResultsRes> getGoalResults(@PathVariable Long userId) {
-        try{
+        try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
             Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(userId, userIdByAuth)){
+            if (!Objects.equals(userId, userIdByAuth)) {
                 return new BaseResponse<>(INVALID_JWT);
-            }
-            else{
+            } else {
                 GetGoalResultsRes getGoalResultsRes = useProvider.getGoalResults(userId);
                 return new BaseResponse<>(getGoalResultsRes);
             }
-        } catch(BaseException e){
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
@@ -96,7 +98,7 @@ public class UseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
             @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "SetUsageTimeReq", paramType = "body",value = "목표사용시간")
+            @ApiImplicitParam(name = "SetUsageTimeReq", paramType = "body", value = "목표사용시간")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
@@ -109,12 +111,34 @@ public class UseController {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String user = principal.getUsername();
         long id = Long.parseLong(user);
-        if(id!=userId)
+        if (id != userId)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
-        if(useService.existUsageTime(userId))
+        if (useService.existUsageTime(userId))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(POST_USE_EXISTS_USAGE_TIME));
-        useService.setUsageTime(userId,setUsageTimeReq);
+        useService.setUsageTime(userId, setUsageTimeReq);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("설정하다"));
+    }
+
+    /**
+     * 홈 화면 리스트 반환 API
+     * [GET] /{userIdx}
+     */
+    @ApiOperation("홈 화면 리스트 반환 api")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+    })
+    @GetMapping("/{userIdx}")
+    public BaseResponse<List<GetHomeListRes>> getHomeList(@PathVariable Long userIdx) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userId = Long.parseLong(springSecurityUserId);
+        if (userId != userIdx) {
+            return new BaseResponse<>(INVALID_JWT);
+        } else {
+            List<GetHomeListRes> homeListRes = useProvider.getHomeListRes(userId);
+            return new BaseResponse<>(homeListRes);
+        }
+
     }
 
     /**

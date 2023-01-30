@@ -33,17 +33,19 @@ public class UseService {
     @Transactional
     public PostUseTimeAndCountRes saveTimeAndCount(Long user_id, PostUseTimeAndCountReq postUseTimeAndCountReq) {
         UsePhone use = useDao.findOneByFk(user_id); // 최근에 생성된 use 테이블 가져오기
+        // 입력받은 시간(String -> Time) 변환
+        Time useTime = Time.valueOf(postUseTimeAndCountReq.getHour() + ":" + postUseTimeAndCountReq.getMinute() + ":0");
         // 최근에 생성된 테이블이 없다면...(목표 설정을 하지 않았다면...)
         if (getDate(use.getCreatedAt()) != getDate(new Timestamp(new Date().getTime()))) {
             UsePhone newUse = UsePhone.builder()
-                    .useTime(postUseTimeAndCountReq.getUse_time())
+                    .useTime(useTime)
                     .count(postUseTimeAndCountReq.getCount())
                     .createdAt(new Timestamp(new Date().getTime()))
                     .updatedAt(new Timestamp(new Date().getTime()))
                     .build();
             useDao.save(newUse);
         } else {
-            use.setUseTime(postUseTimeAndCountReq.getUse_time());
+            use.setUseTime(useTime);
             use.setCount(postUseTimeAndCountReq.getCount());
             use.setUpdatedAt(new Timestamp(new Date().getTime()));
         }

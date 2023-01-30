@@ -120,7 +120,7 @@ public class SentenceService {
      * word에서 받아와서 keyword에 저장
      */
     @Transactional
-    @Scheduled(cron = "0 0 9 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void getKeyword() {
         System.out.println("start");
         List<Word> words = new ArrayList<>();
@@ -135,7 +135,7 @@ public class SentenceService {
 
             if(word.isPresent()) {
                 // 단어가 존재하면 keyword에 존재하는지 검사
-                Optional<Keyword> keyword = keywordRepository.findByWordId(id);
+                Optional<Keyword> keyword = keywordRepository.findByWordIdAndStatus(id, "A");
 
                 if(keyword.isEmpty()) {
                     // Keyword 테이블에 존재하는지 검사 후 없으면 넣기
