@@ -10,10 +10,19 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @EnableJpaRepositories
 public interface BattleRepository extends JpaRepository<Battle, Long> {
+    /* 이미 신청한 키워드인지 확인 */
+    @Query("select b from Battle as b \n" +
+            "where b.challenged.id = :userId \n" +
+            "   or b.challenger.id = :userId \n " +
+            "   and b.word.id = :wordId \n " +
+            "   and b.status <> 'D'")
+    Optional<Battle> findByUserIdAndWordId(@Param("userId") Long userId, @Param("wordId") Long wordId);
+
     /* 대기 중인 대결 리스트 반환 (내가 챌린저인 경우) */
     @Query("select b.id as battleId, \n" +
             "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +

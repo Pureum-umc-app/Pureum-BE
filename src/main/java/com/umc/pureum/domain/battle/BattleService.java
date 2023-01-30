@@ -48,10 +48,14 @@ public class BattleService {
         if(word.isEmpty()) {
             throw new BaseException(BaseResponseStatus.POST_BATTLE_NO_EXIST_KEYWORD);
         }
+        Optional<Battle> battle = battleRepository.findByUserIdAndWordId(postBattleReq.getChallengerId(), postBattleReq.getWordId());
+        if(battle.isPresent()) {
+            throw new BaseException(BaseResponseStatus.POST_BATTLE_ALREADY_EXIST_KEYWORD);
+        }
 
         // 대결 저장
-        Battle battle = new Battle(challenger.get(), challenged.get(), word.get(), postBattleReq.getDuration(), BattleStatus.W);
-        Battle savedBattle = battleRepository.save(battle);
+        Battle newBattle = new Battle(challenger.get(), challenged.get(), word.get(), postBattleReq.getDuration(), BattleStatus.W);
+        Battle savedBattle = battleRepository.save(newBattle);
 
         // 문장 저장
         BattleSentence sentence = new BattleSentence(savedBattle, challenger.get(),

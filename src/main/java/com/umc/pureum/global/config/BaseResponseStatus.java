@@ -54,7 +54,7 @@ public enum BaseResponseStatus {
     // battle
     POST_BATTLE_EMPTY_SENTENCE(false, 2050, "대결 문장을 입력해야 합니다."),
     POST_BATTLE_NO_EXIST_KEYWORD(false, 2051,"존재하지 않는 키워드입니다."),
-
+    POST_BATTLE_ALREADY_EXIST_KEYWORD(false, 2052,"이미 대결에 사용한 단어입니다."),
 
     /**
      * 3000 : Response 오류
