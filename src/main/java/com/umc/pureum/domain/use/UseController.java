@@ -2,6 +2,7 @@ package com.umc.pureum.domain.use;
 
 
 import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.GetHomeListRes;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
 import com.umc.pureum.domain.use.dto.request.SetUsageTimeReq;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Time;
+import java.util.List;
 import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
@@ -36,7 +38,8 @@ public class UseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
             @ApiImplicitParam(name = "user_idx", paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "use_time",paramType = "formData",value = "일일 사용 시간"),
+            @ApiImplicitParam(name = "hour",paramType = "formData",value = "일일 사용 시간(시)"),
+            @ApiImplicitParam(name = "minute",paramType = "formData",value = "일일 사용 시간(분)"),
             @ApiImplicitParam(name = "count",paramType = "formData",value = "휴대폰 켠 횟수"),
     })
     @ResponseBody
@@ -110,5 +113,23 @@ public class UseController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(POST_USE_EXISTS_USAGE_TIME));
         useService.setUsageTime(userId,setUsageTimeReq);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("설정하다"));
+    }
+
+    @ApiOperation("홈 화면 리스트 반환 api")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+    })
+    @GetMapping("/{userIdx}")
+    public BaseResponse<List<GetHomeListRes>> getHomeList(@PathVariable Long userIdx){
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userId = Long.parseLong(springSecurityUserId);
+        if(userId != userIdx){
+            return new BaseResponse<>(INVALID_JWT);
+        }
+        else{
+            List<GetHomeListRes> homeListRes = useProvider.getHomeListRes(userId);
+            return new BaseResponse<>(homeListRes);
+        }
     }
 }
