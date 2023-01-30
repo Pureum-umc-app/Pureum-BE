@@ -38,10 +38,12 @@ public class BattleController {
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
             @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
             @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다."),
             @ApiResponse(code = 2050, message = "대결 문장을 입력해야 합니다."),
             @ApiResponse(code = 2051, message = "존재하지 않는 키워드입니다."),
+            @ApiResponse(code = 2052, message = "이미 대결에 사용한 단어입니다.")
     })
     @ResponseBody
     @PostMapping("")
@@ -94,6 +96,7 @@ public class BattleController {
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
             @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
             @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다.")
     })
