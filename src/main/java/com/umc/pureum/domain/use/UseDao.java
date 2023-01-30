@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
@@ -29,6 +30,13 @@ public class UseDao {
     public List<UsePhone> findAll(Long user_id){
         return em.createQuery("select u from UsePhone u where u.user.id = :user_id", UsePhone.class)
                 .setParameter("user_id",user_id)
+                .getResultList();
+    }
+
+    // 날짜별 사용시간 적은 순 사용 top 10 가져오기
+    public List<UsePhone> findRankTopTen(Timestamp updateAt){
+        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt order by u.useTime limit 10", UsePhone.class)
+                .setParameter("updateAt", updateAt)
                 .getResultList();
     }
 

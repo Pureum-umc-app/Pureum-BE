@@ -40,6 +40,7 @@ public class MyPageController {
     @GetMapping("/sentence")
     public BaseResponse<GetMySentencesRes> getMySentences() throws BaseException {
         try {
+            // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String springSecurityUserId = principal.getUsername();
             Long userId = Long.parseLong(springSecurityUserId);
@@ -52,7 +53,7 @@ public class MyPageController {
 
     /**
      * 문장 수정 API
-     * [POST] /mypages/sentence/{sentenceId}/edit
+     * [PUT] /mypages/sentence/{sentenceId}/edit
      */
     @ApiOperation("문장 수정")
     @ApiImplicitParams({
@@ -63,8 +64,8 @@ public class MyPageController {
     @ResponseBody
     @PutMapping("/sentence/{sentenceId}/edit")
     public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId, @RequestBody PostUpdateSentenceReq postUpdateSentenceReq) throws BaseException {
-        // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
         try {
+            // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String springSecurityUserId = principal.getUsername();
             Long userId = Long.parseLong(springSecurityUserId);
@@ -87,7 +88,7 @@ public class MyPageController {
 
     /**
      * 문장 삭제 API
-     * [POST] /mypages/sentence/{sentenceId}/delete
+     * [PUT] /mypages/sentence/{sentenceId}/delete
      */
     @ApiOperation("문장 삭제")
     @ApiImplicitParams({
