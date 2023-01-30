@@ -83,14 +83,14 @@ public class UseService {
             return true;
     }
 
-    public ReturnGradeRes returnGrade(ReturnGradeReq request) {
+    public ReturnGradeRes returnGrade(Long userId) {
 
         // request 로 받은 userId 로 userAccount 찾기
-        UserAccount userAccount = userRepository.findById(request.getUserId()).get();
+        UserAccount userAccount = userRepository.findById(userId).get();
 
         // userAccount 에서 해당 user 의 grade 찾기
         int grade = userAccount.getGrade();
 
-        return new ReturnGradeRes(request.getUserId(), grade);
+        return new ReturnGradeRes(userId , grade);
     }
 }

@@ -65,6 +65,10 @@ public class AttendanceController {
      * [POST] /attendances/check
      */
     @ApiOperation("출석 체크 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "AttendanceCheckReq", paramType = "body", value = "출석 체크 Request")
+    })
     @ResponseBody
     @PostMapping("/check")
     public BaseResponse<AttendanceCheckRes> check(@RequestBody AttendanceCheckReq request) throws BaseException {
