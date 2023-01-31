@@ -34,7 +34,7 @@ public class MyPageController {
      */
     @ApiOperation("나의 문장 리스트 반환 ")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
     })
     @ResponseBody
     @GetMapping("/sentence")
@@ -56,7 +56,8 @@ public class MyPageController {
      */
     @ApiOperation("문장 수정")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1"),
             @ApiImplicitParam(name = "sentence", paramType = "formData", value = "문장")
     })
     @ResponseBody
@@ -67,11 +68,17 @@ public class MyPageController {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String springSecurityUserId = principal.getUsername();
             Long userId = Long.parseLong(springSecurityUserId);
-            if (userId != myPageProvider.findSentence(sentenceId).getId()) {
+            if (userId != myPageProvider.findSentence(sentenceId).getUser().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             } else {
-                myPageService.updateSentence(sentenceId, postUpdateSentenceReq);
-                return new BaseResponse<>(SUCCESS);
+                if(postUpdateSentenceReq.getSentence().isEmpty()){ // 공백이면 에러 메세지 출력
+                    return new BaseResponse<>(POST_SENTENCE_EMPTY);
+                } else if (!postUpdateSentenceReq.getSentence().contains(myPageService.getKeyword(sentenceId))) { // 키워드 포함 안하면 에러 메세지 출력
+                    return new BaseResponse<>(POST_SENTENCE_NO_EXISTS_KEYWORD);
+                } else {
+                    myPageService.updateSentence(sentenceId, postUpdateSentenceReq);
+                    return new BaseResponse<>(SUCCESS);
+                }
             }
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
@@ -84,7 +91,8 @@ public class MyPageController {
      */
     @ApiOperation("문장 삭제")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1")
     })
     @ResponseBody
     @PutMapping("/sentence/{sentenceId}/delete")
@@ -94,7 +102,7 @@ public class MyPageController {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String springSecurityUserId = principal.getUsername();
             Long userId = Long.parseLong(springSecurityUserId);
-            if (userId != myPageProvider.findSentence(sentenceId).getId()) {
+            if (userId != myPageProvider.findSentence(sentenceId).getUser().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             } else {
                 myPageService.deleteSentence(sentenceId);
