@@ -6,16 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Time;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RankerInformationDto {
+public class RankInformationDto {
 
-    private int rankNum;
-    private String nickname;
-    private String image;
-    private Time useTime;
+    RankerInformationDto myRank;
+    List<RankerInformationDto> allRank;
 }
