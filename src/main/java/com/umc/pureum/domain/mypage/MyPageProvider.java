@@ -25,13 +25,12 @@ public class MyPageProvider {
         List<Sentence> myOpenSentences = myPageDao.findByFkOnlyOpen(userId);
         List<MySentenceDto> collect = mySentences.stream().map(s -> MySentenceDto.builder()
                         .sentenceId(s.getId())
-                        .word(myPageDao.findWord(s.getKeyword().getWord().getId()).getWord())
+                        .word(s.getKeyword().getWord().getWord())
                         .sentence(s.getSentence())
                         .countLike(myPageDao.findSentenceLike(s.getId()).size())
                         .status(s.getStatus()).build())
                 .collect(Collectors.toList());
         return new GetMySentencesRes(mySentences.size(), myOpenSentences.size(), collect);
     }
-
 
 }
