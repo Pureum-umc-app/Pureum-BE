@@ -1,18 +1,15 @@
 package com.umc.pureum.domain.battle;
 
-import com.umc.pureum.domain.battle.dto.BattleStatusReq;
-import com.umc.pureum.domain.battle.dto.BattleStatusRes;
-import com.umc.pureum.domain.battle.dto.CreateChallengedSentenceReq;
-import com.umc.pureum.domain.battle.dto.CreateChallengedSentenceRes;
-import com.umc.pureum.domain.battle.entity.Battle;
-import com.umc.pureum.domain.battle.entity.BattleSentence;
-import com.umc.pureum.domain.battle.entity.BattleStatus;
-import com.umc.pureum.domain.battle.entity.BattleWord;
+import com.umc.pureum.domain.battle.dto.*;
+import com.umc.pureum.domain.battle.entity.*;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import com.umc.pureum.domain.sentence.entity.Sentence;
+import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.domain.battle.dto.PostBattleReq;
 import com.umc.pureum.domain.battle.repository.BattleRepository;
 import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
 import com.umc.pureum.domain.battle.repository.BattleWordRepository;
@@ -38,6 +35,7 @@ public class BattleService {
     private final BattleRepository battleRepository;
     private final BattleWordRepository battleWordRepository;
     private final BattleSentenceRepository battleSentenceRepository;
+    private final BattleLikeDao battleLikeDao;
 
     // accept : 대결 수락
     @Transactional
@@ -162,6 +160,43 @@ public class BattleService {
     // isExist : 문장에 키워드가 포함되어있는지 확인하는 함수
     private boolean isExist (String writingSentence, String writingWord){
         return writingSentence.contains(writingWord);
+    }
+
+    // like : 대결 좋아요 DB 에 저장
+    @Transactional
+    public LikeBattleRes like(long userId , LikeBattleReq request) {
+
+        // request 로 받은 sentenceId 로 문장 찾기
+        BattleSentence battleSentence = battleSentenceDao.findOne(request.getSentenceId());
+
+        // request 로 받은 userId 로 userAccount 찾기
+        UserAccount userAccount = userRepository.findById(userId).get();
+
+        //request 로 받은 sentenceId 로 문장 좋아요 찾기
+        if(battleLikeDao.findBySentenceId(request.getSentenceId()).isPresent()){
+
+            BattleLike battleLike = battleLikeDao.findBySentenceId(request.getSentenceId()).get();
+
+            // 존재하는 sentence 일 경우 sentence status 확인하고 status 바꾼다 .
+            if(Status.A.equals(battleLike.getStatus())){
+                battleLike.setStatus(Status.D);
+            }
+            else if(Status.D.equals(battleLike.getStatus())){
+                battleLike.setStatus(Status.A);
+            }
+
+            return new LikeBattleRes(battleLike.getId(),battleLike.getStatus());
+
+        }
+
+        // 존재하지 않는 sentence 일 경우 sentenceLike 생성해서 저장
+        else{
+            BattleLike battleLike = new BattleLike(userAccount, battleSentence, Status.A);
+            battleLikeDao.save(battleLike);
+
+            return new LikeBattleRes(battleLike.getId(),battleLike.getStatus());
+        }
+
     }
 
 }
