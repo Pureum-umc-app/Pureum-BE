@@ -61,6 +61,9 @@ public class BattleController {
             if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
+            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())){
+                return new BaseResponse<>(INVALID_USER);
+            }
             else{
                 // 대결 상태 저장
                 BattleStatusRes battleStatusRes = battleService.accept(request);
@@ -95,6 +98,9 @@ public class BattleController {
             // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
             if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()){
                 return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())){
+                return new BaseResponse<>(INVALID_USER);
             }
             else{
                 // 대결 상태 저장
@@ -132,6 +138,10 @@ public class BattleController {
                     userId != battleDao.findOne(request.getBattleId()).getChallenger().getId()){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
+            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus()) ||
+                    !"A".equals(battleDao.findOne(request.getBattleId()).getChallenger().getStatus())){
+                return new BaseResponse<>(INVALID_USER);
+            }
             else{
                 // 대결 상태 저장
                 BattleStatusRes battleStatusRes = battleService.reject(request);
@@ -167,6 +177,9 @@ public class BattleController {
             // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
             if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()){
                 return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())){
+                return new BaseResponse<>(INVALID_USER);
             }
             else{
                 // challenged 가 작성한 문장 저장
@@ -294,6 +307,9 @@ public class BattleController {
             // springsecurity 로 찾은 userId 랑 request 로 받은 sentence 에서 찾은 userId 비교
             if(userId != battleSentenceDao.findOne(request.getSentenceId()).getUser().getId()){
                 return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else if(!"A".equals(battleSentenceDao.findOne(request.getSentenceId()).getUser().getStatus())){
+                return new BaseResponse<>(INVALID_USER);
             }
             else{
                 // 문장 좋아요 저장
