@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,7 +33,17 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "where b.status = :status")
     List<GetBattlesInterface> findAllByStatus(@Param("status") BattleStatus status);
 
-    /* 대기 중인 대결 리스트 반환 (내가 챌린저인 경우) */
+    /* 나의 진행 중인 대결 리스트 반환 */
+    @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
+            "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
+            "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg \n" +
+            "from Battle as b \n" +
+            "where b.challenged.id = :userId \n" +
+            "   or b.challenger.id = :userId \n" +
+            "   and b.status = :status")
+    List<GetBattlesInterface> findAllByUserIdAndStatus(@Param("userId") Long userId, @Param("status") BattleStatus status);
+
+    /* 대기 중인 대결 리스트 반환 */
     @Query("select b.id as battleId, \n" +
             "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
             "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg, \n" +
