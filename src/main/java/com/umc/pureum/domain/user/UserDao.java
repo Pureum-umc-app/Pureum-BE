@@ -14,9 +14,11 @@ public class UserDao {
 
     private final EntityManager em;
 
-    // 사용자 테이블 중 유저 아이디 조회
-    public List<UserAccount> findAll(){
-        return em.createQuery("select u from UserAccount u", UserAccount.class)
+    // 사용자 테이블 전체 조회(해당 유저 제외한) + 랜덤
+    public List<UserAccount> findAllExcludeMe(Long id){
+        return em.createQuery("select u from UserAccount u where u.id != :id and u.status = 'A' order by RAND()", UserAccount.class)
+                .setParameter("id",id)
+                .setMaxResults(20)
                 .getResultList();
     }
 

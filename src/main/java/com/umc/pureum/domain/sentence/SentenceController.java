@@ -9,6 +9,8 @@ import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
+import com.umc.pureum.domain.user.UserDao;
+import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.service.KakaoService;
 import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
@@ -250,4 +252,5 @@ public class SentenceController {
         }
 
     }
+
 }
