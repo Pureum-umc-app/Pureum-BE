@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.mypage;
+package com.umc.pureum.domain.home;
 
 import com.umc.pureum.global.utils.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class MyPageProvider {
-    private final MyPageDao myPageDao;
+public class HomeProvider {
+    private final HomeDao homeDao;
     private final JwtService jwtService;
 }
