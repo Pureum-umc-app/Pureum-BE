@@ -24,7 +24,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "   and b.status <> 'D'")
     Optional<Battle> findByUserIdAndWordId(@Param("userId") Long userId, @Param("wordId") Long wordId);
 
-    /* 전체 대결 리스트 반환 (진행 중 or 종료) */
+    /* 진행 중인 대결 리스트 반환 */
     @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
             "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
             "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg \n" +
