@@ -22,7 +22,6 @@ import java.util.UUID;
 public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-
     private final AmazonS3 amazonS3;
 
     public String uploadFile(MultipartFile multipartFile) throws IOException {

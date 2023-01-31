@@ -35,11 +35,6 @@ public class MyPageDao {
                 .getResultList();
     }
 
-    // word 테이블 조회
-    public Word findWord(Long id){
-        return em.find(Word.class, id);
-    }
-
     // sentence_like 테이블 조회
     public List<SentenceLike> findSentenceLike(Long sentenceId){
         return em.createQuery("select s from SentenceLike s where s.sentence.id = :sentenceId")
