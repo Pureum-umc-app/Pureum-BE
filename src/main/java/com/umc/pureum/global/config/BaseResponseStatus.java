@@ -50,7 +50,7 @@ public enum BaseResponseStatus {
     //sentence
     POST_SENTENCE_EMPTY(false, 2040, "문장을 입력해주세요."),
     POST_SENTENCE_NO_EXISTS_KEYWORD(false, 2041, "키워드가 포함되어있지 않습니다."),
-
+    GET_SENTENCE_INVALID_SORT_METHOD(false,2042,"정렬 방식이 잘못되었습니다."),
 
 
     /**
