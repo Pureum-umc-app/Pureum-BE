@@ -22,4 +22,8 @@ public class UserDao {
                 .getResultList();
     }
 
+    // userId 로 UserAccount 찾기
+    public UserAccount findByUserId(Long userId){
+        return em.find(UserAccount.class,userId);
+    }
 }

@@ -205,8 +205,13 @@ public class SentenceController {
         long userId = Long.parseLong(UserId);
 
         try{
-            CreateSentenceRes write = sentenceService.write(userId , request);
-            return new BaseResponse<>(write);
+            if(userId != request.getUserId()){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else{
+                CreateSentenceRes write = sentenceService.write(userId , request);
+                return new BaseResponse<>(write);
+            }
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
