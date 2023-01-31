@@ -10,6 +10,7 @@ import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
 import com.umc.pureum.domain.use.dto.request.ReturnGradeReq;
 import com.umc.pureum.domain.use.dto.request.ReturnGradeRes;
 import com.umc.pureum.domain.use.dto.request.SetUsageTimeReq;
+import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
@@ -33,6 +34,7 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 public class UseController {
     private final UseProvider useProvider;
     private final UseService useService;
+    private final UserDao userDao;
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
@@ -125,7 +127,7 @@ public class UseController {
 
     /**
      * 나의 학년 카테고리 반환 API
-     * [GET] /{userId}/uses/grade
+     * [GET] /uses/{userId}/grade
      */
     @ApiOperation("나의 학년 카테고리 반환 API ")
     @ApiImplicitParams({
@@ -145,11 +147,13 @@ public class UseController {
             if(id != userId){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
+            else if(!"A".equals(userDao.findByUserId(userId).getStatus())){
+                return new BaseResponse<>(INVALID_USER);
+            }
             else{
                 // user 의 grade 찾기
                 ReturnGradeRes returnGradeRes = useService.returnGrade(userId);
                 return new BaseResponse<>(returnGradeRes);
-
             }
         }catch (Exception e){
             e.printStackTrace();
