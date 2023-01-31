@@ -1,10 +1,10 @@
-package com.umc.pureum.domain.mypage;
+package com.umc.pureum.domain.home;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class MyPageService {
-    private final MyPageDao myPageDao;
+public class HomeService {
+    private final HomeDao homeDao;
 }
