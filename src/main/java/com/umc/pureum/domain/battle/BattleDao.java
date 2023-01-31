@@ -22,15 +22,9 @@ public class BattleDao {
         return em.find(Battle.class, battleId);
     }
 
-    // battle_id 로 battleWord 찾기
-//    public Optional<BattleWord> findByBattleWordId(Long battleWordId){
-//        List<BattleWord> battleWordList = em.createQuery("select b from BattleWord b where b.battle.id= :battleWordId", BattleWord.class)
-//                .setParameter("battleWordId", battleWordId)
-//                .getResultList();
-//        return battleWordList.stream().findAny();
-//    }
-
+    //대결 단어 조회
     public BattleWord findWord(Long battleId){
         return em.find(BattleWord.class, battleId);
     }
+
 }
