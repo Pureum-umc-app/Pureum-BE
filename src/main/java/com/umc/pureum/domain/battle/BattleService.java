@@ -2,26 +2,28 @@ package com.umc.pureum.domain.battle;
 
 import com.umc.pureum.domain.battle.dto.BattleStatusReq;
 import com.umc.pureum.domain.battle.dto.BattleStatusRes;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
-import com.umc.pureum.domain.sentence.entity.Sentence;
-import com.umc.pureum.domain.sentence.entity.SentenceLike;
-import com.umc.pureum.domain.battle.dto.PostBattleReq;
+import com.umc.pureum.domain.battle.dto.CreateChallengedSentenceReq;
+import com.umc.pureum.domain.battle.dto.CreateChallengedSentenceRes;
 import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
 import com.umc.pureum.domain.battle.entity.BattleWord;
+import com.umc.pureum.domain.sentence.entity.Word;
+import com.umc.pureum.domain.user.UserRepository;
+import com.umc.pureum.domain.user.entity.UserAccount;
+import com.umc.pureum.global.config.BaseException;
+import com.umc.pureum.domain.battle.dto.PostBattleReq;
 import com.umc.pureum.domain.battle.repository.BattleRepository;
 import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
 import com.umc.pureum.domain.battle.repository.BattleWordRepository;
-import com.umc.pureum.domain.sentence.repository.KeywordRepository;
-import com.umc.pureum.domain.user.UserRepository;
-import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_EMPTY;
+import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_EXISTS_KEYWORD;
 
 import java.util.Optional;
 
@@ -30,11 +32,12 @@ import java.util.Optional;
 @Service
 public class BattleService {
     private final BattleDao battleDao;
-    private final BattleProvider battleProvider
+    private final BattleSentenceDao battleSentenceDao;
+    private final UserRepository userRepository;
+    private final BattleProvider battleProvider;
     private final BattleRepository battleRepository;
     private final BattleWordRepository battleWordRepository;
     private final BattleSentenceRepository battleSentenceRepository;
-    private final UserRepository userRepository;
 
     // accept : 대결 수락
     @Transactional
@@ -76,27 +79,27 @@ public class BattleService {
 
         // battle ID , Status 값
         return new BattleStatusRes(battle.getId(), battle.getStatus());
-        
-        
+    }
+
     /* 대결 신청 API */
     @Transactional
-    public Long createBattle(PostBattleReq postBattleReq) throws BaseException {
+    public Long createBattle (PostBattleReq postBattleReq) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> challenger = userRepository.findByIdAndStatus(postBattleReq.getChallengerId(), "A");
-        if(challenger.isEmpty()) {
+        if (challenger.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
         Optional<UserAccount> challenged = userRepository.findByIdAndStatus(postBattleReq.getChallengedId(), "A");
-        if(challenged.isEmpty()) {
+        if (challenged.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
         // 키워드 예외 처리
         Optional<BattleWord> word = battleWordRepository.findByIdAndStatus(postBattleReq.getWordId(), Status.A);
-        if(word.isEmpty()) {
+        if (word.isEmpty()) {
             throw new BaseException(BaseResponseStatus.POST_BATTLE_NO_EXIST_KEYWORD);
         }
         Optional<Battle> battle = battleRepository.findByUserIdAndWordId(postBattleReq.getChallengerId(), postBattleReq.getWordId());
-        if(battle.isPresent()) {
+        if (battle.isPresent()) {
             throw new BaseException(BaseResponseStatus.POST_BATTLE_ALREADY_EXIST_KEYWORD);
         }
 
@@ -112,8 +115,53 @@ public class BattleService {
         return savedBattle.getId();
     }
 
-    public String BattleMyProfilePhoto(long userId) {
-        return userRepository.findByIdAndStatus(userId,"A").get().getImage();
+    public String BattleMyProfilePhoto ( long userId){
+        return userRepository.findByIdAndStatus(userId, "A").get().getImage();
 
     }
+
+    // writeChallenged : challenged 의 문장 작성 DB 에 저장
+    @Transactional
+    public CreateChallengedSentenceRes writeChallenged (Long userId, CreateChallengedSentenceReq request) throws BaseException {
+
+        Long battleId = request.getBattleId();
+        String writingSentence = request.getSentence();
+
+        // request 로 받은 battleId 로 배틀 찾기
+        Battle battle = battleDao.findOne(battleId);
+
+        // battle 상태 바꾸기
+        battle.setStatus(BattleStatus.I);
+
+        // request 로 받은 battleWordId 로 단어 찾기
+        BattleWord battleWord = battle.getWord();
+        Word word = battleWord.getWord();
+        String writingWord = word.getWord();
+
+        // 작성한 문장 존재 여부 확인
+        if (writingSentence == "") {
+            throw new BaseException(POST_SENTENCE_EMPTY);
+        }
+
+        // 작성할 문장에 단어 포함 여부 확인
+        else if (!isExist(writingSentence, writingWord)) {
+            throw new BaseException(POST_SENTENCE_NO_EXISTS_KEYWORD);
+        }
+
+        // request 로 받은 userId 로 userAccount 찾기
+        UserAccount userAccount = userRepository.findById(userId).get();
+
+        BattleSentence battleSentence = new BattleSentence(battle, userAccount, writingSentence, battleWord, Status.A);
+        battleSentenceDao.save(battleSentence);
+
+        return new CreateChallengedSentenceRes(battleSentence.getId(), battle.getId(), battle.getStatus());
+    }
+
+
+    /* Sentence 내에 Keyword 존재여부 검사*/
+    // isExist : 문장에 키워드가 포함되어있는지 확인하는 함수
+    private boolean isExist (String writingSentence, String writingWord){
+        return writingSentence.contains(writingWord);
+    }
+
 }
