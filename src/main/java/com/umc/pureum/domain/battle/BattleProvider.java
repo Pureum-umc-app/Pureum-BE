@@ -39,6 +39,7 @@ public class BattleProvider {
     public List<BattleFighterRes> getBattleFighters(Long userId){
         List<UserAccount> allExcludeMe = userDao.findAllExcludeMe(userId);
         return allExcludeMe.stream().map(u -> BattleFighterRes.builder()
+                        .userId(u.getId())
                         .nickname(u.getNickname())
                         .image(u.getImage()).build())
                 .collect(Collectors.toList());

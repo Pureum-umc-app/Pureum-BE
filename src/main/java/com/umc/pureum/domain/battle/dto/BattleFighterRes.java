@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class BattleFighterRes {
 
+    private Long userId;
     private String nickname;
     private String image;
 }
