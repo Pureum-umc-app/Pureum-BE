@@ -20,9 +20,9 @@ public class S3Config {
     private static String region;
     @Bean
     public AmazonS3 amazonS3Client() {
-        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
+        BasicAWSCredentials awsCredentials = new BasicAWSCredentials("AKIAXF6NZWF4MZMTDFU2", "B/BKIWHrs4ggotEYbHaqxQdJG6T1yax6a/LWKCbD");
         return AmazonS3ClientBuilder.standard()
-                .withRegion(region)
+                .withRegion("ap-northeast-2")
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }
