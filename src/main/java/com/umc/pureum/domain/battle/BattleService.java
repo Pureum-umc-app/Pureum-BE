@@ -83,7 +83,6 @@ public class BattleService {
     public CreateChallengedSentenceRes writeChallenged(Long userId , CreateChallengedSentenceReq request) throws BaseException {
 
         Long battleId = request.getBattleId();
-        Long battleWordId = request.getBattleWordId();
         String writingSentence = request.getSentence();
 
         // request 로 받은 battleId 로 배틀 찾기
@@ -93,9 +92,8 @@ public class BattleService {
        battle.setStatus(BattleStatus.I);
 
         // request 로 받은 battleWordId 로 단어 찾기
-        BattleWord battleWord = battleSentenceDao.findByBattleWordId(battleWordId);
-        Word word;
-        word = battleWord.getWord();
+        BattleWord battleWord = battle.getWord();
+        Word word = battleWord.getWord();
         String writingWord = word.getWord();
 
         // 작성한 문장 존재 여부 확인
@@ -112,6 +110,7 @@ public class BattleService {
         UserAccount userAccount = userRepository.findById(userId).get();
 
         BattleSentence battleSentence = new BattleSentence(battle , userAccount , writingSentence , battleWord , Status.A);
+        battleSentenceDao.save(battleSentence);
 
         return new CreateChallengedSentenceRes(battleSentence.getId() , battle.getId() , battle.getStatus());
     }
