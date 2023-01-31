@@ -17,7 +17,7 @@ import java.util.Optional;
 @EnableJpaRepositories
 public interface KeywordRepository extends JpaRepository<Keyword, Long> {
     /* 중복 검사 */
-    Optional<Keyword> findByWordId(Long id);
+    Optional<Keyword> findByWordIdAndStatus(Long id, String status);
 
     /* 오늘의 단어 반환 API */
     @Query("select k from Keyword as k \n" +
