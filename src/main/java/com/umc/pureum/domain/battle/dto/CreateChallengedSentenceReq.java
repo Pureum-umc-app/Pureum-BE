@@ -8,7 +8,6 @@ import lombok.Data;
 public class CreateChallengedSentenceReq {
 
     private Long battleId;
-    private Long battleWordId;
     private String sentence;
 
     public CreateChallengedSentenceReq() {
