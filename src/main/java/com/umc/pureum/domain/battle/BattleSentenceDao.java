@@ -16,14 +16,18 @@ public class BattleSentenceDao {
 
     private final EntityManager em;
 
-    //battleSentence 저장
+    //대결 문장 저장
     public void save(BattleSentence battleSentence) {
         em.persist(battleSentence);
     }
 
-    //battleWord 조회
+    //대결 단어 조회
     public BattleWord findByBattleWordId(Long battle_word_id){
         return em.find(BattleWord.class , battle_word_id);
     }
 
+    //대결 문장 조회
+    public BattleSentence findOne(Long id){
+        return em.find(BattleSentence.class, id);
+    }
 }
