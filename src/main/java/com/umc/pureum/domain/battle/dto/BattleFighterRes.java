@@ -1,0 +1,17 @@
+package com.umc.pureum.domain.battle.dto;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class BattleFighterRes {
+
+    private String nickname;
+    private String image;
+}

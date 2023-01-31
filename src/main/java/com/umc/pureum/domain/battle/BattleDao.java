@@ -17,4 +17,5 @@ public class BattleDao {
     public Battle findOne(Long id){
         return em.find(Battle.class, id);
     }
+
 }

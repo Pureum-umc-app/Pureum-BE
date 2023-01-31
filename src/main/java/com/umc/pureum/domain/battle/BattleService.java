@@ -16,6 +16,7 @@ import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
 import com.umc.pureum.domain.battle.repository.BattleWordRepository;
 import com.umc.pureum.domain.sentence.repository.KeywordRepository;
 import com.umc.pureum.domain.user.UserRepository;
+import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import com.umc.pureum.global.entity.Status;
@@ -30,7 +31,7 @@ import java.util.Optional;
 @Service
 public class BattleService {
     private final BattleDao battleDao;
-    private final BattleProvider battleProvider
+    private final BattleProvider battleProvider;
     private final BattleRepository battleRepository;
     private final BattleWordRepository battleWordRepository;
     private final BattleSentenceRepository battleSentenceRepository;
@@ -76,8 +77,9 @@ public class BattleService {
 
         // battle ID , Status 값
         return new BattleStatusRes(battle.getId(), battle.getStatus());
-        
-        
+
+    }
+
     /* 대결 신청 API */
     @Transactional
     public Long createBattle(PostBattleReq postBattleReq) throws BaseException {
@@ -86,10 +88,12 @@ public class BattleService {
         if(challenger.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
+
         Optional<UserAccount> challenged = userRepository.findByIdAndStatus(postBattleReq.getChallengedId(), "A");
         if(challenged.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
+
         // 키워드 예외 처리
         Optional<BattleWord> word = battleWordRepository.findByIdAndStatus(postBattleReq.getWordId(), Status.A);
         if(word.isEmpty()) {
@@ -110,10 +114,10 @@ public class BattleService {
         battleSentenceRepository.save(sentence);
 
         return savedBattle.getId();
-    }
+        }
 
-    public String BattleMyProfilePhoto(long userId) {
-        return userRepository.findByIdAndStatus(userId,"A").get().getImage();
+        public String BattleMyProfilePhoto(long userId) {
+            return userRepository.findByIdAndStatus(userId,"A").get().getImage();
 
+        }
     }
-}

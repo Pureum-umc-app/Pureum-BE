@@ -1,10 +1,13 @@
 package com.umc.pureum.domain.battle;
 
 
+import com.umc.pureum.domain.battle.dto.BattleFighterRes;
 import com.umc.pureum.domain.battle.dto.BattleStatusReq;
 import com.umc.pureum.domain.battle.dto.BattleStatusRes;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import com.umc.pureum.domain.user.UserDao;
+import com.umc.pureum.domain.user.entity.UserAccount;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +43,7 @@ public class BattleController {
     private final BattleProvider battleProvider;
     private final BattleService battleService;
     private final BattleDao battleDao;
-
+    private final UserDao userDao;
 
     /**
      * 대결 수락 API
@@ -238,6 +241,33 @@ public class BattleController {
         }
         catch(BaseException e) {
             return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 대결 상대 리스트 반환 API
+     * [GET] battles/{userIdx}/fighters
+     */
+    @ApiOperation("대결 상대 리스트 반환 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userIdx", paramType = "path", value = "유저 인덱스", example = "1", dataType = "Long")
+    })
+    @GetMapping("/{userIdx}/fighters")
+    public BaseResponse<List<BattleFighterRes>> getBattleFighters(@PathVariable Long userIdx){
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userId = Long.parseLong(springSecurityUserId);
+        try {
+            if (userId != userIdx) {
+                return new BaseResponse<>(INVALID_JWT);
+            } else {
+                List<BattleFighterRes> battleFighters = battleProvider.getBattleFighters(userId);
+                return new BaseResponse<>(battleFighters);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
         }
     }
 }
