@@ -11,9 +11,9 @@ public class ReturnRunBattleRes {
 
     private Long challengerId;
 
-    private Long challenger
+    private Long challenger;
 
     private Long challengedId;
 
-    private Long
+
 }
