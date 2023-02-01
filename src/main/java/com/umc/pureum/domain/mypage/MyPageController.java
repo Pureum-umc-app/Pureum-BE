@@ -4,6 +4,7 @@ import com.umc.pureum.domain.mypage.dto.GetMySentencesRes;
 import com.umc.pureum.domain.mypage.dto.PostUpdateSentenceReq;
 import com.umc.pureum.domain.mypage.dto.reponse.GetProfileResponseDto;
 import com.umc.pureum.domain.mypage.dto.request.PatchEditProfileReq;
+import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
@@ -40,6 +41,7 @@ public class MyPageController {
     @GetMapping("/sentence")
     public BaseResponse<GetMySentencesRes> getMySentences() throws BaseException {
         try {
+            // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String springSecurityUserId = principal.getUsername();
             Long userId = Long.parseLong(springSecurityUserId);
@@ -52,7 +54,7 @@ public class MyPageController {
 
     /**
      * 문장 수정 API
-     * [POST] /mypages/sentence/{sentenceId}/edit
+     * [PATCH] /mypages/sentence/{sentenceId}/edit
      */
     @ApiOperation("문장 수정")
     @ApiImplicitParams({
@@ -61,10 +63,10 @@ public class MyPageController {
             @ApiImplicitParam(name = "sentence", paramType = "formData", value = "문장")
     })
     @ResponseBody
-    @PutMapping("/sentence/{sentenceId}/edit")
+    @PatchMapping ("/sentence/{sentenceId}/edit")
     public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId, @RequestBody PostUpdateSentenceReq postUpdateSentenceReq) throws BaseException {
-        // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
         try {
+            // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String springSecurityUserId = principal.getUsername();
             Long userId = Long.parseLong(springSecurityUserId);
@@ -87,7 +89,7 @@ public class MyPageController {
 
     /**
      * 문장 삭제 API
-     * [POST] /mypages/sentence/{sentenceId}/delete
+     * [PUT] /mypages/sentence/{sentenceId}/delete
      */
     @ApiOperation("문장 삭제")
     @ApiImplicitParams({
@@ -95,7 +97,7 @@ public class MyPageController {
             @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1")
     })
     @ResponseBody
-    @PutMapping("/sentence/{sentenceId}/delete")
+    @PatchMapping ("/sentence/{sentenceId}/delete")
     public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId) throws BaseException {
         try {
             // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
