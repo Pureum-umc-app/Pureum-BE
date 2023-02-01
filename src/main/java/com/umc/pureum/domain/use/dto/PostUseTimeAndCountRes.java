@@ -9,5 +9,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class PostUseTimeAndCountRes {
     @ApiModelProperty(example = "1")
-    private Long use_id;
+    private Long useId;
 }
