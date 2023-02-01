@@ -23,4 +23,11 @@ public class UserDao {
     public UserAccount findByUserId(Long userId){
         return em.find(UserAccount.class,userId);
     }
+
+    public List<UserAccount> findAllExcludeMe(Long id) {
+        return em.createQuery("select u from UserAccount u where u.id != :id and u.status = 'A' order by RAND()", UserAccount.class)
+                .setParameter("id", id)
+                .setMaxResults(20)
+                .getResultList();
+    }
 }
