@@ -16,6 +16,7 @@ import com.umc.pureum.domain.sentence.function.TimeGeneralization;
 import com.umc.pureum.domain.sentence.repository.KeywordRepository;
 import com.umc.pureum.domain.sentence.repository.SentenceRepository;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
+import com.umc.pureum.domain.sentence.service.SentenceLikeService;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
@@ -128,7 +129,6 @@ public class SentenceService {
      * word에서 받아와서 keyword에 저장
      */
     @Transactional
-    // @Scheduled(cron = "0 0 9 * * *")
     @Scheduled(cron = "0 0 0 * * *")
     public void getKeyword() {
         System.out.println("start");
