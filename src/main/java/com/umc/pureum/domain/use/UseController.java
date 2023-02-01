@@ -122,7 +122,7 @@ public class UseController {
             @ApiResponse(code = 2051, message = "이미 목표시간을 설정하였습니다.")
     })
     @ResponseBody
-    @PostMapping("/{userId}/set_usage_time")
+    @PostMapping("/{userId}/set-usage-time")
     public ResponseEntity<BaseResponse<String>> setUsageTime(@PathVariable Long userId, @RequestBody SetUsageTimeReq setUsageTimeReq) throws BaseException {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String user = principal.getUsername();
