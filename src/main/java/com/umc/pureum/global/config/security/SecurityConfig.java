@@ -27,13 +27,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
     private static final String[] PERMITTED_URLS = {
-            "/user/signin",//로그인
-            "/user/signup", //회원가입
-            "/user/kakao/auth", //토큰받는 api
+            "/users/signin",//로그인
+            "/users/signup", //회원가입
+            "/users/kakao/auth", //토큰받는 api
             "/v2/api-docs/**",  //swagger
             "/swagger-ui/**", //swagger
             "/swagger-resources/**", //swagger
-            "/user/nickname/{nickname}/validation"
+            "/users/nickname/{nickname}/validation"
     };
 
     @Bean
