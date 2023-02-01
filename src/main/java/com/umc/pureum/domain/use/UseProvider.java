@@ -5,7 +5,6 @@ import com.umc.pureum.domain.use.dto.GoalResult;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
-import com.umc.pureum.domain.user.entity.UserStatus;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
