@@ -27,7 +27,7 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "유저")
-@RequestMapping("/user")
+@RequestMapping("/users")
 
 public class UserController {
     private final KakaoService kakaoService;
@@ -40,7 +40,7 @@ public class UserController {
      * @param code // 인가코드
      * @throws IOException // 카카오 서버 접속 오류 예외처리
      */
-    // kauth.kakao.com/oauth/authorize?client_id=633bdb4f088357e5fe5cde61b4543053&redirect_uri=http://localhost:9000/user/kakao/auth&response_type=code
+    // kauth.kakao.com/oauth/authorize?client_id=633bdb4f088357e5fe5cde61b4543053&redirect_uri=http://localhost:9000/users/kakao/auth&response_type=code
     //위의 링크로 접속하면 console 창에 토큰 정보 나오는데 그거 사용하면 됩니다.
     @ApiIgnore
     @ApiOperation("(서버전용)인가 코드로 토큰 받아오는 API ")
