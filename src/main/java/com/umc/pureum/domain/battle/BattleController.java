@@ -398,4 +398,31 @@ public class BattleController {
         }
 
     }
+
+    /*** 대결 상대 리스트 반환 API
+     * * 랜덤으로 20명 추출*
+     * [GET] battles/{userIdx}/fighters
+     */
+    @ApiOperation("대결 상대 리스트 반환API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체jwt 토큰"),
+            @ApiImplicitParam(name = "userIdx", paramType = "path", value = "유저 인덱스", example = "1", dataType = "Long")
+    })
+    @GetMapping("/{userIdx}/fighters")
+    public BaseResponse<List<BattleFighterRes>> getBattleFighters(@PathVariable Long userIdx) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userId = Long.parseLong(springSecurityUserId);
+        try {
+            if (userId != userIdx) {
+                return new BaseResponse<>(INVALID_JWT);
+            } else {
+                List<BattleFighterRes> battleFighters = battleProvider.getBattleFighters(userId);
+                return new BaseResponse<>(battleFighters);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
+        }
+    }
 }
