@@ -22,6 +22,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.io.IOException;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.utils.FileCheck.checkImage;
 
 @Slf4j
 @RestController
@@ -72,10 +73,13 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestParam(value = "image", required = false) MultipartFile image, CreateUserDto createUserDto) throws BaseException {
-        if (!image.isEmpty()) createUserDto.setImage(image);
-        else createUserDto.setImage(null);
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         try {
+            if (!image.isEmpty()) {
+                if (!checkImage(image))
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
+                createUserDto.setImage(image);
+            } else createUserDto.setImage(null);
             if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
             }
