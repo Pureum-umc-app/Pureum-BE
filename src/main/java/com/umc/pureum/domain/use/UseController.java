@@ -1,16 +1,23 @@
 package com.umc.pureum.domain.use;
 
 
+import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
+import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
 import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
 import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
+import com.umc.pureum.domain.use.dto.request.ReturnGradeReq;
+import com.umc.pureum.domain.use.dto.request.ReturnGradeRes;
 import com.umc.pureum.domain.use.dto.request.SetUsageTimeReq;
+import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +34,7 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 public class UseController {
     private final UseProvider useProvider;
     private final UseService useService;
+    private final UserDao userDao;
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
@@ -65,6 +73,12 @@ public class UseController {
     @ApiOperation("목표 달성 여부 반환")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
+            @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다.")
     })
     @ResponseBody
     @GetMapping("/{userId}/goals/result")
@@ -110,5 +124,42 @@ public class UseController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(POST_USE_EXISTS_USAGE_TIME));
         useService.setUsageTime(userId,setUsageTimeReq);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("설정하다"));
+    }
+
+    /**
+     * 나의 학년 카테고리 반환 API
+     * [GET] /uses/{userId}/grade
+     */
+    @ApiOperation("나의 학년 카테고리 반환 API ")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
+    @ResponseBody
+    @GetMapping("/{userId}/grade")
+    public BaseResponse<ReturnGradeRes> myGrade(@PathVariable Long userId) {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        long id = Long.parseLong(UserId);
+
+        try{
+            // springsecurity 로 찾은 userId 랑 request 에서 찾은 userId 비교
+            if(id != userId){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else if(!"A".equals(userDao.findByUserId(userId).getStatus())){
+                return new BaseResponse<>(INVALID_USER);
+            }
+            else{
+                // user 의 grade 찾기
+                ReturnGradeRes returnGradeRes = useService.returnGrade(userId);
+                return new BaseResponse<>(returnGradeRes);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
+        }
+
     }
 }

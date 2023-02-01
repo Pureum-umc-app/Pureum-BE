@@ -21,14 +21,17 @@ public class Battle extends BaseEntity {
     private UserAccount challenger;
     @ManyToOne @JoinColumn(name = "challenged_id")
     private UserAccount challenged;
+    @ManyToOne @JoinColumn(name = "battle_word_id")
+    private BattleWord word;
     private int duration;
     @Enumerated(EnumType.STRING)
     private BattleStatus status;
 
     @Builder
-    public Battle(UserAccount challenger, UserAccount challenged, int duration, BattleStatus status) {
+    public Battle(UserAccount challenger, UserAccount challenged, BattleWord word, int duration, BattleStatus status) {
         this.challenger = challenger;
         this.challenged = challenged;
+        this.word = word;
         this.duration = duration;
         this.status = status;
     }
