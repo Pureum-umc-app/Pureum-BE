@@ -1,12 +1,22 @@
-package com.umc.pureum.domain.sentence;
+package com.umc.pureum.domain.sentence.service;
 
+import com.umc.pureum.domain.sentence.SentenceDao;
+import com.umc.pureum.domain.sentence.SentenceLikeDao;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
 import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
+import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import com.umc.pureum.domain.sentence.dto.response.SentenceListRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Sentence;
+import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.Word;
+import com.umc.pureum.domain.sentence.entity.mapping.SentenceLikeMapping;
+import com.umc.pureum.domain.sentence.function.TimeGeneralization;
 import com.umc.pureum.domain.sentence.repository.KeywordRepository;
+import com.umc.pureum.domain.sentence.repository.SentenceRepository;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
+import com.umc.pureum.domain.sentence.service.SentenceLikeService;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
@@ -27,7 +37,11 @@ import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_E
 @Transactional(readOnly = true)
 @Service
 public class SentenceService {
+    private final SentenceLikeService sentenceLikeService;
+
+    private final SentenceRepository sentenceRepository;
     private final SentenceDao sentenceDao;
+    private final SentenceLikeDao sentenceLikeDao;
     private final WordRepository wordRepository;
     private final KeywordRepository keywordRepository;
     private final UserRepository userRepository;
@@ -73,13 +87,49 @@ public class SentenceService {
         return writingSentence.contains(writingWord);
     }
 
+    // like : 문장 좋아요 DB 에 저장
+    @Transactional
+    public LikeSentenceRes like(long userId, LikeSentenceReq request) {
+
+        // request 로 받은 sentenceId 로 문장 찾기
+        Sentence sentence = sentenceDao.findOne(request.getSentenceId());
+
+        // request 로 받은 userId 로 userAccount 찾기
+        UserAccount userAccount = userRepository.findById(userId).get();
+
+        //request 로 받은 sentenceId 로 문장 좋아요 찾기
+        if (sentenceLikeDao.findBySentenceId(request.getSentenceId()).isPresent()) {
+
+            SentenceLike sentenceLike = sentenceLikeDao.findBySentenceId(request.getSentenceId()).get();
+
+            // 존재하는 sentence 일 경우 sentence status 확인하고 status 바꾼다 .
+            if ("A".equals(sentenceLike.getStatus())) {
+                sentenceLike.setStatus("D");
+            } else if ("D".equals(sentenceLike.getStatus())) {
+                sentenceLike.setStatus("A");
+            }
+
+            return new LikeSentenceRes(sentenceLike.getId());
+
+        }
+
+        // 존재하지 않는 sentence 일 경우 sentenceLike 생성해서 저장
+        else {
+            SentenceLike sentenceLike = new SentenceLike(userAccount, sentence, "A");
+            sentenceLikeDao.save(sentenceLike);
+
+            return new LikeSentenceRes(sentenceLike.getId());
+        }
+
+    }
+
 
     /**
      * 매일 0시에 오늘의 단어 3개를 불러옴
      * word에서 받아와서 keyword에 저장
      */
     @Transactional
-    // @Scheduled(cron = "0 0 9 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void getKeyword() {
         System.out.println("start");
         List<Word> words = new ArrayList<>();
@@ -103,5 +153,30 @@ public class SentenceService {
                 }
             }
         }
+    }
+
+    public List<SentenceListRes> getSentenceList(long userId, long word_id, int page, int limit, String sort) {
+        List<SentenceLikeMapping> sentenceLikeMappings = sentenceLikeService.getSentenceLikeOrderByDate(word_id, page, limit, sort);
+        List<SentenceListRes> sentenceListResList = new ArrayList<>();
+        TimeGeneralization timeGeneralization = new TimeGeneralization();
+        String time;
+        SentenceListRes sentenceListRes;
+        for (SentenceLikeMapping sentenceLikeMapping : sentenceLikeMappings) {
+            time = timeGeneralization.genericTime(sentenceLikeMapping.getTime());
+            sentenceListRes = SentenceListRes.builder()
+                    .likeNum(sentenceLikeMapping.getLikeNum())
+                    .sentenceId(sentenceLikeMapping.getSentence_id())
+                    .sentence(sentenceLikeMapping.getSentence())
+                    .keywordId(sentenceLikeMapping.getKeywordId())
+                    .image(sentenceLikeMapping.getImage())
+                    .keyword(sentenceLikeMapping.getKeyword())
+                    .nickname(sentenceLikeMapping.getNickname())
+                    .userId(sentenceLikeMapping.getUserId())
+                    .selfLike(sentenceLikeService.getSentenceSelfLike(userId, sentenceLikeMapping.getSentence_id()))
+                    .time(time)
+                    .build();
+            sentenceListResList.add(sentenceListRes);
+        }
+        return sentenceListResList;
     }
 }
