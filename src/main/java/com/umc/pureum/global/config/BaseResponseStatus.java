@@ -45,11 +45,13 @@ public enum BaseResponseStatus {
     POST_USERS_NO_EXISTS_EMAIL(false,2032,"존재하지 않는 이메일입니다."),
     POST_USERS_EXISTS(false,2033,"이미 가입된 회원입니다."),
     POST_USERS_NO_EXISTS_USER(false,2034 ,"존재하지 않는 회원입니다."),
-    // homes
+    // homes,
+    POST_USE_EXISTS_USAGE_TIME(false, 2051, "이미 목표 시간을 설정하였습니다."),
 
     //sentence
     POST_SENTENCE_EMPTY(false, 2040, "문장을 입력해주세요."),
     POST_SENTENCE_NO_EXISTS_KEYWORD(false, 2041, "키워드가 포함되어있지 않습니다."),
+    GET_SENTENCE_INVALID_SORT_METHOD(false, 2042, "정렬 방식이 잘못되었습니다."),
 
     // battle
     POST_BATTLE_EMPTY_SENTENCE(false, 2050, "대결 문장을 입력해야 합니다."),
@@ -80,6 +82,7 @@ public enum BaseResponseStatus {
 
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다.");
+
 
 
     // 5000 : 필요시 만들어서 쓰세요
