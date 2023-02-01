@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
@@ -19,9 +21,10 @@ public class UseDao {
     }
 
     // 사용 테이블의 외래키를 통한 최근에 생성된 사용 테이블 단건 조회
-    public UsePhone findOneByFk(Long user_id){
-        return em.createQuery("select u from UsePhone u where u.user.id = :user_id order by u.createdAt desc limit 1", UsePhone.class)
-                .setParameter("user_id",user_id)
+    public UsePhone findOneByFk(Long userId){
+        return em.createQuery("select u from UsePhone u where u.user.id = :userId order by u.createdAt desc", UsePhone.class)
+                .setParameter("userId",userId)
+                .setMaxResults(1)
                 .getSingleResult();
     }
 
@@ -31,5 +34,54 @@ public class UseDao {
                 .setParameter("user_id",user_id)
                 .getResultList();
     }
+
+    // 날짜별 사용시간 적은 순 사용 top 10(같은 카테고리 내) 가져오기
+    public List<UsePhone> findRankTopTen(Timestamp updateAt, int grade){
+        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt and u.user.grade = :grade order by u.useTime", UsePhone.class)
+                .setParameter("updateAt", updateAt)
+                .setParameter("grade", grade)
+                .setMaxResults(10)
+                .getResultList();
+    }
+
+    // 날짜별 사용시간 적은 순 같은 학년 내 사용 랭킹(페이지 0 일 경우) 가져오기
+    public List<UsePhone> findRankZeroInSameGrade(Timestamp updateAt, int grade){
+        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt and u.user.grade = :grade order by u.useTime", UsePhone.class)
+                .setParameter("updateAt", updateAt)
+                .setParameter("grade", grade)
+                .setFirstResult(0)
+                .setMaxResults(25)
+                .getResultList();
+    }
+
+    // 날짜별 사용시간 적은 순 같은 학년 내 사용 랭킹(페이지 0 초과) 가져오기
+    public List<UsePhone> findRankOverZeroInSameGrade(Timestamp updateAt, int grade, int page){
+        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt and u.user.grade = :grade order by u.useTime", UsePhone.class)
+                .setParameter("updateAt", updateAt)
+                .setParameter("grade", grade)
+                .setFirstResult((page-1)*25)
+                .setMaxResults(25)
+                .getResultList();
+    }
+
+    // 날짜별 사용시간 적은 순 사용 랭킹(페이지 0 일 경우) 가져오기
+    public List<UsePhone> findRankZeroInAllGrade(Timestamp updateAt){
+        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt order by u.useTime", UsePhone.class)
+                .setParameter("updateAt", updateAt)
+                .setFirstResult(0)
+                .setMaxResults(25)
+                .getResultList();
+    }
+
+    // 날짜별 사용시간 적은 순 사용 랭킹(페이지 0 초과) 가져오기
+    public List<UsePhone> findRankOverZeroInAllGrade(Timestamp updateAt, int page){
+        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt order by u.useTime", UsePhone.class)
+                .setParameter("updateAt", updateAt)
+                .setFirstResult((page-1)*25)
+                .setMaxResults(25)
+                .getResultList();
+    }
+
+
 
  }
