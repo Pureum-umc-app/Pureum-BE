@@ -6,10 +6,7 @@ import com.umc.pureum.domain.attendance.dto.GetStampRes;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,6 +36,12 @@ public class AttendanceController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
     })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
+            @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다.")
+    })
     @ResponseBody
     @GetMapping("/{userId}")
     public BaseResponse<GetStampRes> getStamps(@PathVariable Long userId) {
@@ -65,6 +68,10 @@ public class AttendanceController {
      * [POST] /attendances/check
      */
     @ApiOperation("출석 체크 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "AttendanceCheckReq", paramType = "body", value = "출석 체크 Request")
+    })
     @ResponseBody
     @PostMapping("/check")
     public BaseResponse<AttendanceCheckRes> check(@RequestBody AttendanceCheckReq request) throws BaseException {
