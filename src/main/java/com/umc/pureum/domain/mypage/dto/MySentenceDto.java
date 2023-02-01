@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 public class MySentenceDto {
 
+    private Long sentenceId; // 문장 인덱슨
     private String word; // 단어
     private String sentence; // 문장
     private int countLike; // 좋아요 수
