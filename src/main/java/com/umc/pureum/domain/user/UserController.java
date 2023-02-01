@@ -146,7 +146,7 @@ public class UserController {
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다."),
     })
-    @PatchMapping(value = "/Resign/{userId}")
+    @PatchMapping(value = "/resign/{userId}")
     public ResponseEntity<BaseResponse<String>> UserResign(@PathVariable long userId) throws BaseException {
         try {
             String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
