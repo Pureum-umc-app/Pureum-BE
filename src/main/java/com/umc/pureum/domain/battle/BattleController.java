@@ -361,6 +361,7 @@ public class BattleController {
         }
     }
 
+    /*
      * 대결 문장 좋아요 API
      * [POST] /battles/like
      */
