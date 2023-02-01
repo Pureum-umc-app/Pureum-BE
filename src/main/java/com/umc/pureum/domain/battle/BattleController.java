@@ -12,6 +12,8 @@ import static com.umc.pureum.global.config.BaseResponseStatus.DATABASE_ERROR;
 import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_USER_JWT;
 
 import com.umc.pureum.domain.battle.dto.repsonse.BattleMyProfilePhotoRes;
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesRes;
 import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
@@ -21,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Objects;
 
@@ -254,6 +257,43 @@ public class BattleController {
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(battleMyProfilePhotoRes));
     }
 
+    /**
+     * 진행 중인 대결 리스트 반환 (최신순)
+     * @return 대기 중인 대결 리스트
+     */
+    @ApiOperation("진행 중인 대결 리스트 반환")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
+            @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
+    })
+    @ResponseBody
+    @GetMapping("/list")
+    public BaseResponse<List<GetBattlesRes>> getBattles() {
+        try {
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String user = principal.getUsername();
+
+            Long userIdByAuth = Long.parseLong(user);
+
+            List<GetBattlesRes> battlesRes = battleProvider.getBattles(userIdByAuth);
+            return new BaseResponse<>(battlesRes);
+        }
+        catch(BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /**
+     * 나의 대기 중인 대결 리스트 반환
+     * @param userId
+     * @return
+     */
     @ApiOperation("대기 중인 대결 리스트 반환")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
@@ -286,6 +326,41 @@ public class BattleController {
     }
 
     /**
+     * 나의 진행 중인 대결 리스트 반환 (최신순)
+     * @return 진행 중인 대결 리스트
+     */
+    @ApiOperation("나의 진행 중인 대결 리스트 반환")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
+            @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
+    })
+    @ResponseBody
+    @GetMapping("/my-list/{userId}")
+    public BaseResponse<List<GetBattlesRes>> getMyBattles(@PathVariable Long userId) {
+        try {
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            String user = principal.getUsername();
+
+            Long userIdByAuth = Long.parseLong(user);
+
+            if(!userId.equals(userIdByAuth)) {
+                return new BaseResponse<>(INVALID_JWT);
+            }
+
+            List<GetBattlesRes> battlesRes = battleProvider.getMyBattles(userIdByAuth);
+            return new BaseResponse<>(battlesRes);
+        }
+        catch(BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
      * 대결 문장 좋아요 API
      * [POST] /battles/like
      */
