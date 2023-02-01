@@ -42,7 +42,8 @@ public class UseController {
      */
     @ApiOperation("일일 사용 시간, 휴대폰 켠 횟수 저장")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "X-ACCESS-TOKEN", required = true, dataType = "string", paramType = "header"),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "user_idx", paramType = "path", value = "유저 인덱스", example = "1"),
             @ApiImplicitParam(name = "use_time",paramType = "formData",value = "일일 사용 시간"),
             @ApiImplicitParam(name = "count",paramType = "formData",value = "휴대폰 켠 횟수"),
     })
