@@ -5,10 +5,12 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.pureum.domain.sentence.dto.*;
+import com.umc.pureum.domain.sentence.dto.response.SentenceListRes;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
+import com.umc.pureum.domain.sentence.service.SentenceService;
 import com.umc.pureum.domain.user.service.KakaoService;
 import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
@@ -17,6 +19,9 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.json.XML;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -96,7 +101,7 @@ public class SentenceController {
                 GetMeansRes getMeansRes = mapper.readValue(jsonObject.toString(), GetMeansRes.class);
                 System.out.println(getMeansRes);
 
-                if(getMeansRes.getChannel().getItem().isEmpty()) continue;
+                if (getMeansRes.getChannel().getItem().isEmpty()) continue;
 
                 // DB에 뜻 저장
                 String meaning = getMeansRes.getChannel().getItem().get(0).getSense().get(0).getDefinition();
@@ -130,20 +135,19 @@ public class SentenceController {
     @ResponseBody
     @GetMapping("/incomplete/{userId}")
     public BaseResponse<List<GetKeywordRes>> getIncompleteKeyWords(@PathVariable Long userId) {
-        try{
+        try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
             Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(userId, userIdByAuth)){
+            if (!Objects.equals(userId, userIdByAuth)) {
                 return new BaseResponse<>(INVALID_JWT);
-            }
-            else{
+            } else {
                 List<GetKeywordRes> getKeywordRes = sentenceProvider.getInCompleteKeyword(userId);
                 return new BaseResponse<>(getKeywordRes);
             }
-        } catch(BaseException e){
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
@@ -166,20 +170,19 @@ public class SentenceController {
     @ResponseBody
     @GetMapping("/complete/{userId}")
     public BaseResponse<List<GetKeywordRes>> getCompleteKeywords(@PathVariable Long userId) {
-        try{
+        try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
             Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(userId, userIdByAuth)){
+            if (!Objects.equals(userId, userIdByAuth)) {
                 return new BaseResponse<>(INVALID_JWT);
-            }
-            else{
+            } else {
                 List<GetKeywordRes> getKeywordRes = sentenceProvider.getCompleteKeyword(userId);
                 return new BaseResponse<>(getKeywordRes);
             }
-        } catch(BaseException e){
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
@@ -227,27 +230,56 @@ public class SentenceController {
     })
     @ResponseBody
     @PostMapping("/like")
-    public BaseResponse<LikeSentenceRes> likeSentence(@RequestBody LikeSentenceReq request) throws BaseException{
+    public BaseResponse<LikeSentenceRes> likeSentence(@RequestBody LikeSentenceReq request) throws BaseException {
 
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
 
         long userId = Long.parseLong(UserId);
 
-        try{
+        try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 sentence 에서 찾은 userId 비교
-            if(userId != sentenceDao.findOne(request.getSentenceId()).getUser().getId()){
+            if (userId != sentenceDao.findOne(request.getSentenceId()).getUser().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else{
+            } else {
                 // 문장 좋아요 저장
-                LikeSentenceRes likeSentenceRes = sentenceService.like(userId , request);
+                LikeSentenceRes likeSentenceRes = sentenceService.like(userId, request);
                 return new BaseResponse<>(likeSentenceRes);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
+    }
 
+    @ApiOperation("단어별 문장 리스트 반환 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "word_id", paramType = "query", value = "nickname"),
+            @ApiImplicitParam(name = "page", paramType = "query", value = "image"),
+            @ApiImplicitParam(name = "limit", paramType = "query", value = "nickname"),
+            @ApiImplicitParam(name = "sort", paramType = "query", value = "image")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2042, message = "정렬 방식이 잘못되었습니다.")
+    })
+    @GetMapping("/{userId}")
+    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@PathVariable long userId, @RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort) throws BaseException {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long id = Long.parseLong(principal.getUsername());
+        try {
+            if (id != userId)
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
+            if (!(sort.equals("date") || sort.equals("like")))
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(GET_SENTENCE_INVALID_SORT_METHOD));
+            List<SentenceListRes> sentenceListRes = sentenceService.getSentenceList(userId, word_id, page, limit, sort);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(sentenceListRes));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(DATABASE_ERROR));
+        }
     }
 }
