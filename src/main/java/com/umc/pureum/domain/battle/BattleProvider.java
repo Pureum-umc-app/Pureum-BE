@@ -1,28 +1,36 @@
 package com.umc.pureum.domain.battle;
 
 import com.umc.pureum.domain.battle.dto.BattleFighterRes;
+import com.umc.pureum.domain.battle.dto.GetBattleWordRes;
 import com.umc.pureum.domain.battle.dto.repsonse.GetBattleLikeInterface;
 import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
 import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesRes;
 import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
+import com.umc.pureum.domain.battle.entity.BattleWord;
 import com.umc.pureum.domain.battle.repository.BattleLikeRepository;
 import com.umc.pureum.domain.battle.repository.BattleRepository;
 import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
+import com.umc.pureum.domain.sentence.entity.Keyword;
+import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
-import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.umc.pureum.global.entity.Status.A;
 
 @RequiredArgsConstructor
 @Service
@@ -52,7 +60,7 @@ public class BattleProvider {
             for (GetBattlesInterface battle : battles) {
                 System.out.println(battle.getBattleId());
                 // Challenger 문장 받아오기
-                Optional<BattleSentence> ers = sentenceRepository.findByBattleIdAndUserIdAndStatus(battle.getBattleId(), battle.getChallengerId(), Status.A);
+                Optional<BattleSentence> ers = sentenceRepository.findByBattleIdAndUserIdAndStatus(battle.getBattleId(), battle.getChallengerId(), A);
                 if (ers.isEmpty()) {
                     throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
                 }
@@ -61,7 +69,7 @@ public class BattleProvider {
                 Optional<GetBattleLikeInterface> erl = likeRepository.findByUserId(userId, ersId);
 
                 // Challenged 문장 받아오기
-                Optional<BattleSentence> eds = sentenceRepository.findByBattleIdAndUserIdAndStatus(battle.getBattleId(), battle.getChallengedId(), Status.A);
+                Optional<BattleSentence> eds = sentenceRepository.findByBattleIdAndUserIdAndStatus(battle.getBattleId(), battle.getChallengedId(), A);
                 if (eds.isEmpty()) {
                     throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
                 }
@@ -116,7 +124,7 @@ public class BattleProvider {
 
             for (GetBattlesInterface battle : battles) {
                 // Challenger 문장 받아오기
-                Optional<BattleSentence> ers = sentenceRepository.findByBattleIdAndUserIdAndStatus(battle.getBattleId(), battle.getChallengerId(), Status.A);
+                Optional<BattleSentence> ers = sentenceRepository.findByBattleIdAndUserIdAndStatus(battle.getBattleId(), battle.getChallengerId(), A);
                 if (ers.isEmpty()) {
                     throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
                 }
@@ -125,7 +133,7 @@ public class BattleProvider {
                 Optional<GetBattleLikeInterface> erl = likeRepository.findByUserId(userId, ersId);
 
                 // Challenged 문장 받아오기
-                Optional<BattleSentence> eds = sentenceRepository.findByBattleIdAndUserIdAndStatus(battle.getBattleId(), battle.getChallengedId(), Status.A);
+                Optional<BattleSentence> eds = sentenceRepository.findByBattleIdAndUserIdAndStatus(battle.getBattleId(), battle.getChallengedId(), A);
                 if (eds.isEmpty()) {
                     throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
                 }
@@ -152,13 +160,23 @@ public class BattleProvider {
         }
     }
 
-
-    /* 대결 상대 리스트 반환API */
+    /* 대결 상대 리스트 반환 API */
     public List<BattleFighterRes> getBattleFighters(Long userId) {
         List<UserAccount> allExcludeMe = userDao.findAllExcludeMe(userId);
         return allExcludeMe.stream().map(u -> BattleFighterRes.builder()
                 .userId(u.getId())
                 .nickname(u.getNickname())
                 .image(u.getImage()).build())
-                .collect(Collectors.toList());}
+                .collect(Collectors.toList());
+    }
+
+    /* 대결 키워드 3개 반환 API */
+    public List<GetBattleWordRes> getBattleWordThree(){
+        List<BattleWord> battleWordThreeRecently = battleDao.getBattleWordThreeRecently();
+        return battleWordThreeRecently.stream().map(b -> GetBattleWordRes.builder()
+                .wordId(b.getWord().getId())
+                .word(b.getWord().getWord())
+                .meaning(b.getWord().getMeaning()).build())
+                .collect(Collectors.toList());
+    }
 }
