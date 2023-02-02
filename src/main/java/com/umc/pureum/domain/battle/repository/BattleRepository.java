@@ -19,8 +19,8 @@ import java.util.Optional;
 public interface BattleRepository extends JpaRepository<Battle, Long> {
     /* 이미 신청한 키워드인지 확인 */
     @Query("select b from Battle as b \n" +
-            "where b.challenged.id = :userId \n" +
-            "   or b.challenger.id = :userId \n " +
+            "where (b.challenged.id = :userId \n" +
+            "   or b.challenger.id = :userId) \n " +
             "   and b.word.id = :wordId \n " +
             "   and b.status <> 'D'")
     Optional<Battle> findByUserIdAndWordId(@Param("userId") Long userId, @Param("wordId") Long wordId);
@@ -30,7 +30,9 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
             "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg \n" +
             "from Battle as b \n" +
-            "where b.status = :status")
+            "where b.status = :status" +
+            "   and b.challenger.status = 'A'" +
+            "   and b.challenged.status = 'A'")
     List<GetBattlesInterface> findAllByStatus(@Param("status") BattleStatus status);
 
     /* 나의 진행 중인 대결 리스트 반환 */
@@ -38,9 +40,11 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
             "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg \n" +
             "from Battle as b \n" +
-            "where b.challenged.id = :userId \n" +
-            "   or b.challenger.id = :userId \n" +
-            "   and b.status = :status")
+            "where (b.challenged.id = :userId \n" +
+            "   or b.challenger.id = :userId) \n" +
+            "   and b.status = :status"+
+            "   and b.challenger.status = 'A'" +
+            "   and b.challenged.status = 'A'")
     List<GetBattlesInterface> findAllByUserIdAndStatus(@Param("userId") Long userId, @Param("status") BattleStatus status);
 
     /* 대기 중인 대결 리스트 반환 */
@@ -50,8 +54,10 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "   b.word.id as keywordId, b.word.word.word as keyword, \n" +
             "   b.duration as duration \n" +
             "from Battle as b \n" +
-            "where b.challenged.id = :userId" +
-            "    or b.challenger.id = :userId" +
-            "    and b.status = :status")
+            "where (b.challenged.id = :userId \n" +
+            "    or b.challenger.id = :userId) \n" +
+            "    and b.status = :status \n"+
+            "   and b.challenger.status = 'A' \n" +
+            "   and b.challenged.status = 'A'")
     List<GetWaitBattlesRes> findAllByWaitBattles(@Param("userId") Long userId, @Param("status")BattleStatus status);
 }
