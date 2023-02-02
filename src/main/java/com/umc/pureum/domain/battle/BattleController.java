@@ -403,7 +403,7 @@ public class BattleController {
 
     /** 대결 상대 리스트 반환 API
      * 랜덤으로 20명 추출
-     * [GET] battles/{userIdx}/fighters
+     * [GET] battles/{userId}/fighters
      */
     @ApiOperation("대결 상대 리스트 반환 API")
     @ApiImplicitParams({
@@ -435,7 +435,7 @@ public class BattleController {
     }
 
     /** 대결 키워드 3개 반환 API
-     * [GET] battles/{userIdx}/battleWords
+     * [GET] battles/{userId}/battleWords
      */
     @ApiOperation("대결 키워드 3개 반환 API")
     @ApiImplicitParams({
