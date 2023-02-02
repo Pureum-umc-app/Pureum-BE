@@ -1,11 +1,17 @@
 package com.umc.pureum.domain.battle;
 
 import com.umc.pureum.domain.battle.dto.repsonse.*;
+import com.umc.pureum.domain.battle.dto.BattleFighterRes;
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattleLikeInterface;
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesRes;
+import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
 import com.umc.pureum.domain.battle.repository.BattleLikeRepository;
 import com.umc.pureum.domain.battle.repository.BattleRepository;
 import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
+import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
@@ -17,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -26,6 +33,7 @@ public class BattleProvider {
     private final BattleSentenceRepository sentenceRepository;
     private final BattleLikeRepository likeRepository;
     private final UserRepository userRepository;
+    private final UserDao userDao;
 
     /* 진행 중인 대결 리스트 반환 API */
     public List<GetBattlesRes> getBattles(Long userId) throws BaseException {
@@ -155,4 +163,14 @@ public class BattleProvider {
             return new ArrayList<>();
         }
     }
+
+
+    /* 대결 상대 리스트 반환API */
+    public List<BattleFighterRes> getBattleFighters(Long userId) {
+        List<UserAccount> allExcludeMe = userDao.findAllExcludeMe(userId);
+        return allExcludeMe.stream().map(u -> BattleFighterRes.builder()
+                .userId(u.getId())
+                .nickname(u.getNickname())
+                .image(u.getImage()).build())
+                .collect(Collectors.toList());}
 }

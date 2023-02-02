@@ -75,7 +75,7 @@ public class UseProvider {
         cal.setTime(date);
         cal.add(Calendar.DATE, -1);
 
-        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-DD");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
         return format.format(cal.getTime());
     }
