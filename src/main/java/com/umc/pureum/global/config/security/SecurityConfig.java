@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .exceptionHandling(config -> config
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
-                .authorizeRequests(ant -> ant
+                .authorizeHttpRequests(ant -> ant
                         .antMatchers(PERMITTED_URLS).permitAll() // 해당 문자열 배열에 저장된 uri 요청은 제외
                         .anyRequest().authenticated() // 모든 요청은 Auth 받아야함
                 );
@@ -89,13 +89,5 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationCheckFilter jwtAuthenticationCheckFilter(JwtTokenProvider jwtTokenProvider) {
         return new JwtAuthenticationCheckFilter(jwtTokenProvider);
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web
-                .ignoring().antMatchers(
-                        PERMITTED_URLS
-                );
     }
 }
