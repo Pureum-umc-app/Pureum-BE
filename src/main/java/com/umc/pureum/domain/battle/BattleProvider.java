@@ -1,9 +1,6 @@
 package com.umc.pureum.domain.battle;
 
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattleLikeInterface;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesRes;
-import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
+import com.umc.pureum.domain.battle.dto.repsonse.*;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
 import com.umc.pureum.domain.battle.repository.BattleLikeRepository;
@@ -82,6 +79,17 @@ public class BattleProvider {
         } else {  // 대결이 없으면 빈 배열을 리턴함
             return new ArrayList<>();
         }
+    }
+
+    /* 종료된 대결 리스트 반환 API */
+    public List<GetCompleteBattlesRes> getCompleteBattles(Long userId) throws BaseException {
+        // 유저 예외 처리
+        Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
+        if(myInfo.isEmpty()) {
+            throw new BaseException(BaseResponseStatus.INVALID_USER);
+        }
+
+        return battleRepository.findAllByComplete(userId);
     }
 
     /* 대기 중인 대결 리스트 반환 API */
