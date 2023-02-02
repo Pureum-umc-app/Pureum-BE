@@ -48,23 +48,23 @@ public class UseController {
     @ApiOperation("일일 사용 시간, 휴대폰 켠 횟수 저장")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "user_idx", paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
             @ApiImplicitParam(name = "hour", paramType = "formData", value = "일일 사용 시간(시)"),
             @ApiImplicitParam(name = "minute", paramType = "formData", value = "일일 사용 시간(분)"),
             @ApiImplicitParam(name = "count", paramType = "formData", value = "휴대폰 켠 횟수"),
     })
     @ResponseBody
-    @PostMapping("/{user_idx}/useTimeAndCount")
-    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long user_idx, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq) {
+    @PostMapping("/{userId}/useTimeAndCount")
+    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long userId, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq) {
         // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String springSecurityUserId = principal.getUsername();
-        Long userId = Long.parseLong(springSecurityUserId);
+        Long userIdx = Long.parseLong(springSecurityUserId);
         try {
-            if (userId != user_idx) {
+            if (userIdx != userId) {
                 return new BaseResponse<>(INVALID_JWT);
             } else {
-                PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(userId, postUseTimeAndCountReq);
+                PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(userIdx, postUseTimeAndCountReq);
                 return new BaseResponse<>(postUseTimeAndCountRes);
             }
         } catch (Exception e){
@@ -122,7 +122,7 @@ public class UseController {
             @ApiResponse(code = 2051, message = "이미 목표시간을 설정하였습니다.")
     })
     @ResponseBody
-    @PostMapping("/{userId}/set_usage_time")
+    @PostMapping("/{userId}/set-usage-time")
     public ResponseEntity<BaseResponse<String>> setUsageTime(@PathVariable Long userId, @RequestBody SetUsageTimeReq setUsageTimeReq) throws BaseException {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String user = principal.getUsername();
@@ -142,18 +142,18 @@ public class UseController {
     @ApiOperation("홈 화면 리스트 반환 api")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userIdx", paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
     })
-    @GetMapping("/{userIdx}")
-    public BaseResponse<List<GetHomeListRes>> getHomeList(@PathVariable Long userIdx) {
+    @GetMapping("/{userId}")
+    public BaseResponse<List<GetHomeListRes>> getHomeList(@PathVariable Long userId) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String springSecurityUserId = principal.getUsername();
-        Long userId = Long.parseLong(springSecurityUserId);
+        Long userIdx = Long.parseLong(springSecurityUserId);
         try {
             if (userId != userIdx) {
                 return new BaseResponse<>(INVALID_JWT);
             } else {
-                List<GetHomeListRes> homeListRes = useProvider.getHomeListRes(userId);
+                List<GetHomeListRes> homeListRes = useProvider.getHomeListRes(userIdx);
                 return new BaseResponse<>(homeListRes);
             }
         } catch (Exception e){

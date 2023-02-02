@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.mypage.dto;
+package com.umc.pureum.domain.battle.dto;
 
 
 import lombok.AllArgsConstructor;
@@ -10,6 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PostUpdateSentenceReq {
-    private String sentence;
+public class BattleFighterRes {
+
+    private Long userId;
+    private String nickname;
+    private String image;
+
 }
