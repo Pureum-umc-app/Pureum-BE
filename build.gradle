@@ -27,7 +27,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
     // 어노테이션
-    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'org.jetbrains:annotations:23.1.0'
 
     // Lombok
     implementation 'org.projectlombok:lombok'
@@ -42,18 +42,31 @@ dependencies {
     // Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    // Security, Authentication
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-
     // jwt
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation(group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2')
+    implementation(group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2')
+    implementation(group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2')
 
     // Swagger
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
     // gson
-    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+
+    // XML -> JSON
+    implementation group: 'org.json', name: 'json', version: '20220320'
+
+    // Jackson
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.7.1'
+
+    // S3
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.13'
+
+    //spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
 }
 
 tasks.named('test') {
