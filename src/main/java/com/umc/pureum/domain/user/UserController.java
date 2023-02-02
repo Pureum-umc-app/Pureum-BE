@@ -22,12 +22,13 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.io.IOException;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.utils.FileCheck.checkImage;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "유저")
-@RequestMapping("/user")
+@RequestMapping("/users")
 
 public class UserController {
     private final KakaoService kakaoService;
@@ -40,7 +41,7 @@ public class UserController {
      * @param code // 인가코드
      * @throws IOException // 카카오 서버 접속 오류 예외처리
      */
-    // kauth.kakao.com/oauth/authorize?client_id=633bdb4f088357e5fe5cde61b4543053&redirect_uri=http://localhost:9000/user/kakao/auth&response_type=code
+    // kauth.kakao.com/oauth/authorize?client_id=633bdb4f088357e5fe5cde61b4543053&redirect_uri=http://localhost:9000/users/kakao/auth&response_type=code
     //위의 링크로 접속하면 console 창에 토큰 정보 나오는데 그거 사용하면 됩니다.
     @ApiIgnore
     @ApiOperation("(서버전용)인가 코드로 토큰 받아오는 API ")
@@ -72,10 +73,13 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestParam(value = "image", required = false) MultipartFile image, CreateUserDto createUserDto) throws BaseException {
-        if (!image.isEmpty()) createUserDto.setImage(image);
-        else createUserDto.setImage(null);
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         try {
+            if (!image.isEmpty()) {
+                if (!checkImage(image))
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
+                createUserDto.setImage(image);
+            } else createUserDto.setImage(null);
             if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
             }
@@ -146,7 +150,7 @@ public class UserController {
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다."),
     })
-    @PatchMapping(value = "/Resign/{userId}")
+    @PatchMapping(value = "/resign/{userId}")
     public ResponseEntity<BaseResponse<String>> UserResign(@PathVariable long userId) throws BaseException {
         try {
             String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
