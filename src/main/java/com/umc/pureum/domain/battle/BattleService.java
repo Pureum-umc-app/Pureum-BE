@@ -2,6 +2,8 @@ package com.umc.pureum.domain.battle;
 
 import com.umc.pureum.domain.battle.dto.*;
 import com.umc.pureum.domain.battle.entity.*;
+import com.umc.pureum.domain.battle.entity.mapping.EndBattle;
+import com.umc.pureum.domain.battle.repository.*;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
@@ -11,12 +13,10 @@ import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.domain.battle.repository.BattleRepository;
-import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
-import com.umc.pureum.domain.battle.repository.BattleWordRepository;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +24,7 @@ import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_EMPT
 import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_EXISTS_KEYWORD;
 import static com.umc.pureum.global.entity.Status.A;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +41,8 @@ public class BattleService {
     private final BattleSentenceRepository battleSentenceRepository;
     private final BattleLikeDao battleLikeDao;
 
+    private final BattleResultRepository battleResultRepository;
+    private final BattleLikeRepository battleLikeRepository;
     // accept : 대결 수락
     @Transactional
     public BattleStatusRes accept(BattleStatusReq request) {
@@ -234,5 +234,41 @@ public class BattleService {
         }
 
     }
-
+    @Transactional
+    @Scheduled(cron = "0 0 1 * * *")
+    public void setResult() {
+        List<Battle> battleIdList = battleRepository.findByEndBattle();
+        long challengedBattleSentenceId;
+        long challengerBattleSentenceId;
+        int challengerLikeNum;
+        int challengedLikeNum;
+        BattleResult battleResult;
+        for (Battle battle : battleIdList) {
+            challengedBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenged().getId());
+            challengerBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenger().getId());
+            challengedLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengedBattleSentenceId);
+            challengerLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengerBattleSentenceId);
+            if (challengedLikeNum > challengerLikeNum) {
+                battleResult = BattleResult.builder()
+                        .battle(battle)
+                        .user(battle.getChallenged())
+                        .status(Status.A)
+                        .build();
+                battleResultRepository.save(battleResult);
+            } else if (challengedLikeNum < challengerLikeNum) {
+                battleResult = BattleResult.builder()
+                        .battle(battle)
+                        .user(battle.getChallenger())
+                        .status(Status.A)
+                        .build();
+                battleResultRepository.save(battleResult);
+            } else {
+                battleResult = BattleResult.builder()
+                        .battle(battle)
+                        .status(Status.A)
+                        .build();
+                battleResultRepository.save(battleResult);
+            }
+        }
+    }
 }

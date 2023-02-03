@@ -248,6 +248,7 @@ public class BattleController {
         long id = Long.parseLong(principal.getUsername());
         if (id != userId)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
+        battleService.setResult();
         BattleMyProfilePhotoRes battleMyProfilePhotoRes = new BattleMyProfilePhotoRes(userId, battleService.BattleMyProfilePhoto(userId));
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(battleMyProfilePhotoRes));
     }
