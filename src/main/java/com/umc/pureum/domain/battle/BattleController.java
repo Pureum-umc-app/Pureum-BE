@@ -61,20 +61,18 @@ public class BattleController {
 
         long userId = Long.parseLong(UserId);
 
-        try{
+        try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
-            if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()){
+            if (userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())){
+            } else if (!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
-            }
-            else{
+            } else {
                 // 대결 상태 저장
                 BattleStatusRes battleStatusRes = battleService.accept(request);
                 return new BaseResponse<>(battleStatusRes);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
@@ -99,20 +97,18 @@ public class BattleController {
 
         long userId = Long.parseLong(UserId);
 
-        try{
+        try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
-            if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()){
+            if (userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())){
+            } else if (!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
-            }
-            else{
+            } else {
                 // 대결 상태 저장
                 BattleStatusRes battleStatusRes = battleService.reject(request);
                 return new BaseResponse<>(battleStatusRes);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
@@ -137,22 +133,20 @@ public class BattleController {
 
         long userId = Long.parseLong(UserId);
 
-        try{
+        try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
-            if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId() ||
-                    userId != battleDao.findOne(request.getBattleId()).getChallenger().getId()){
+            if (userId != battleDao.findOne(request.getBattleId()).getChallenged().getId() ||
+                    userId != battleDao.findOne(request.getBattleId()).getChallenger().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus()) ||
-                    !"A".equals(battleDao.findOne(request.getBattleId()).getChallenger().getStatus())){
+            } else if (!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus()) ||
+                    !"A".equals(battleDao.findOne(request.getBattleId()).getChallenger().getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
-            }
-            else{
+            } else {
                 // 대결 상태 저장
                 BattleStatusRes battleStatusRes = battleService.reject(request);
                 return new BaseResponse<>(battleStatusRes);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
@@ -170,7 +164,7 @@ public class BattleController {
     })
     @ResponseBody
     @PostMapping("/challenged/write")
-    public BaseResponse<CreateChallengedSentenceRes> writeSentence(@RequestBody CreateChallengedSentenceReq request) throws BaseException{
+    public BaseResponse<CreateChallengedSentenceRes> writeSentence(@RequestBody CreateChallengedSentenceReq request) throws BaseException {
 
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
@@ -178,27 +172,25 @@ public class BattleController {
         long userId = Long.parseLong(UserId);
 
 
-        try{
+        try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
-            if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()){
+            if (userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())){
+            } else if (!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
-            }
-            else{
+            } else {
                 // challenged 가 작성한 문장 저장
-                CreateChallengedSentenceRes createChallengedSentenceRes = battleService.writeChallenged(userId , request);
+                CreateChallengedSentenceRes createChallengedSentenceRes = battleService.writeChallenged(userId, request);
                 return new BaseResponse<>(createChallengedSentenceRes);
             }
-        }catch (BaseException e){
+        } catch (BaseException e) {
             e.printStackTrace();
             return new BaseResponse<>(e.getStatus());
         }
 
     }
 
-     /* 대결 신청 API
+    /* 대결 신청 API
      * 대결 정보를 받아와서 테이블에 저장
      */
     @ApiOperation("대결 신청")
@@ -219,7 +211,7 @@ public class BattleController {
     public BaseResponse<Long> createBattle(@RequestBody PostBattleReq postBattleReq) {
         try {
             // 문장이 비어있는지 검사
-            if(postBattleReq.getSentence().isBlank()) {
+            if (postBattleReq.getSentence().isBlank()) {
                 return new BaseResponse<>(POST_BATTLE_EMPTY_SENTENCE);
             }
 
@@ -228,21 +220,21 @@ public class BattleController {
 
             Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(postBattleReq.getChallengerId(), userIdByAuth)){
+            if (!Objects.equals(postBattleReq.getChallengerId(), userIdByAuth)) {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
             Long battleId = battleService.createBattle(postBattleReq);
             return new BaseResponse<>(battleId);
-        }
-        catch(BaseException e) {
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
     @ApiOperation("대결 신청할때 내사진 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스")
+            @ApiImplicitParam(name = "Authorization", dataType = "String", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataType = "long", paramType = "path", value = "유저 인덱스")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = BattleMyProfilePhotoRes.class),
@@ -255,12 +247,13 @@ public class BattleController {
         long id = Long.parseLong(principal.getUsername());
         if (id != userId)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
-        BattleMyProfilePhotoRes battleMyProfilePhotoRes = new BattleMyProfilePhotoRes(userId,battleService.BattleMyProfilePhoto(userId));
+        BattleMyProfilePhotoRes battleMyProfilePhotoRes = new BattleMyProfilePhotoRes(userId, battleService.BattleMyProfilePhoto(userId));
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(battleMyProfilePhotoRes));
     }
 
     /**
      * 진행 중인 대결 리스트 반환 (최신순)
+     *
      * @return 대기 중인 대결 리스트
      */
     @ApiOperation("진행 중인 대결 리스트 반환")
@@ -285,14 +278,14 @@ public class BattleController {
 
             List<GetBattlesRes> battlesRes = battleProvider.getBattles(userIdByAuth);
             return new BaseResponse<>(battlesRes);
-        }
-        catch(BaseException e) {
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
 
     /**
      * 나의 대기 중인 대결 리스트 반환
+     *
      * @param userId
      * @return
      */
@@ -315,20 +308,20 @@ public class BattleController {
 
             Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(userId, userIdByAuth)){
+            if (!Objects.equals(userId, userIdByAuth)) {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
             List<GetWaitBattlesRes> battlesRes = battleProvider.getWaitBattles(userId);
             return new BaseResponse<>(battlesRes);
-        }
-        catch(BaseException e) {
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
 
     /**
      * 나의 진행 중인 대결 리스트 반환 (최신순)
+     *
      * @return 진행 중인 대결 리스트
      */
     @ApiOperation("나의 진행 중인 대결 리스트 반환")
@@ -351,14 +344,13 @@ public class BattleController {
 
             Long userIdByAuth = Long.parseLong(user);
 
-            if(!userId.equals(userIdByAuth)) {
+            if (!userId.equals(userIdByAuth)) {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
             List<GetBattlesRes> battlesRes = battleProvider.getMyBattles(userIdByAuth);
             return new BaseResponse<>(battlesRes);
-        }
-        catch(BaseException e) {
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
@@ -374,34 +366,33 @@ public class BattleController {
     })
     @ResponseBody
     @PostMapping("/like")
-    public BaseResponse<LikeBattleRes> likeBattle(@RequestBody LikeBattleReq request) throws BaseException{
+    public BaseResponse<LikeBattleRes> likeBattle(@RequestBody LikeBattleReq request) throws BaseException {
 
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
 
         long userId = Long.parseLong(UserId);
 
-        try{
+        try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 sentence 에서 찾은 userId 비교
-            if(userId != battleSentenceDao.findOne(request.getSentenceId()).getUser().getId()){
+            if (userId != battleSentenceDao.findOne(request.getSentenceId()).getUser().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else if(!"A".equals(battleSentenceDao.findOne(request.getSentenceId()).getUser().getStatus())){
+            } else if (!"A".equals(battleSentenceDao.findOne(request.getSentenceId()).getUser().getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
-            }
-            else{
+            } else {
                 // 문장 좋아요 저장
-                LikeBattleRes likeBattleRes = battleService.like(userId , request);
+                LikeBattleRes likeBattleRes = battleService.like(userId, request);
                 return new BaseResponse<>(likeBattleRes);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
 
     }
 
-    /** 대결 상대 리스트 반환 API
+    /**
+     * 대결 상대 리스트 반환 API
      * 랜덤으로 20명 추출
      * [GET] battles/{userId}/fighters
      */
@@ -430,11 +421,12 @@ public class BattleController {
 
     // 대결 키워드 12시 1분마다 3개 넣기
     @Scheduled(cron = "0 1 0 * * ?")
-    public void saveBattleWordRandomThree(){
+    public void saveBattleWordRandomThree() {
         battleService.saveBattleWordRandomThree();
     }
 
-    /** 대결 키워드 3개 반환 API
+    /**
+     * 대결 키워드 3개 반환 API
      * [GET] battles/{userId}/battleWords
      */
     @ApiOperation("대결 키워드 3개 반환 API")
@@ -442,24 +434,23 @@ public class BattleController {
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
             @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1", dataType = "Long")
     })
-     @GetMapping("/{userId}/battleWords")
-     public BaseResponse<List<GetBattleWordRes>> getBattleWordThree(@PathVariable Long userId){
-         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-         String springSecurityUserId = principal.getUsername();
-         Long userIdx = Long.parseLong(springSecurityUserId);
-         try {
-             if (userId != userIdx) {
-                 return new BaseResponse<>(INVALID_JWT);
-             } else {
-                 List<GetBattleWordRes> battleWordThree = battleProvider.getBattleWordThree();
-                 return new BaseResponse<>(battleWordThree);
-             }
-         } catch (Exception e) {
-             e.printStackTrace();
-             return new BaseResponse<>(DATABASE_ERROR);
-         }
+    @GetMapping("/{userId}/battleWords")
+    public BaseResponse<List<GetBattleWordRes>> getBattleWordThree(@PathVariable Long userId) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userIdx = Long.parseLong(springSecurityUserId);
+        try {
+            if (userId != userIdx) {
+                return new BaseResponse<>(INVALID_JWT);
+            } else {
+                List<GetBattleWordRes> battleWordThree = battleProvider.getBattleWordThree();
+                return new BaseResponse<>(battleWordThree);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
+        }
 
-     }
-
+    }
 
 }
