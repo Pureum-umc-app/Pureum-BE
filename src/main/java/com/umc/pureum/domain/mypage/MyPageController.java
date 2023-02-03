@@ -152,7 +152,8 @@ public class MyPageController {
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = GetProfileResponseDto.class),
-            @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다.")
+            @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2005, message = "이미지파일이 아닙니다")
     })
     @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> EditProfile(@RequestParam(value = "image", required = false) MultipartFile image, PatchEditProfileReq patchEditProfileReq, @PathVariable long userId) throws BaseException {
