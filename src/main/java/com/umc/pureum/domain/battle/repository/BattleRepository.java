@@ -42,7 +42,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "        end as winnerId, \n" +
             "   case when(r.user.id = b.challenger.id) then b.challenger.nickname \n" +
             "        when(r.user.id = b.challenged.id) then b.challenged.nickname \n" +
-            "        else null \n" +
+            "        else '' \n" +
             "        end as winnerNickname, \n" +
             "   case when(r.user.id = b.challenger.id) then b.challenger.image \n" +
             "        when(r.user.id = b.challenged.id) then b.challenged.image \n" +
