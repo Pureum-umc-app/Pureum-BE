@@ -467,4 +467,44 @@ public class BattleController {
 
     }
 
+    /**
+     * 대결 정보 반환 API (종료)
+     * [GET] /battles/finish/{battleIdx}
+     */
+    @ApiOperation("대결 정보 반환 API (종료)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
+    @ResponseBody
+    @GetMapping("/finish/{battleIdx}")
+    public BaseResponse<ReturnFinishBattleRes> returnFinishBattle(@PathVariable Long battleIdx) throws BaseException{
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        long userId = Long.parseLong(UserId);
+
+
+        try{
+            // springsecurity 로 찾은 userId 랑 request 에서 찾은 userId 비교
+            if(userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
+                    userId != battleDao.findOne(battleIdx).getChallenger().getId()){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else if(!"A".equals(battleDao.findOne(battleIdx).getChallenged().getStatus()) &&
+                    !"A".equals(battleDao.findOne(battleIdx).getChallenger().getStatus())) {
+                return new BaseResponse<>(INVALID_USER);
+            }
+            else{
+                // user 의 grade 찾기
+                ReturnFinishBattleRes returnFinishBattleRes = battleService.returnFinishBattle(battleIdx , userId);
+                return new BaseResponse<>(returnFinishBattleRes);
+            }
+        }catch (BaseException e){
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
+        }
+
+    }
+
 }

@@ -35,14 +35,4 @@ public class BattleSentenceDao {
         return em.find(BattleSentence.class, id);
     }
 
-    //대결 문장 정보 가져오기
-//    public Optional<GetBattleSentenceInterface> findInfoByBattleIdAndUserId(Long battleId , Long userId){
-//        List<GetBattleSentenceInterface> battleInfoList = em.createQuery("select b.id as battleSenteceId , b.sentence as battleSentence \n" +
-//                        "from BattleSentence b \n" +
-//                        "where b.id = :battleId",GetBattleSentenceInterface.class )
-//                .setParameter("battleId", battleId)
-//                .getResultList();
-//        return battleInfoList.stream().findAny();
-//    }
-
 }

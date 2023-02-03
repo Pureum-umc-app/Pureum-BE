@@ -3,7 +3,7 @@ package com.umc.pureum.domain.battle;
 import com.umc.pureum.domain.battle.dto.*;
 import com.umc.pureum.domain.battle.dto.repsonse.*;
 import com.umc.pureum.domain.battle.entity.*;
-import com.umc.pureum.domain.battle.repository.BattleLikeRepository;
+import com.umc.pureum.domain.battle.repository.*;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
 import com.umc.pureum.domain.sentence.entity.Sentence;
@@ -12,9 +12,6 @@ import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.domain.battle.repository.BattleRepository;
-import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
-import com.umc.pureum.domain.battle.repository.BattleWordRepository;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +35,7 @@ public class BattleService {
     private final BattleSentenceRepository battleSentenceRepository;
     private final BattleLikeDao battleLikeDao;
     private final BattleLikeRepository likeRepository;
+    private final BattleResultRepository battleResultRepository;
 
     // accept : 대결 수락
     @Transactional
@@ -244,6 +242,55 @@ public class BattleService {
 
         } else {
             throw new BaseException(GET_BATTLE_FINISH_STATUS);
+        }
+        return null;
+    }
+
+    //returnRunBattle : 대결 정보 return
+    @Transactional
+    public ReturnFinishBattleRes returnFinishBattle(long battleIdx , Long userId) throws BaseException {
+        GetBattleInfoRes battleInfo = battleRepository.findInfoByBattleId(battleIdx).stream().findAny().get();
+
+        if (battleInfo.getBattleStatus().equals(BattleStatus.D) || battleInfo.getBattleStatus().equals(BattleStatus.D)) {
+
+            GetBattleResultInterface getBattleResultInterface = battleResultRepository.findBattleResultByBattleId(battleIdx).stream().findAny().get();
+
+            System.out.println("!!!!!!!!!!!!!!!!"+getBattleResultInterface.getUserId());
+
+            Long challengedId = battleInfo.getChallengedId();
+            Long challengerId = battleInfo.getChallengerId();
+
+            GetBattleSentenceInterface challengedSentenceInfo = battleSentenceRepository.findInfoByBattleIdAndUserId(battleIdx, challengedId).stream().findAny().get();
+            GetBattleSentenceInterface challengerSentenceInfo = battleSentenceRepository.findInfoByBattleIdAndUserId(battleIdx, challengerId).stream().findAny().get();
+
+            Long challengedSentenceId = challengedSentenceInfo.getBattleSentenceId();
+            Long challengerSentenceId = challengerSentenceInfo.getBattleSentenceId();
+
+            GetBattleLikeInterface challengedLikeInterface = likeRepository.findByUserId(challengedId, challengedSentenceId).stream().findAny().get();
+            GetBattleLikeInterface challengerLikeInterface = likeRepository.findByUserId(challengerId, challengerSentenceId).stream().findAny().get();
+
+            if (userId == challengedId) {
+                return new ReturnFinishBattleRes(battleIdx , getBattleResultInterface.getUserId(),
+                        battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
+                        battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
+                        challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
+                        challengerSentenceInfo.getBattleSentenceId(), challengerSentenceInfo.getBattleSentence(),
+                        challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
+                        challengerLikeInterface.getIsLike()
+                        );
+            } else if (userId == challengerId) {
+                return new ReturnFinishBattleRes(battleIdx , getBattleResultInterface.getUserId(),
+                        battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
+                        battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
+                        challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
+                        challengerSentenceInfo.getBattleSentenceId(), challengerSentenceInfo.getBattleSentence(),
+                        challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
+                        challengerLikeInterface.getIsLike()
+                );
+            }
+
+        } else {
+            throw new BaseException(Get_BATTLE_RUN_STATUS);
         }
         return null;
     }
