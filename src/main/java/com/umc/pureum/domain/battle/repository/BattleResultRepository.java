@@ -20,4 +20,5 @@ public interface BattleResultRepository extends JpaRepository<BattleResult, Long
     " from BattleResult b \n" +
     "where b.battle.id = :battleId")
     List<GetBattleResultInterface> findBattleResultByBattleId(@Param("battleId") Long battleId);
+
 }
