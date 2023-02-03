@@ -205,15 +205,14 @@ public class SentenceController {
 
         long userId = Long.parseLong(UserId);
 
-        try{
-            if(userId != request.getUserId()){
+        try {
+            if (userId != request.getUserId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else{
-                CreateSentenceRes write = sentenceService.write(userId , request);
+            } else {
+                CreateSentenceRes write = sentenceService.write(userId, request);
                 return new BaseResponse<>(write);
             }
-        }catch (BaseException e){
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
 
@@ -254,12 +253,12 @@ public class SentenceController {
 
     @ApiOperation("단어별 문장 리스트 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "word_id", paramType = "query", value = "nickname"),
-            @ApiImplicitParam(name = "page", paramType = "query", value = "image"),
-            @ApiImplicitParam(name = "limit", paramType = "query", value = "nickname"),
-            @ApiImplicitParam(name = "sort", paramType = "query", value = "image")
+            @ApiImplicitParam(name = "Authorization", dataType = "String", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataType = "long", paramType = "path", value = "유저 id", example = "1"),
+            @ApiImplicitParam(name = "word_id", dataType = "long", paramType = "query", value = "단어 id"),
+            @ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "페이지"),
+            @ApiImplicitParam(name = "limit", dataType = "int", paramType = "query", value = "페이지 별  객체 수"),
+            @ApiImplicitParam(name = "sort", dataType = "String", paramType = "query", value = "정렬 조건(like, date")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -267,7 +266,7 @@ public class SentenceController {
             @ApiResponse(code = 2042, message = "정렬 방식이 잘못되었습니다.")
     })
     @GetMapping("/{userId}")
-    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@PathVariable long userId, @RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort) throws BaseException {
+    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@PathVariable long userId, @RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = Long.parseLong(principal.getUsername());
         try {
