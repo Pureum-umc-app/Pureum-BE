@@ -38,7 +38,7 @@ public class MyPageController {
      */
     @ApiOperation("나의 문장 리스트 반환 ")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
     })
     @ResponseBody
     @GetMapping("/sentence")
@@ -61,9 +61,9 @@ public class MyPageController {
      */
     @ApiOperation("문장 수정")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1"),
-            @ApiImplicitParam(name = "sentence", paramType = "formData", value = "문장")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1", dataTypeClass = Integer.class),
+            @ApiImplicitParam(name = "postUpdateSentenceReq", paramType = "body", value = "문장", dataTypeClass = PostUpdateSentenceReq.class)
     })
     @ResponseBody
     @PatchMapping("/sentence/{sentenceId}/edit")
@@ -96,8 +96,8 @@ public class MyPageController {
      */
     @ApiOperation("문장 삭제")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1", dataTypeClass = Integer.class)
     })
     @ResponseBody
     @PatchMapping("/sentence/{sentenceId}/delete")
@@ -120,8 +120,8 @@ public class MyPageController {
 
     @ApiOperation("프로필 조회 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1")
+            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스", example = "1")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = GetProfileResponseDto.class),
@@ -145,14 +145,15 @@ public class MyPageController {
 
     @ApiOperation("프로필 수정 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "nickname", paramType = "formData", value = "nickname"),
-            @ApiImplicitParam(name = "image", paramType = "formData", value = "image")
+            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "nickname", dataTypeClass = String.class, paramType = "formData", value = "nickname"),
+            @ApiImplicitParam(name = "image", dataTypeClass = MultipartFile.class, paramType = "formData", value = "image")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = GetProfileResponseDto.class),
-            @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다.")
+            @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2005, message = "이미지파일이 아닙니다")
     })
     @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> EditProfile(@RequestParam(value = "image", required = false) MultipartFile image, PatchEditProfileReq patchEditProfileReq, @PathVariable long userId) throws BaseException {
