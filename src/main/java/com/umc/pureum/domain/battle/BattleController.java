@@ -437,7 +437,7 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/run/{battleIdx}")
-    public BaseResponse<ReturnRunBattleRes> returnRunBattle(@PathVariable Long battleIdx) {
+    public BaseResponse<ReturnRunBattleRes> returnRunBattle(@PathVariable Long battleIdx) throws BaseException{
 
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
@@ -460,7 +460,7 @@ public class BattleController {
                 ReturnRunBattleRes returnRunBattleRes = battleService.returnRunBattle(battleIdx , userId);
                 return new BaseResponse<>(returnRunBattleRes);
             }
-        }catch (Exception e){
+        }catch (BaseException e){
             e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
