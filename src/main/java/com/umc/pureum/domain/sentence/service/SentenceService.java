@@ -61,8 +61,7 @@ public class SentenceService {
 
         // 작성한 문장 존재 여부 확인
         if(writingSentence == ""){
-
-
+            throw new BaseException(POST_SENTENCE_EMPTY);
         }
 
         // 작성할 문장에 단어 포함 여부 확인
