@@ -30,11 +30,11 @@ public class AttendanceController {
     /**
      * 도장 개수 반환 API
      * 전체 도장 개수 & 현재 스탬프지의 도장 개수 반환
-     * [GET] /attendances/{userIdx}
+     * [GET] /attendances/{userId}
      */
     @ApiOperation("도장 개수 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class)
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -69,8 +69,8 @@ public class AttendanceController {
      */
     @ApiOperation("출석 체크 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "AttendanceCheckReq", paramType = "body", value = "출석 체크 Request")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "request", paramType = "body", value = "출석 체크 Request", dataTypeClass = AttendanceCheckReq.class)
     })
     @ResponseBody
     @PostMapping("/check")

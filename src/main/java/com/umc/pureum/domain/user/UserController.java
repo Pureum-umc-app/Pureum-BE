@@ -60,10 +60,10 @@ public class UserController {
      */
     @ApiOperation("회원가입 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataType = "String", paramType = "header", value = "kakao-ACCESS-TOKEN"),
-            @ApiImplicitParam(name = "nickname", dataType = "String", paramType = "formData", value = "nickname"),
-            @ApiImplicitParam(name = "grade", dataType = "int", paramType = "formData", value = "grade"),
-            @ApiImplicitParam(name = "image", dataType = "int", paramType = "formData", value = "image")
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-ACCESS-TOKEN"),
+            @ApiImplicitParam(name = "nickname", dataTypeClass = String.class, paramType = "formData", value = "nickname"),
+            @ApiImplicitParam(name = "grade", dataTypeClass = Integer.class, paramType = "formData", value = "grade"),
+            @ApiImplicitParam(name = "image", dataTypeClass = Integer.class, paramType = "formData", value = "image")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -103,7 +103,7 @@ public class UserController {
      */
     @ApiOperation("로그인 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataType = "String", paramType = "header", value = "kakao-access token"),
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class , paramType = "header", value = "kakao-access token"),
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = LogInResponseDto.class),
@@ -124,7 +124,7 @@ public class UserController {
 
     @ApiOperation("닉네임 유효성 체크 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "nickname", dataType = "String", paramType = "path", value = "닉네임"),
+            @ApiImplicitParam(name = "nickname", dataTypeClass = String.class, paramType = "path", value = "닉네임"),
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
@@ -144,9 +144,9 @@ public class UserController {
 
     @ApiOperation("회원 탈퇴 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", dataType = "String", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", dataType = "long", paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataType = "String", paramType = "header", value = "kakao-access token")
+            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-access token")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
