@@ -1,5 +1,7 @@
 package com.umc.pureum.domain.battle;
 
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattleInfoRes;
+import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleWord;
 import com.umc.pureum.domain.sentence.entity.Keyword;
@@ -28,6 +30,7 @@ public class BattleDao {
     public BattleWord findWord(Long battleId){
         return em.find(BattleWord.class, battleId);
     }
+
 
     // battleWord 저장
     public void saveBattleWord(BattleWord battleWord){
