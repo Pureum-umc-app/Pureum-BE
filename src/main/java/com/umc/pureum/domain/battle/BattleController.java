@@ -463,8 +463,7 @@ public class BattleController {
                 return new BaseResponse<>(returnRunBattleRes);
             }
         }catch (BaseException e){
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
+            return new BaseResponse<>(e.getStatus());
         }
 
     }
@@ -503,8 +502,7 @@ public class BattleController {
                 return new BaseResponse<>(returnFinishBattleRes);
             }
         }catch (BaseException e){
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
+            return new BaseResponse<>(e.getStatus());
         }
 
     }
