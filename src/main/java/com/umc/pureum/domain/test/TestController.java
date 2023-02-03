@@ -1,5 +1,6 @@
 package com.umc.pureum.domain.test;
 
+import com.umc.pureum.domain.battle.BattleService;
 import com.umc.pureum.domain.sentence.SentenceDao;
 import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.mapping.SentenceLikeMapping;
@@ -56,6 +57,7 @@ public class TestController {
         logger.error("ERROR Level 테스트");
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String UserId = principal.getUsername();
+
 //        System.out.println(sentenceLikeRepository.findByStatus( "A", PageRequest.of(0,1,Sort.by(Sort.Order.desc("id")))).getContent());
 
 //        sentenceLikeMappings.forEach(System.out::println);

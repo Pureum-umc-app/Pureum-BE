@@ -1,10 +1,12 @@
 package com.umc.pureum.domain.battle.repository;
 
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattleInfoRes;
 import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
 import com.umc.pureum.domain.battle.dto.repsonse.GetCompleteBattles;
 import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
+import com.umc.pureum.domain.battle.entity.mapping.EndBattle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -12,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,6 +82,12 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "    or b.challenger.id = :userId" +
             "    and b.status = :status")
     List<GetWaitBattlesRes> findAllByWaitBattles(@Param("userId") Long userId, @Param("status")BattleStatus status);
+
+    @Query(nativeQuery = true,
+            value = "SELECT * " +
+                    "FROM battle " +
+                    "WHERE DATE_FORMAT(updated_at,'%Y-%m-%d')= (DATE_FORMAT(CURDATE(),'%Y-%m-%d')-INTERVAL duration DAY) and status = 'I'")
+    List<Battle> findByEndBattle();
 
     /* 나의 종료된 대결 리스트 반환 */
     @Query("select b.id as battleId, b.word.id as wordId, b.word.word.word as word, \n" +
