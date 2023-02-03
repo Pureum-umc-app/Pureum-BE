@@ -5,6 +5,7 @@ import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
 import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
+import com.umc.pureum.domain.battle.entity.mapping.EndBattle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -12,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,11 +58,10 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "    and b.status = :status")
     List<GetWaitBattlesRes> findAllByWaitBattles(@Param("userId") Long userId, @Param("status")BattleStatus status);
 
-    @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
-            "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
-            "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg, \n" +
-            "   b.duration as duration, b.status as battleStatus \n" +
-            "from Battle as b \n" +
-            "where b.id = :battleId")
-    List<GetBattleInfoRes> findInfoByBattleId(@Param("battleId") Long battleId);
+    @Query(nativeQuery = true,
+            value = "SELECT * " +
+                    "FROM battle " +
+                    "WHERE DATE_FORMAT(updated_at,'%Y-%m-%d')= (DATE_FORMAT(CURDATE(),'%Y-%m-%d')-INTERVAL duration DAY) and status = 'I'")
+    List<Battle> findByEndBattle();
+
 }
