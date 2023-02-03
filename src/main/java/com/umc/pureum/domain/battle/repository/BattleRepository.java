@@ -1,5 +1,6 @@
 package com.umc.pureum.domain.battle.repository;
 
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattleInfoRes;
 import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
 import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.Battle;
@@ -54,4 +55,12 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "    or b.challenger.id = :userId" +
             "    and b.status = :status")
     List<GetWaitBattlesRes> findAllByWaitBattles(@Param("userId") Long userId, @Param("status")BattleStatus status);
+
+    @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
+            "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
+            "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg, \n" +
+            "   b.duration as duration, b.status as battleStatus \n" +
+            "from Battle as b \n" +
+            "where b.id = :battleId")
+    List<GetBattleInfoRes> findInfoByBattleId(@Param("battleId") Long battleId);
 }
