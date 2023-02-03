@@ -26,8 +26,8 @@ public class ReturnRunBattleRes {
     private Long challengerSentenceId;
     private String challengerSentence;
 
-    private Long challengerLikeCnt;
     private Long challengedLikeCnt;
+    private Long challengerLikeCnt;
 
     private int userLike;
 
