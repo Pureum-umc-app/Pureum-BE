@@ -1,9 +1,9 @@
 package com.umc.pureum.domain.battle;
 
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattleInfoRes;
+import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleWord;
-import com.umc.pureum.domain.sentence.entity.Sentence;
-import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -26,5 +26,19 @@ public class BattleDao {
     public BattleWord findWord(Long battleId){
         return em.find(BattleWord.class, battleId);
     }
+
+    //대결 정보 가져오기
+//    public Optional<GetBattleInfoRes> findInfoByBattleId(Long battleId){
+//        List<GetBattleInfoRes> battleInfoList = em.createQuery("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
+//                        "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
+//                        "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg, \n" +
+//                        "   b.duration as duration, b.status as status \n" +
+//                        "from Battle as b \n" +
+//                        "where b.id = :battleId" , GetBattleInfoRes.class)
+//                .setParameter("battleId", battleId)
+//                .getResultList();
+//        return battleInfoList.stream().findAny();
+//    }
+
 
 }
