@@ -265,8 +265,6 @@ public class BattleService {
 
             GetBattleResultInterface getBattleResultInterface = battleResultRepository.findBattleResultByBattleId(battleIdx).stream().findAny().get();
 
-            System.out.println("!!!!!!!!!!!!!!!!"+getBattleResultInterface.getUserId());
-
             Long challengedId = battleInfo.getChallengedId();
             Long challengerId = battleInfo.getChallengerId();
 
