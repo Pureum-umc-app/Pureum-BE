@@ -1,5 +1,7 @@
 package com.umc.pureum.domain.battle;
 
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattleSentenceInterface;
+import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.battle.entity.BattleWord;
 import com.umc.pureum.domain.sentence.entity.Keyword;
@@ -9,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,4 +34,5 @@ public class BattleSentenceDao {
     public BattleSentence findOne(Long id){
         return em.find(BattleSentence.class, id);
     }
+
 }
