@@ -237,7 +237,7 @@ public class BattleService {
                         battleInfo.getDuration(), battleInfo.getBattleStatus(),
                         challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
                         challengerSentenceInfo.getBattleSentenceId(), challengerSentenceInfo.getBattleSentence(),
-                        challengerLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
+                        challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
                         challengerLikeInterface.getIsLike()
                 );
             }
