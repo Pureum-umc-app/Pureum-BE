@@ -6,6 +6,7 @@ import com.umc.pureum.domain.battle.entity.*;
 import com.umc.pureum.domain.battle.repository.*;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.Word;
@@ -18,7 +19,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_EMPTY;
+import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_EXISTS_KEYWORD;
+import static com.umc.pureum.global.entity.Status.A;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
 
@@ -199,6 +208,7 @@ public class BattleService {
 
     }
 
+
     //returnRunBattle : 대결 정보 return
     @Transactional
     public ReturnRunBattleRes returnRunBattle(long battleIdx , Long userId) throws BaseException {
@@ -294,4 +304,35 @@ public class BattleService {
         }
         return null;
     }
+
+    @Transactional
+    // battleWord 에 단어 3개 넣기
+    public void saveBattleWordRandomThree() {
+        // 중복 검사
+        // keyword, battleWord 테이블에서 wordId 만 뽑아서 Long 배열 만들기
+        List<Keyword> keywordTable = battleDao.getKeywordTable();
+        Long[] keywordWordId = keywordTable.stream().mapToLong(k -> k.getWord().getId()).boxed().toArray(Long[]::new);
+
+        List<BattleWord> battleWordTable = battleDao.getBattleWordTable();
+        Long[] battleWordWordId = battleWordTable.stream().mapToLong(b -> b.getWord().getId()).boxed().toArray(Long[]::new);
+
+        // 각각 만든 Long 배열 합치기
+        Long[] wordId = Stream.of(keywordWordId, battleWordWordId).flatMap(Stream::of).toArray(Long[]::new);
+
+        // 배열 -> List
+        List<Long> wordIdLongToList = Arrays.asList(wordId);
+
+        List<Word> randomThreeBattleWord = battleDao.getRandomThreeBattleWord(wordIdLongToList);
+
+        List<BattleWord> battleWords = randomThreeBattleWord.stream().map(r -> BattleWord.builder()
+                        .word(r)
+                        .status(A).build())
+                .collect(Collectors.toList());
+
+        for (BattleWord battleWord : battleWords) {
+            battleDao.saveBattleWord(battleWord);
+        }
+
+    }
+
 }
