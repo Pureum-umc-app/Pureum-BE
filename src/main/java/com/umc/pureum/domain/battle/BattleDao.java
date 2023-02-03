@@ -27,18 +27,5 @@ public class BattleDao {
         return em.find(BattleWord.class, battleId);
     }
 
-    //대결 정보 가져오기
-//    public Optional<GetBattleInfoRes> findInfoByBattleId(Long battleId){
-//        List<GetBattleInfoRes> battleInfoList = em.createQuery("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
-//                        "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
-//                        "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg, \n" +
-//                        "   b.duration as duration, b.status as status \n" +
-//                        "from Battle as b \n" +
-//                        "where b.id = :battleId" , GetBattleInfoRes.class)
-//                .setParameter("battleId", battleId)
-//                .getResultList();
-//        return battleInfoList.stream().findAny();
-//    }
-
 
 }
