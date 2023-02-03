@@ -168,6 +168,17 @@ public class BattleProvider {
         }
     }
 
+    /* 나의 종료된 대결 리스트 반환 */
+    public List<GetCompleteBattles> getMyCompleteBattles(Long userId) throws BaseException {
+        // 유저 예외 처리
+        Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
+        if(myInfo.isEmpty()) {
+            throw new BaseException(BaseResponseStatus.INVALID_USER);
+        }
+
+        return battleRepository.findAllByComplete();
+    }
+
     /* 대결 상대 리스트 반환 API */
     public List<BattleFighterRes> getBattleFighters(Long userId) {
         List<UserAccount> allExcludeMe = userDao.findAllExcludeMe(userId);
