@@ -4,6 +4,7 @@ package com.umc.pureum.domain.battle;
 import com.umc.pureum.domain.battle.dto.*;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
 import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import com.umc.pureum.domain.use.dto.request.ReturnGradeRes;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -137,11 +138,11 @@ public class BattleController {
 
         try{
             // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
-            if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId() &&
+            if(userId != battleDao.findOne(request.getBattleId()).getChallenged().getId() ||
                     userId != battleDao.findOne(request.getBattleId()).getChallenger().getId()){
                 return new BaseResponse<>(INVALID_USER_JWT);
             }
-            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus()) ||
+            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus()) &&
                     !"A".equals(battleDao.findOne(request.getBattleId()).getChallenger().getStatus())){
                 return new BaseResponse<>(INVALID_USER);
             }
@@ -425,4 +426,45 @@ public class BattleController {
             return new BaseResponse<>(DATABASE_ERROR);
         }
     }
+
+    /**
+     * 대결 정보 반환 API (대기 중, 진행 중)
+     * [GET] /battles/run/{battleIdx}
+     */
+    @ApiOperation("대결 정보 반환 API (대기 중, 진행 중)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
+    @ResponseBody
+    @GetMapping("/run/{battleIdx}")
+    public BaseResponse<ReturnRunBattleRes> returnRunBattle(@PathVariable Long battleIdx) {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        long userId = Long.parseLong(UserId);
+
+
+        try{
+            // springsecurity 로 찾은 userId 랑 request 에서 찾은 userId 비교
+            if(userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
+                    userId != battleDao.findOne(battleIdx).getChallenger().getId()){
+                return new BaseResponse<>(INVALID_USER_JWT);
+            }
+            else if(!"A".equals(battleDao.findOne(battleIdx).getChallenged().getStatus()) &&
+                    !"A".equals(battleDao.findOne(battleIdx).getChallenger().getStatus())) {
+                return new BaseResponse<>(INVALID_USER);
+            }
+            else{
+                // user 의 grade 찾기
+                ReturnRunBattleRes returnRunBattleRes = battleService.returnRunBattle(battleIdx , userId);
+                return new BaseResponse<>(returnRunBattleRes);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return new BaseResponse<>(DATABASE_ERROR);
+        }
+
+    }
+
 }

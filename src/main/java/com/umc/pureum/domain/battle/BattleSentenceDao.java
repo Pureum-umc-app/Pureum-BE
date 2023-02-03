@@ -1,5 +1,7 @@
 package com.umc.pureum.domain.battle;
 
+import com.umc.pureum.domain.battle.dto.repsonse.GetBattleSentenceInterface;
+import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.battle.entity.BattleWord;
 import com.umc.pureum.domain.sentence.entity.Keyword;
@@ -9,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,4 +34,15 @@ public class BattleSentenceDao {
     public BattleSentence findOne(Long id){
         return em.find(BattleSentence.class, id);
     }
+
+    //대결 문장 정보 가져오기
+//    public Optional<GetBattleSentenceInterface> findInfoByBattleIdAndUserId(Long battleId , Long userId){
+//        List<GetBattleSentenceInterface> battleInfoList = em.createQuery("select b.id as battleSenteceId , b.sentence as battleSentence \n" +
+//                        "from BattleSentence b \n" +
+//                        "where b.id = :battleId",GetBattleSentenceInterface.class )
+//                .setParameter("battleId", battleId)
+//                .getResultList();
+//        return battleInfoList.stream().findAny();
+//    }
+
 }
