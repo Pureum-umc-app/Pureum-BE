@@ -124,7 +124,7 @@ public class SentenceController {
      */
     @ApiOperation("오늘의 작성 전 단어 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class)
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -159,7 +159,7 @@ public class SentenceController {
      */
     @ApiOperation("오늘의 작성 완료 단어 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class)
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -193,8 +193,8 @@ public class SentenceController {
      */
     @ApiOperation("문장 작성 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "CreateSentenceReq", paramType = "body", value = "문장 작성 Request")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "request", paramType = "body", value = "문장 작성 Request", dataTypeClass = CreateSentenceReq.class)
     })
     @ResponseBody
     @PostMapping("/write")
@@ -224,8 +224,8 @@ public class SentenceController {
      */
     @ApiOperation("문장 좋아요 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "LikeSentenceReq", paramType = "body", value = "문장 좋아요 Request")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "request", paramType = "body", value = "문장 좋아요 Request", dataTypeClass = LikeSentenceReq.class)
     })
     @ResponseBody
     @PostMapping("/like")
@@ -253,12 +253,12 @@ public class SentenceController {
 
     @ApiOperation("단어별 문장 리스트 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", dataType = "String", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", dataType = "long", paramType = "path", value = "유저 id", example = "1"),
-            @ApiImplicitParam(name = "word_id", dataType = "long", paramType = "query", value = "단어 id"),
-            @ApiImplicitParam(name = "page", dataType = "int", paramType = "query", value = "페이지"),
-            @ApiImplicitParam(name = "limit", dataType = "int", paramType = "query", value = "페이지 별  객체 수"),
-            @ApiImplicitParam(name = "sort", dataType = "String", paramType = "query", value = "정렬 조건(like, date")
+            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 id", example = "1"),
+            @ApiImplicitParam(name = "word_id", dataTypeClass = Long.class, paramType = "query", value = "단어 id"),
+            @ApiImplicitParam(name = "page", dataTypeClass = Integer.class, paramType = "query", value = "페이지"),
+            @ApiImplicitParam(name = "limit", dataTypeClass = Integer.class, paramType = "query", value = "페이지 별  객체 수"),
+            @ApiImplicitParam(name = "sort", dataTypeClass = String.class, paramType = "query", value = "정렬 조건(like, date")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
