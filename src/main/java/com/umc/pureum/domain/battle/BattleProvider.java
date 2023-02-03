@@ -2,10 +2,7 @@ package com.umc.pureum.domain.battle;
 
 import com.umc.pureum.domain.battle.dto.BattleFighterRes;
 import com.umc.pureum.domain.battle.dto.GetBattleWordRes;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattleLikeInterface;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesRes;
-import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
+import com.umc.pureum.domain.battle.dto.repsonse.*;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
 import com.umc.pureum.domain.battle.entity.BattleWord;
@@ -96,6 +93,17 @@ public class BattleProvider {
         }
     }
 
+    /* 종료된 대결 리스트 반환 */
+    public List<GetCompleteBattles> getCompleteBattles(Long userId) throws BaseException {
+        // 유저 예외 처리
+        Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
+        if(myInfo.isEmpty()) {
+            throw new BaseException(BaseResponseStatus.INVALID_USER);
+        }
+
+        return battleRepository.findAllByComplete();
+    }
+
     /* 대기 중인 대결 리스트 반환 API */
     public List<GetWaitBattlesRes> getWaitBattles(Long userId) throws BaseException {
         // 유저 예외 처리
@@ -158,6 +166,17 @@ public class BattleProvider {
         } else {  // 대결이 없으면 빈 배열을 리턴함
             return new ArrayList<>();
         }
+    }
+
+    /* 나의 종료된 대결 리스트 반환 */
+    public List<GetCompleteBattles> getMyCompleteBattles(Long userId) throws BaseException {
+        // 유저 예외 처리
+        Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
+        if(myInfo.isEmpty()) {
+            throw new BaseException(BaseResponseStatus.INVALID_USER);
+        }
+
+        return battleRepository.findAllByComplete();
     }
 
     /* 대결 상대 리스트 반환 API */
