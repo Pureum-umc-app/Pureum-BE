@@ -43,7 +43,7 @@ public class UseController {
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
-     * [POST] /uses/{user_id}/useTimeAndCount
+     * [POST] /uses/{user_id}/use-time-and-count
      */
     @ApiOperation("일일 사용 시간, 휴대폰 켠 횟수 저장")
     @ApiImplicitParams({
@@ -52,7 +52,7 @@ public class UseController {
             @ApiImplicitParam(name = "postUseTimeAndCountReq", paramType = "body", value = "일일 사용 시간, 휴대폰 화면 켠 횟수", dataTypeClass = PostUseTimeAndCountReq.class),
     })
     @ResponseBody
-    @PostMapping("/{userId}/useTimeAndCount")
+    @PostMapping("/{userId}/use-time-and-count")
     public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long userId, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq) {
         // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -199,11 +199,11 @@ public class UseController {
     /**
      * 날짜 별 랭킹(같은 카테고리(학년) 내) 조회 API
      * 그 랭킹에서 자신의 랭킹 정보 또한 조회
-     * [GET] /uses/rankInSameGrade
+     * [GET] /uses/rank-same-grade
      * 페이징 처리함!(25개 씩)
      * 파라미터 인자로 날짜( ex)"2023-01-31" ), 페이지를 받음.
      */
-    @GetMapping("/rankInSameGrade")
+    @GetMapping("/rank-same-grade")
     @ApiOperation("날짜 별 랭킹(같은 카테고리(학년) 내) 조회 API")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
@@ -231,11 +231,11 @@ public class UseController {
     /**
      * 날짜 별 랭킹(전체) 조회 API
      * 그 랭킹에서 자신의 랭킹 정보 또한 조회
-     * [GET] /uses/rankInAllGrade
+     * [GET] /uses/rank-all-grade
      * 페이징 처리함!(25개 씩)
      * 파라미터 인자로 날짜( ex)"2023-01-31" ), 페이지를 받음.
      */
-    @GetMapping("/rankInAllGrade")
+    @GetMapping("/rank-all-grade")
     @ApiOperation("날짜 별 랭킹(같은 카테고리(학년) 내) 조회 API")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
