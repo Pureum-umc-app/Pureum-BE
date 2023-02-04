@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.umc.pureum.domain.sentence.dao.SentenceDao;
-import com.umc.pureum.domain.sentence.dao.SentenceLikeDao;
 import com.umc.pureum.domain.sentence.dto.request.CreateSentenceReq;
 import com.umc.pureum.domain.sentence.dto.request.LikeSentenceReq;
 import com.umc.pureum.domain.sentence.dto.response.CreateSentenceRes;
@@ -17,8 +16,6 @@ import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
 import com.umc.pureum.domain.sentence.service.SentenceService;
-import com.umc.pureum.domain.user.service.KakaoService;
-import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
@@ -55,9 +52,6 @@ public class SentenceController {
     private final SentenceService sentenceService;
     private final WordRepository wordRepository;
     private final SentenceDao sentenceDao;
-    private final SentenceLikeDao sentenceLikeDao;
-    private final KakaoService kakaoService;
-    private final UserService userService;
 
     /**
      * 한국어 기초 사전 API 연동
