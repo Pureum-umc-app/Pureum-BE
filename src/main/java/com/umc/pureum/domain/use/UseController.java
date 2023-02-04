@@ -1,17 +1,12 @@
 package com.umc.pureum.domain.use;
 
 
-import com.umc.pureum.domain.mypage.dto.GetMySentencesRes;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
-import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
-import com.umc.pureum.domain.use.dto.GetHomeListRes;
-import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
-import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
-import com.umc.pureum.domain.use.dto.rank.RankInformationDto;
-import com.umc.pureum.domain.use.dto.rank.RankerInformationDto;
-import com.umc.pureum.domain.use.dto.request.ReturnGradeReq;
+import com.umc.pureum.domain.use.dto.response.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.response.GetHomeListRes;
+import com.umc.pureum.domain.use.dto.request.PostUseTimeAndCountReq;
+import com.umc.pureum.domain.use.dto.response.PostUseTimeAndCountRes;
+import com.umc.pureum.domain.use.dto.response.RankInformationDto;
+import com.umc.pureum.domain.use.dto.response.RankerInformationDto;
 import com.umc.pureum.domain.use.dto.request.ReturnGradeRes;
 import com.umc.pureum.domain.use.dto.request.SetUsageTimeReq;
 import com.umc.pureum.domain.user.UserDao;
@@ -26,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Time;
 import java.util.List;
 import java.util.Objects;
 
