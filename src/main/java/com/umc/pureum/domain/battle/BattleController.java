@@ -1,29 +1,26 @@
 package com.umc.pureum.domain.battle;
 
 
-import com.umc.pureum.domain.battle.dto.*;
+import com.umc.pureum.domain.battle.dao.BattleDao;
+import com.umc.pureum.domain.battle.dao.BattleSentenceDao;
+import com.umc.pureum.domain.battle.dto.ReturnFinishBattleRes;
 import com.umc.pureum.domain.battle.dto.repsonse.*;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
-import com.umc.pureum.domain.use.dto.request.ReturnGradeRes;
-import com.umc.pureum.domain.sentence.entity.Word;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-
-import static com.umc.pureum.global.config.BaseResponseStatus.DATABASE_ERROR;
-import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_USER_JWT;
-
+import com.umc.pureum.domain.battle.dto.request.BattleStatusReq;
+import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
+import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
+import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Objects;
 
@@ -251,7 +248,6 @@ public class BattleController {
         long id = Long.parseLong(principal.getUsername());
         if (id != userId)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
-        battleService.setResult();
         BattleMyProfilePhotoRes battleMyProfilePhotoRes = new BattleMyProfilePhotoRes(userId, battleService.BattleMyProfilePhoto(userId));
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(battleMyProfilePhotoRes));
     }
@@ -545,7 +541,7 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/finish/{battleIdx}")
-    public BaseResponse<ReturnFinishBattleRes> returnFinishBattle(@PathVariable Long battleIdx) throws BaseException{
+    public BaseResponse<ReturnFinishBattleRes> returnFinishBattle(@PathVariable Long battleIdx) {
 
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
