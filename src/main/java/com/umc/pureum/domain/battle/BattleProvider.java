@@ -108,15 +108,16 @@ public class BattleProvider {
         return battleRepository.findAllByComplete(request);
     }
 
-    /* 대기 중인 대결 리스트 반환 API */
-    public List<GetWaitBattlesRes> getWaitBattles(Long userId) throws BaseException {
+    /* 나의 대기 중인 대결 리스트 반환 API */
+    public List<GetWaitBattlesRes> getWaitBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
         if(myInfo.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
-        return battleRepository.findAllByWaitBattles(userId, BattleStatus.W);
+        PageRequest request = PageRequest.of(page, limit);
+        return battleRepository.findAllWaitBattles(userId, request);
     }
 
     /* 나의 진행 중인 대결 리스트 반환 API */
