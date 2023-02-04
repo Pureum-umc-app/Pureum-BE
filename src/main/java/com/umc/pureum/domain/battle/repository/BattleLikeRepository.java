@@ -19,4 +19,10 @@ public interface BattleLikeRepository extends JpaRepository<BattleLike, Long> {
             "where battle_sentence_id = ?2 \n" +
             "   and status = 'A'", nativeQuery = true)
     Optional<GetBattleLikeInterface> findByUserId(Long userId, Long sentenceId);
+
+    @Query(nativeQuery = true,
+            value = "select count(user_id) as count " +
+                    "from battle_like " +
+                    "where battle_sentence_id = :id and status = 'A'")
+    int CountLikeNumBySentenceId(@Param("id") long sentenceId);
 }

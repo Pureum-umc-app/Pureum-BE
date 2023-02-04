@@ -1,7 +1,6 @@
 package com.umc.pureum.domain.battle.dao;
 
 import com.umc.pureum.domain.battle.entity.BattleLike;
-import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

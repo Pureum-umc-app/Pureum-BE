@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.time.LocalDateTime;
+
 @ApiIgnore
 @RestController
 @RequestMapping("/test")
@@ -46,9 +48,11 @@ public class TestController {
         logger.error("ERROR Level 테스트");
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String UserId = principal.getUsername();
+
 //        System.out.println(sentenceLikeRepository.findByStatus( "A", PageRequest.of(0,1,Sort.by(Sort.Order.desc("id")))).getContent());
 
 //        sentenceLikeMappings.forEach(System.out::println);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(UserId));
+        LocalDateTime now = LocalDateTime.now();
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(UserId+" \n"+now));
     }
 }
