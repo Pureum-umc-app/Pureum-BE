@@ -1,6 +1,6 @@
 package com.umc.pureum.domain.battle.repository;
 
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattleSentenceInterface;
+import com.umc.pureum.domain.battle.dto.response.GetBattleSentenceInterface;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.global.entity.Status;
 import org.springframework.data.jpa.repository.JpaRepository;

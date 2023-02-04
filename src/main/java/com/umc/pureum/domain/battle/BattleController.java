@@ -3,8 +3,8 @@ package com.umc.pureum.domain.battle;
 
 import com.umc.pureum.domain.battle.dao.BattleDao;
 import com.umc.pureum.domain.battle.dao.BattleSentenceDao;
-import com.umc.pureum.domain.battle.dto.repsonse.ReturnFinishBattleRes;
-import com.umc.pureum.domain.battle.dto.repsonse.*;
+import com.umc.pureum.domain.battle.dto.response.ReturnFinishBattleRes;
+import com.umc.pureum.domain.battle.dto.response.*;
 import com.umc.pureum.domain.battle.dto.request.BattleStatusReq;
 import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
 import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
