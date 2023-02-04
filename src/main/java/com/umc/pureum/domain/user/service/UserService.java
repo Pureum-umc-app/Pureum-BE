@@ -7,7 +7,7 @@ import com.umc.pureum.domain.use.UseRepository;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.use.entity.UseStatus;
 import com.umc.pureum.domain.user.UserRepository;
-import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
+import com.umc.pureum.domain.user.dto.request.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
 import com.umc.pureum.domain.mypage.dto.reponse.GetProfileResponseDto;
 import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
