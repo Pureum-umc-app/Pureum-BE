@@ -1,9 +1,9 @@
 package com.umc.pureum.domain.use;
 
-import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
-import com.umc.pureum.domain.use.dto.GetHomeListRes;
-import com.umc.pureum.domain.use.dto.GoalResult;
-import com.umc.pureum.domain.use.dto.rank.RankerInformationDto;
+import com.umc.pureum.domain.use.dto.response.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.response.GetHomeListRes;
+import com.umc.pureum.domain.use.dto.response.GoalResultRes;
+import com.umc.pureum.domain.use.dto.response.RankerInformationDto;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
@@ -11,7 +11,6 @@ import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.build.Plugin;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +47,7 @@ public class UseProvider {
 
         // 결과 매핑
         GetGoalResultsRes goalResultsRes = new GetGoalResultsRes(userId, uses.stream()
-                .map(d -> GoalResult.builder()
+                .map(d -> GoalResultRes.builder()
                         .date(getYesterday(d.getUpdatedAt()))
                         .isSuccess(getSuccess(d.getUseTime(), d.getPurposeTime())).build())
                 .collect(Collectors.toList()));

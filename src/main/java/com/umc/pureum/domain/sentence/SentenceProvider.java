@@ -1,6 +1,6 @@
 package com.umc.pureum.domain.sentence;
 
-import com.umc.pureum.domain.sentence.dto.GetKeywordRes;
+import com.umc.pureum.domain.sentence.dto.response.GetKeywordRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.repository.KeywordRepository;
 import com.umc.pureum.domain.sentence.repository.SentenceRepository;
@@ -11,10 +11,6 @@ import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
