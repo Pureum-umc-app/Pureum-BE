@@ -22,8 +22,7 @@ import java.util.Optional;
 public interface BattleRepository extends JpaRepository<Battle, Long> {
     /* 이미 신청한 키워드인지 확인 */
     @Query("select b from Battle as b \n" +
-            "where b.challenged.id = :userId \n" +
-            "   or b.challenger.id = :userId \n " +
+            "where (b.challenged.id = :userId or b.challenger.id = :userId) \n " +
             "   and b.word.id = :wordId \n " +
             "   and b.status <> 'D'")
     Optional<Battle> findByUserIdAndWordId(@Param("userId") Long userId, @Param("wordId") Long wordId);
@@ -59,7 +58,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "   on b.id = r.battle.id \n" +
             "where b.status = 'C' \n" +
             "   and r.status = 'A'")
-    List<GetCompleteBattles> findAllByComplete(PageRequest request);
+    List<GetCompleteBattles> findAllCompleteBattles(PageRequest request);
 
     /* 나의 대기 중인 대결 리스트 반환 */
     @Query("select b.id as battleId, \n" +
@@ -70,7 +69,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "from Battle as b \n" +
             "where (b.challenged.id = :userId or b.challenger.id = :userId) \n" +
             "    and (b.status = 'W' or b.status = 'A')")
-    List<GetWaitBattlesRes> findAllWaitBattles(@Param("userId") Long userId, PageRequest request);
+    List<GetWaitBattlesRes> findAllMyWaitBattles(@Param("userId") Long userId, PageRequest request);
 
     /* 나의 진행 중인 대결 리스트 반환 */
     @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
