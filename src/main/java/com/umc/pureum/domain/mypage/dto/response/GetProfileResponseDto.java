@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.mypage.dto.reponse;
+package com.umc.pureum.domain.mypage.dto.response;
 
 
 import com.umc.pureum.domain.user.entity.mapping.UserProfileMapping;
