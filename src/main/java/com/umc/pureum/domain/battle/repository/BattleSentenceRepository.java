@@ -37,4 +37,5 @@ public interface BattleSentenceRepository extends JpaRepository<BattleSentence, 
             "    and b.user.id = :userId")
     List<GetBattleSentenceInterface> findInfoByBattleIdAndUserId(@Param("battleId") Long battleId , @Param("userId") Long userId);
 
+    List<BattleSentence> findByUserId(long userId);
 }
