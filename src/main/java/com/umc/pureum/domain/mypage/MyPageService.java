@@ -7,12 +7,12 @@ import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.Optional;
-
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -27,6 +27,14 @@ public class MyPageService {
         Sentence sentence = myPageDao.find(sentenceId);
         sentence.setSentence(postUpdateSentenceReq.getSentence());
     }
+
+    // 키워드 단어 가져오기
+    public String getKeyword(Long sentenceId){
+        Sentence sentence = myPageDao.find(sentenceId);
+        String word = sentence.getKeyword().getWord().getWord();
+        return word;
+    }
+
 
     // 문장 삭제(테이블에서 없애는 것이 아니라 상태만 바꿈)
     @Transactional

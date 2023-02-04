@@ -22,12 +22,13 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.io.IOException;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.utils.FileCheck.checkImage;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @Api(tags = "유저")
-@RequestMapping("/user")
+@RequestMapping("/users")
 
 public class UserController {
     private final KakaoService kakaoService;
@@ -40,7 +41,7 @@ public class UserController {
      * @param code // 인가코드
      * @throws IOException // 카카오 서버 접속 오류 예외처리
      */
-    // kauth.kakao.com/oauth/authorize?client_id=633bdb4f088357e5fe5cde61b4543053&redirect_uri=http://localhost:9000/user/kakao/auth&response_type=code
+    // kauth.kakao.com/oauth/authorize?client_id=633bdb4f088357e5fe5cde61b4543053&redirect_uri=http://localhost:9000/users/kakao/auth&response_type=code
     //위의 링크로 접속하면 console 창에 토큰 정보 나오는데 그거 사용하면 됩니다.
     @ApiIgnore
     @ApiOperation("(서버전용)인가 코드로 토큰 받아오는 API ")
@@ -59,23 +60,27 @@ public class UserController {
      */
     @ApiOperation("회원가입 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", paramType = "header", value = "kakao-ACCESS-TOKEN"),
-            @ApiImplicitParam(name = "nickname", paramType = "formData", value = "nickname"),
-            @ApiImplicitParam(name = "grade", paramType = "formData", value = "grade"),
-            @ApiImplicitParam(name = "image", paramType = "formData", value = "image")
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-ACCESS-TOKEN"),
+            @ApiImplicitParam(name = "nickname", dataTypeClass = String.class, paramType = "formData", value = "nickname"),
+            @ApiImplicitParam(name = "grade", dataTypeClass = Integer.class, paramType = "formData", value = "grade"),
+            @ApiImplicitParam(name = "image", dataTypeClass = Integer.class, paramType = "formData", value = "image")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
             @ApiResponse(code = 2031, message = "중복된 닉네임입니다."),
-            @ApiResponse(code = 2033, message = "이미 가입된 회원입니다.")
+            @ApiResponse(code = 2033, message = "이미 가입된 회원입니다."),
+            @ApiResponse(code = 2005, message = "이미지파일이 아닙니다")
     })
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestParam(value = "image", required = false) MultipartFile image, CreateUserDto createUserDto) throws BaseException {
-        if (!image.isEmpty()) createUserDto.setImage(image);
-        else createUserDto.setImage(null);
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         try {
+            if (!image.isEmpty()) {
+                if (!checkImage(image))
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
+                createUserDto.setImage(image);
+            } else createUserDto.setImage(null);
             if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
             }
@@ -98,7 +103,7 @@ public class UserController {
      */
     @ApiOperation("로그인 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", paramType = "header", value = "kakao-access token"),
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class , paramType = "header", value = "kakao-access token"),
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = LogInResponseDto.class),
@@ -119,7 +124,7 @@ public class UserController {
 
     @ApiOperation("닉네임 유효성 체크 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "nickname", paramType = "path", value = "닉네임"),
+            @ApiImplicitParam(name = "nickname", dataTypeClass = String.class, paramType = "path", value = "닉네임"),
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
@@ -136,17 +141,18 @@ public class UserController {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
     @ApiOperation("회원 탈퇴 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", paramType = "header", value = "kakao-access token")
+            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-access token")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다."),
     })
-    @PatchMapping(value = "/Resign/{userId}")
+    @PatchMapping(value = "/resign/{userId}")
     public ResponseEntity<BaseResponse<String>> UserResign(@PathVariable long userId) throws BaseException {
         try {
             String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
@@ -154,7 +160,7 @@ public class UserController {
                 System.out.println(userId);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
             }
-            userService.UserResign(userId,accessToken);
+            userService.UserResign(userId, accessToken);
             return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원탈퇴되었습니다."));
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
