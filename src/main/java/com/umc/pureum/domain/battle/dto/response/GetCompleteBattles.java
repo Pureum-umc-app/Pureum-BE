@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.battle.dto.repsonse;
+package com.umc.pureum.domain.battle.dto.response;
 
 import io.swagger.annotations.ApiModelProperty;
 

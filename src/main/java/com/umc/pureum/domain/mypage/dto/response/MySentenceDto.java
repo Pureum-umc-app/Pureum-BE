@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.mypage.dto.reponse;
+package com.umc.pureum.domain.mypage.dto.response;
 
 
 import lombok.*;
