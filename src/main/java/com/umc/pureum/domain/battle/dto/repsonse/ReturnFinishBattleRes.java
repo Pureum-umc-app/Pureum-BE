@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.battle.dto;
+package com.umc.pureum.domain.battle.dto.repsonse;
 
 import lombok.Builder;
 import lombok.Data;
