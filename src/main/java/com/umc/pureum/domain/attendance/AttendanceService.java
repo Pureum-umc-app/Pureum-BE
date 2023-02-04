@@ -1,14 +1,9 @@
 package com.umc.pureum.domain.attendance;
 
-import com.umc.pureum.domain.attendance.dto.AttendanceCheckReq;
-import com.umc.pureum.domain.attendance.dto.AttendanceCheckRes;
+import com.umc.pureum.domain.attendance.dto.request.AttendanceCheckReq;
+import com.umc.pureum.domain.attendance.dto.response.AttendanceCheckRes;
 import com.umc.pureum.domain.attendance.entity.AttendanceCheck;
 import com.umc.pureum.domain.attendance.entity.AttendanceStatus;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
-import com.umc.pureum.domain.sentence.entity.Sentence;
-import com.umc.pureum.domain.sentence.entity.SentenceLike;
-import com.umc.pureum.domain.use.UseDao;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import lombok.RequiredArgsConstructor;
