@@ -3,37 +3,34 @@ package com.umc.pureum.domain.battle;
 import com.umc.pureum.domain.battle.dao.BattleDao;
 import com.umc.pureum.domain.battle.dao.BattleLikeDao;
 import com.umc.pureum.domain.battle.dao.BattleSentenceDao;
-import com.umc.pureum.domain.battle.dto.repsonse.BattleStatusRes;
-import com.umc.pureum.domain.battle.dto.repsonse.CreateChallengedSentenceRes;
-import com.umc.pureum.domain.battle.dto.repsonse.LikeBattleRes;
+import com.umc.pureum.domain.battle.dto.ReturnFinishBattleRes;
+import com.umc.pureum.domain.battle.dto.repsonse.*;
 import com.umc.pureum.domain.battle.dto.request.BattleStatusReq;
 import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
 import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
 import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import com.umc.pureum.domain.battle.entity.*;
+import com.umc.pureum.domain.battle.repository.*;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.domain.battle.repository.BattleRepository;
-import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
-import com.umc.pureum.domain.battle.repository.BattleWordRepository;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_EMPTY;
-import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_EXISTS_KEYWORD;
-import static com.umc.pureum.global.entity.Status.A;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.entity.Status.A;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -42,11 +39,13 @@ public class BattleService {
     private final BattleDao battleDao;
     private final BattleSentenceDao battleSentenceDao;
     private final UserRepository userRepository;
-    private final BattleProvider battleProvider;
     private final BattleRepository battleRepository;
     private final BattleWordRepository battleWordRepository;
     private final BattleSentenceRepository battleSentenceRepository;
     private final BattleLikeDao battleLikeDao;
+    private final BattleLikeRepository likeRepository;
+    private final BattleResultRepository battleResultRepository;
+    private final BattleLikeRepository battleLikeRepository;
 
     // accept : 대결 수락
     @Transactional
@@ -210,6 +209,103 @@ public class BattleService {
 
     }
 
+
+    //returnRunBattle : 대결 정보 return
+    @Transactional
+    public ReturnRunBattleRes returnRunBattle(long battleIdx , Long userId) throws BaseException {
+        GetBattleInfoRes battleInfo = battleRepository.findInfoByBattleId(battleIdx).stream().findAny().get();
+
+        if (battleInfo.getBattleStatus().equals(BattleStatus.W) || battleInfo.getBattleStatus().equals(BattleStatus.A) || battleInfo.getBattleStatus().equals(BattleStatus.I)) {
+
+            Long challengedId = battleInfo.getChallengedId();
+            Long challengerId = battleInfo.getChallengerId();
+
+            GetBattleSentenceInterface challengedSentenceInfo = battleSentenceRepository.findInfoByBattleIdAndUserId(battleIdx, challengedId).stream().findAny().get();
+            GetBattleSentenceInterface challengerSentenceInfo = battleSentenceRepository.findInfoByBattleIdAndUserId(battleIdx, challengerId).stream().findAny().get();
+
+            Long challengedSentenceId = challengedSentenceInfo.getBattleSentenceId();
+            Long challengerSentenceId = challengerSentenceInfo.getBattleSentenceId();
+
+            GetBattleLikeInterface challengedLikeInterface = likeRepository.findByUserId(challengedId, challengedSentenceId).stream().findAny().get();
+            GetBattleLikeInterface challengerLikeInterface = likeRepository.findByUserId(challengerId, challengerSentenceId).stream().findAny().get();
+
+            if (userId == challengedId) {
+                return new ReturnRunBattleRes(battleInfo.getBattleId(), battleInfo.getKeywordId(), battleInfo.getKeyword(),
+                        battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
+                        battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
+                        battleInfo.getDuration(), battleInfo.getBattleStatus(),
+                        challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
+                        challengerSentenceInfo.getBattleSentenceId(), challengerSentenceInfo.getBattleSentence(),
+                        challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
+                        challengedLikeInterface.getIsLike()
+                );
+            } else if (userId == challengerId) {
+                return new ReturnRunBattleRes(battleInfo.getBattleId(), battleInfo.getKeywordId(), battleInfo.getKeyword(),
+                        battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
+                        battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
+                        battleInfo.getDuration(), battleInfo.getBattleStatus(),
+                        challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
+                        challengerSentenceInfo.getBattleSentenceId(), challengerSentenceInfo.getBattleSentence(),
+                        challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
+                        challengerLikeInterface.getIsLike()
+                );
+            }
+
+        } else {
+            throw new BaseException(GET_BATTLE_FINISH_STATUS);
+        }
+        return null;
+    }
+
+    //returnRunBattle : 대결 정보 return
+    @Transactional
+    public ReturnFinishBattleRes returnFinishBattle(long battleIdx , Long userId) throws BaseException {
+        GetBattleInfoRes battleInfo = battleRepository.findInfoByBattleId(battleIdx).stream().findAny().get();
+
+        if (battleInfo.getBattleStatus().equals(BattleStatus.D) || battleInfo.getBattleStatus().equals(BattleStatus.D)) {
+
+            GetBattleResultInterface getBattleResultInterface = battleResultRepository.findBattleResultByBattleId(battleIdx).stream().findAny().get();
+
+            System.out.println("!!!!!!!!!!!!!!!!"+getBattleResultInterface.getUserId());
+
+            Long challengedId = battleInfo.getChallengedId();
+            Long challengerId = battleInfo.getChallengerId();
+
+            GetBattleSentenceInterface challengedSentenceInfo = battleSentenceRepository.findInfoByBattleIdAndUserId(battleIdx, challengedId).stream().findAny().get();
+            GetBattleSentenceInterface challengerSentenceInfo = battleSentenceRepository.findInfoByBattleIdAndUserId(battleIdx, challengerId).stream().findAny().get();
+
+            Long challengedSentenceId = challengedSentenceInfo.getBattleSentenceId();
+            Long challengerSentenceId = challengerSentenceInfo.getBattleSentenceId();
+
+            GetBattleLikeInterface challengedLikeInterface = likeRepository.findByUserId(challengedId, challengedSentenceId).stream().findAny().get();
+            GetBattleLikeInterface challengerLikeInterface = likeRepository.findByUserId(challengerId, challengerSentenceId).stream().findAny().get();
+
+            if (userId == challengedId) {
+                return new ReturnFinishBattleRes(battleIdx , getBattleResultInterface.getUserId(),
+                        battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
+                        battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
+                        challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
+                        challengerSentenceInfo.getBattleSentenceId(), challengerSentenceInfo.getBattleSentence(),
+                        challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
+                        challengerLikeInterface.getIsLike()
+                        );
+            } else if (userId == challengerId) {
+                return new ReturnFinishBattleRes(battleIdx , getBattleResultInterface.getUserId(),
+                        battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
+                        battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
+                        challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
+                        challengerSentenceInfo.getBattleSentenceId(), challengerSentenceInfo.getBattleSentence(),
+                        challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
+                        challengerLikeInterface.getIsLike()
+                );
+            }
+
+        } else {
+            throw new BaseException(Get_BATTLE_RUN_STATUS);
+        }
+        return null;
+    }
+
     @Transactional
     // battleWord 에 단어 3개 넣기
     public void saveBattleWordRandomThree() {
@@ -240,4 +336,41 @@ public class BattleService {
 
     }
 
+    @Transactional
+    @Scheduled(cron = "0 0 1 * * *")
+    public void setResult() {
+        List<Battle> battleIdList = battleRepository.findByEndBattle();
+        long challengedBattleSentenceId;
+        long challengerBattleSentenceId;
+        int challengerLikeNum;
+        int challengedLikeNum;
+        BattleResult battleResult;
+        for (Battle battle : battleIdList) {
+            challengedBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenged().getId());
+            challengerBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenger().getId());
+            challengedLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengedBattleSentenceId);
+            challengerLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengerBattleSentenceId);
+            if (challengedLikeNum > challengerLikeNum) {
+                battleResult = BattleResult.builder()
+                        .battle(battle)
+                        .user(battle.getChallenged())
+                        .status(Status.A)
+                        .build();
+                battleResultRepository.save(battleResult);
+            } else if (challengedLikeNum < challengerLikeNum) {
+                battleResult = BattleResult.builder()
+                        .battle(battle)
+                        .user(battle.getChallenger())
+                        .status(Status.A)
+                        .build();
+                battleResultRepository.save(battleResult);
+            } else {
+                battleResult = BattleResult.builder()
+                        .battle(battle)
+                        .status(Status.A)
+                        .build();
+                battleResultRepository.save(battleResult);
+            }
+        }
+    }
 }

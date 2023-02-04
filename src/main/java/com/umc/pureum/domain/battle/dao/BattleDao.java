@@ -3,15 +3,12 @@ package com.umc.pureum.domain.battle.dao;
 import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleWord;
 import com.umc.pureum.domain.sentence.entity.Keyword;
-import com.umc.pureum.domain.sentence.entity.Sentence;
-import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.Word;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,6 +25,7 @@ public class BattleDao {
     public BattleWord findWord(Long battleId){
         return em.find(BattleWord.class, battleId);
     }
+
 
     // battleWord 저장
     public void saveBattleWord(BattleWord battleWord){

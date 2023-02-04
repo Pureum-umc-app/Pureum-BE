@@ -12,4 +12,6 @@ import java.util.List;
 @EnableJpaRepositories
 public interface AttendanceRepository extends JpaRepository<AttendanceCheck, Long> {
     List<AttendanceCheck> findALLByUserIdAndStatus(Long id, AttendanceStatus status);
+
+    List<AttendanceCheck> findByUserId(long userId);
 }
