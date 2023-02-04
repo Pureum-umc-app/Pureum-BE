@@ -18,4 +18,6 @@ import java.util.Optional;
 public interface SentenceRepository extends JpaRepository<Sentence, Long> {
     /* 작성 여부 검사 */
     Optional<Sentence> findByKeywordId(Long id);
+
+    List<Sentence> findByUserId(long userId);
 }
