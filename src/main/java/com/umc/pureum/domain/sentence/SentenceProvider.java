@@ -3,7 +3,6 @@ package com.umc.pureum.domain.sentence;
 import com.umc.pureum.domain.sentence.dto.response.GetKeywordRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.repository.KeywordRepository;
-import com.umc.pureum.domain.sentence.repository.SentenceRepository;
 import com.umc.pureum.domain.use.UseProvider;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.global.config.BaseException;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 @Service
 public class SentenceProvider {
     private final KeywordRepository keywordRepository;
-    private final SentenceRepository sentenceRepository;
     private final UserRepository userRepository;
     private final UseProvider useProvider;
 

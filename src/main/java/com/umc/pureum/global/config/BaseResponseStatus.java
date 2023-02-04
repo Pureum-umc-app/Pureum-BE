@@ -46,7 +46,8 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS(false,2033,"이미 가입된 회원입니다."),
     POST_USERS_NO_EXISTS_USER(false,2034 ,"존재하지 않는 회원입니다."),
     POST_USE_EXISTS_USAGE_TIME(false, 2051, "이미 목표 시간을 설정하였습니다."),
-            //sentence
+
+    //sentence
     POST_SENTENCE_EMPTY(false, 2040, "문장을 입력해주세요."),
     POST_SENTENCE_NO_EXISTS_KEYWORD(false, 2041, "키워드가 포함되어있지 않습니다."),
     GET_SENTENCE_INVALID_SORT_METHOD(false, 2042, "정렬 방식이 잘못되었습니다."),
@@ -56,6 +57,8 @@ public enum BaseResponseStatus {
     POST_BATTLE_NO_EXIST_KEYWORD(false, 2051,"존재하지 않는 키워드입니다."),
     POST_BATTLE_ALREADY_EXIST_KEYWORD(false, 2052,"이미 대결에 사용한 단어입니다."),
     GET_BATTLE_INVALID_STATUS(false, 2053,"대기 중 혹은 종료된 대결만 반환 가능합니다."),
+    GET_BATTLE_FINISH_STATUS(false, 2054,"종료된 대결 입니다."),
+    Get_BATTLE_RUN_STATUS(false, 2055,"종료된 대결 아닙니다."),
 
 
 
