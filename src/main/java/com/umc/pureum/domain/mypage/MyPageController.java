@@ -62,7 +62,7 @@ public class MyPageController {
     @ApiOperation("문장 수정")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
-            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1", dataTypeClass = Integer.class),
+            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1", dataTypeClass = Long.class),
             @ApiImplicitParam(name = "postUpdateSentenceReq", paramType = "body", value = "문장", dataTypeClass = PostUpdateSentenceReq.class)
     })
     @ResponseBody
@@ -97,7 +97,7 @@ public class MyPageController {
     @ApiOperation("문장 삭제")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
-            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1", dataTypeClass = Integer.class)
+            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1", dataTypeClass = Long.class)
     })
     @ResponseBody
     @PatchMapping("/sentence/{sentenceId}/delete")
