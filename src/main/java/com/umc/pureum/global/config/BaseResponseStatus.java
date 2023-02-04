@@ -46,6 +46,7 @@ public enum BaseResponseStatus {
     POST_USERS_EXISTS(false,2033,"이미 가입된 회원입니다."),
     POST_USERS_NO_EXISTS_USER(false,2034 ,"존재하지 않는 회원입니다."),
     POST_USE_EXISTS_USAGE_TIME(false, 2051, "이미 목표 시간을 설정하였습니다."),
+    POST_BADGE_EXITS(false,2060,"이미 존재하는 배지입니다."),
 
     //sentence
     POST_SENTENCE_EMPTY(false, 2040, "문장을 입력해주세요."),
