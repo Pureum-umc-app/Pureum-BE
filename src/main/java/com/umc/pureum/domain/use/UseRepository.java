@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @EnableJpaRepositories
@@ -28,4 +29,5 @@ public interface UseRepository extends JpaRepository<UsePhone, Long> {
             "and u.status = 'A'")
     List<UsePhone> existUsageTime(@Param("id")Long id, Pageable limitOne);
 
+    List<UsePhone> findByUserId(Long id);
 }
