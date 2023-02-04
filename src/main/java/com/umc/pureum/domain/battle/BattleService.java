@@ -47,7 +47,6 @@ public class BattleService {
     private final BattleLikeRepository likeRepository;
     private final BattleResultRepository battleResultRepository;
 
-    private final BattleResultRepository battleResultRepository;
     private final BattleLikeRepository battleLikeRepository;
     // accept : 대결 수락
     @Transactional
