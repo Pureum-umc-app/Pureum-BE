@@ -371,7 +371,7 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/list/{userId}")
-    public BaseResponse<List<GetBattlesRes>> getMyBattles(@PathVariable Long userId) {
+    public BaseResponse<List<GetBattlesRes>> getMyBattles(@PathVariable Long userId, @RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
@@ -382,7 +382,7 @@ public class BattleController {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
-            List<GetBattlesRes> battlesRes = battleProvider.getMyBattles(userIdByAuth);
+            List<GetBattlesRes> battlesRes = battleProvider.getMyBattles(userIdByAuth, page, limit);
             return new BaseResponse<>(battlesRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
