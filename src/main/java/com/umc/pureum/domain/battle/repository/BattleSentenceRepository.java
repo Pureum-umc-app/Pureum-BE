@@ -1,15 +1,12 @@
 package com.umc.pureum.domain.battle.repository;
 
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattleSentenceInterface;
+import com.umc.pureum.domain.battle.dto.response.GetBattleSentenceInterface;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.global.entity.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
-
-import org.springframework.security.core.parameters.P;
-
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -37,4 +34,5 @@ public interface BattleSentenceRepository extends JpaRepository<BattleSentence, 
             "    and b.user.id = :userId")
     List<GetBattleSentenceInterface> findInfoByBattleIdAndUserId(@Param("battleId") Long battleId , @Param("userId") Long userId);
 
+    List<BattleSentence> findByUserId(long userId);
 }
