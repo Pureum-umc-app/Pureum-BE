@@ -97,14 +97,15 @@ public class BattleProvider {
     }
 
     /* 종료된 대결 리스트 반환 */
-    public List<GetCompleteBattles> getCompleteBattles(Long userId) throws BaseException {
+    public List<GetCompleteBattles> getCompleteBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
         if(myInfo.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
-        return battleRepository.findAllByComplete();
+        PageRequest request = PageRequest.of(page, limit);
+        return battleRepository.findAllByComplete(request);
     }
 
     /* 대기 중인 대결 리스트 반환 API */
