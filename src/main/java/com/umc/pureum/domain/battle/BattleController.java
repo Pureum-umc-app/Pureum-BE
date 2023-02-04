@@ -407,7 +407,7 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/complete-list/{userId}")
-    public BaseResponse<List<GetCompleteBattles>> getMyCompleteBattles(@PathVariable Long userId) {
+    public BaseResponse<List<GetCompleteBattles>> getMyCompleteBattles(@PathVariable Long userId, @RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
@@ -418,7 +418,7 @@ public class BattleController {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
-            List<GetCompleteBattles> battlesRes = battleProvider.getMyCompleteBattles(userId);
+            List<GetCompleteBattles> battlesRes = battleProvider.getMyCompleteBattles(userId, page, limit);
             return new BaseResponse<>(battlesRes);
         }
         catch(BaseException e) {
