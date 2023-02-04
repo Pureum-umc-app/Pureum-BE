@@ -14,10 +14,20 @@ public class UserDao {
 
     private final EntityManager em;
 
-    // 사용자 테이블 중 유저 아이디 조회
-    public List<UserAccount> findAll(){
-        return em.createQuery("select u from UserAccount u", UserAccount.class)
-                .getResultList();
+    // 사용자 테이블 단건 조회
+    public UserAccount find(Long id){
+        return em.find(UserAccount.class,id);
     }
 
+    // userId 로 UserAccount 찾기
+    public UserAccount findByUserId(Long userId){
+        return em.find(UserAccount.class,userId);
+    }
+
+    public List<UserAccount> findAllExcludeMe(Long id) {
+        return em.createQuery("select u from UserAccount u where u.id != :id and u.status = 'A' order by RAND()", UserAccount.class)
+                .setParameter("id", id)
+                .setMaxResults(20)
+                .getResultList();
+    }
 }
