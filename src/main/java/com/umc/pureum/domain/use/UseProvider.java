@@ -1,23 +1,29 @@
 package com.umc.pureum.domain.use;
 
 import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.GetHomeListRes;
 import com.umc.pureum.domain.use.dto.GoalResult;
+import com.umc.pureum.domain.use.dto.rank.RankerInformationDto;
 import com.umc.pureum.domain.use.entity.UsePhone;
+import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.build.Plugin;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +33,7 @@ public class UseProvider {
     private final UseDao useDao;
     private final UseRepository useRepository;
     private final UserRepository userRepository;
+    private final UserDao userDao;
 
     /** API **/
 
@@ -68,7 +75,7 @@ public class UseProvider {
         cal.setTime(date);
         cal.add(Calendar.DATE, -1);
 
-        SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-DD");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
         return format.format(cal.getTime());
     }
@@ -90,6 +97,89 @@ public class UseProvider {
         }
     }
 
+    // 홈 화면 리스트 반환
+    public List<GetHomeListRes> getHomeListRes(Long userId){
+        List<UsePhone> useAll = useDao.findAll(userId);
+        return useAll.stream().map(u -> GetHomeListRes.builder()
+                        .date(getYesterday(u.getUpdatedAt()))
+                        .useTime(u.getUseTime())
+                        .purposeTime(u.getPurposeTime())
+                        .rank(getRankerInformation(u.getUpdatedAt(), u.getUser().getGrade())).build())
+                .collect(Collectors.toList());
+    }
 
-    /** 유효성 검사 **/
+    // 랭킹 Top 10 사용자 정보 조회(같은 카테고리(학년) 내)
+    public List<RankerInformationDto> getRankerInformation(Timestamp updateAt, int grade){
+        AtomicInteger num = new AtomicInteger(1);
+        List<UsePhone> rankTopTen = useDao.findRankTopTen(updateAt, grade);
+        return rankTopTen.stream().map(r -> RankerInformationDto.builder()
+                        .rankNum(num.getAndIncrement())
+                        .nickname(r.getUser().getNickname())
+                        .image(r.getUser().getImage())
+                        .useTime(r.getUseTime()).build())
+                .collect(Collectors.toList());
+    }
+
+    // 날짜 별 랭킹 전체 조회(같은 카테고리(학년) 내)
+    public List<RankerInformationDto> getRankerInformationByDateInSameGrade(Long userId, String date, int page){
+        AtomicInteger num = new AtomicInteger(1);
+        Timestamp getDate = getTimeStampFromString(date);
+        int grade = userDao.find(userId).getGrade();
+        if (page == 0){
+            List<UsePhone> rankZero = useDao.findRankZeroInSameGrade(getDate,grade);
+            return rankZero.stream().map(r -> RankerInformationDto.builder()
+                        .rankNum(num.getAndIncrement())
+                        .nickname(r.getUser().getNickname())
+                        .image(r.getUser().getImage())
+                        .useTime(r.getUseTime()).build())
+                    .collect(Collectors.toList());
+        } else {
+            List<UsePhone> rankOverZero = useDao.findRankOverZeroInSameGrade(getDate,grade,page);
+            return rankOverZero.stream().map(r -> RankerInformationDto.builder()
+                        .rankNum(num.getAndIncrement())
+                        .nickname(r.getUser().getNickname())
+                        .image(r.getUser().getImage())
+                        .useTime(r.getUseTime()).build())
+                    .collect(Collectors.toList());
+        }
+    }
+
+    // 날짜 별 랭킹 전체 조회
+    public List<RankerInformationDto> getRankerInformationByDateInAllGrade(String date, int page){
+        AtomicInteger num = new AtomicInteger(1);
+        Timestamp getDate = getTimeStampFromString(date);
+        if (page == 0){
+            List<UsePhone> rankZero = useDao.findRankZeroInAllGrade(getDate);
+            return rankZero.stream().map(r -> RankerInformationDto.builder()
+                            .rankNum(num.getAndIncrement())
+                            .nickname(r.getUser().getNickname())
+                            .image(r.getUser().getImage())
+                            .useTime(r.getUseTime()).build())
+                    .collect(Collectors.toList());
+        } else {
+            List<UsePhone> rankOverZero = useDao.findRankOverZeroInAllGrade(getDate,page);
+            return rankOverZero.stream().map(r -> RankerInformationDto.builder()
+                            .rankNum(num.getAndIncrement())
+                            .nickname(r.getUser().getNickname())
+                            .image(r.getUser().getImage())
+                            .useTime(r.getUseTime()).build())
+                    .collect(Collectors.toList());
+        }
+    }
+
+    // String -> Date(여기서 날짜 1일 더하기) -> timeStamp 로 변환
+    public Timestamp getTimeStampFromString(String setDate){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date = sdf.parse(setDate);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            cal.add(Calendar.DATE, 1);
+            String new_date = sdf.format(cal.getTime()) + " 00:00:00";
+            return Timestamp.valueOf(new_date);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

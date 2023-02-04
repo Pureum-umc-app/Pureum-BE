@@ -16,14 +16,14 @@ public class MyPageDao {
     private final EntityManager em;
 
     // 문장 단건 조회
-    public Sentence find(Long sentenceId){
-        return em.find(Sentence.class, sentenceId);
+    public Sentence find(Long id){
+        return em.find(Sentence.class, id);
     }
 
 
     // 문장 테이블 외래키를 통한 문장 조회
     public List<Sentence> findByFk(Long userId){
-       return em.createQuery("select s from Sentence s where s.user.id = :userId", Sentence.class)
+       return em.createQuery("select s from Sentence s where s.user.id = :userId and s.status != 'D'", Sentence.class)
                 .setParameter("userId",userId)
                 .getResultList();
     }
@@ -33,11 +33,6 @@ public class MyPageDao {
         return em.createQuery("select s from Sentence s where s.user.id = :userId and s.status = 'O'", Sentence.class)
                 .setParameter("userId",userId)
                 .getResultList();
-    }
-
-    // word 테이블 조회
-    public Word findWord(Long id){
-        return em.find(Word.class, id);
     }
 
     // sentence_like 테이블 조회

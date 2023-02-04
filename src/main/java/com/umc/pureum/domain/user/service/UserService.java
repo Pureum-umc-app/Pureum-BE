@@ -1,5 +1,11 @@
 package com.umc.pureum.domain.user.service;
 
+import com.umc.pureum.domain.attendance.AttendanceRepository;
+import com.umc.pureum.domain.attendance.entity.AttendanceCheck;
+import com.umc.pureum.domain.attendance.entity.AttendanceStatus;
+import com.umc.pureum.domain.use.UseRepository;
+import com.umc.pureum.domain.use.entity.UsePhone;
+import com.umc.pureum.domain.use.entity.UseStatus;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
@@ -8,7 +14,6 @@ import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.entity.mapping.UserProfileMapping;
 import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.global.config.BaseResponseStatus;
 import com.umc.pureum.global.config.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.POST_USERS_NO_EXISTS_USER;
@@ -29,6 +35,9 @@ public class UserService {
     private final S3Service s3Service;
     private final JwtTokenProvider jwtTokenProvider;
     private final KakaoService kakaoService;
+    private final UseRepository useRepository;
+    private final AttendanceRepository attendanceRepository;
+
     /**
      * access token으로 유저 정보 가져온 후 회원가입
      *
@@ -74,8 +83,16 @@ public class UserService {
     @Transactional
     public void UserResign(long userId, String accessToken) throws BaseException {
             Optional<UserAccount> userAccount = userRepository.findByIdAndStatus(userId, "A");
+            List<UsePhone> usePhones = useRepository.findByUserId(userId);
+            List<AttendanceCheck> attendanceChecks = attendanceRepository.findByUserId(userId);
             if (userAccount.isPresent()) {
                 userAccount.get().setStatus("D");
+                for (UsePhone usePhone : usePhones) {
+                    usePhone.setStatus(UseStatus.D);
+                }
+                for (AttendanceCheck attendanceCheck : attendanceChecks) {
+                    attendanceCheck.setStatus(AttendanceStatus.D);
+                }
             } else
                 throw new BaseException(POST_USERS_NO_EXISTS_USER);
             kakaoService.unlink(accessToken);
