@@ -105,7 +105,7 @@ public class BattleProvider {
         }
 
         PageRequest request = PageRequest.of(page, limit);
-        return battleRepository.findAllByComplete(request);
+        return battleRepository.findAllCompleteBattles(request);
     }
 
     /* 나의 대기 중인 대결 리스트 반환 API */
@@ -117,7 +117,7 @@ public class BattleProvider {
         }
 
         PageRequest request = PageRequest.of(page, limit);
-        return battleRepository.findAllWaitBattles(userId, request);
+        return battleRepository.findAllMyWaitBattles(userId, request);
     }
 
     /* 나의 진행 중인 대결 리스트 반환 API */
