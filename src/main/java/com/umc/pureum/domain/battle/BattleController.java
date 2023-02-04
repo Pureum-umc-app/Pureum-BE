@@ -301,14 +301,14 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/complete-list")
-    public BaseResponse<List<GetCompleteBattles>> getCompleteBattles() {
+    public BaseResponse<List<GetCompleteBattles>> getCompleteBattles(@RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
             Long userIdByAuth = Long.parseLong(user);
 
-            List<GetCompleteBattles> battlesRes = battleProvider.getCompleteBattles(userIdByAuth);
+            List<GetCompleteBattles> battlesRes = battleProvider.getCompleteBattles(userIdByAuth, page, limit);
             return new BaseResponse<>(battlesRes);
         }
         catch(BaseException e) {

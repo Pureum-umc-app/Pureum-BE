@@ -50,15 +50,16 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "        when(r.user.id = b.challenged.id) then b.challenged.image \n" +
             "        else b.challenger.image \n" +
             "        end as winnerProfileImg, \n" +
-            "   case when(r.user.id = 0) then b.challenged.image \n" +
-            "        else '' \n" +
+            "   case when(r.user.id = b.challenger.id) then '' \n" +
+            "        when(r.user.id = b.challenged.id) then '' \n" +
+            "        else b.challenged.image \n" +
             "        end as otherProfileImg \n" +
             "from Battle as b \n" +
             "left join BattleResult r \n" +
             "   on b.id = r.battle.id \n" +
             "where b.status = 'C' \n" +
             "   and r.status = 'A'")
-    List<GetCompleteBattles> findAllByComplete();
+    List<GetCompleteBattles> findAllByComplete(PageRequest request);
 
     /* 나의 진행 중인 대결 리스트 반환 */
     @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
