@@ -1,16 +1,14 @@
 package com.umc.pureum.domain.attendance;
 
-import com.umc.pureum.domain.attendance.dto.AttendanceCheckReq;
-import com.umc.pureum.domain.attendance.dto.AttendanceCheckRes;
-import com.umc.pureum.domain.attendance.dto.GetStampRes;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import com.umc.pureum.domain.attendance.dto.request.AttendanceCheckReq;
+import com.umc.pureum.domain.attendance.dto.response.AttendanceCheckRes;
+import com.umc.pureum.domain.attendance.dto.response.GetStampRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
