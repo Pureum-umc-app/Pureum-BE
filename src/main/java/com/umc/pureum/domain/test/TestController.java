@@ -9,6 +9,7 @@ import com.umc.pureum.domain.sentence.service.SentenceService;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.global.config.BaseResponse;
 import org.hibernate.criterion.Order;
+import org.joda.time.DateTimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.time.LocalDateTime;
 
 @ApiIgnore
 @RestController
@@ -61,6 +64,7 @@ public class TestController {
 //        System.out.println(sentenceLikeRepository.findByStatus( "A", PageRequest.of(0,1,Sort.by(Sort.Order.desc("id")))).getContent());
 
 //        sentenceLikeMappings.forEach(System.out::println);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(UserId));
+        LocalDateTime now = LocalDateTime.now();
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(UserId+" \n"+now));
     }
 }
