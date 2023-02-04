@@ -1,12 +1,17 @@
 package com.umc.pureum.domain.battle;
 
-import com.umc.pureum.domain.battle.dto.*;
+import com.umc.pureum.domain.battle.dao.BattleDao;
+import com.umc.pureum.domain.battle.dao.BattleLikeDao;
+import com.umc.pureum.domain.battle.dao.BattleSentenceDao;
+import com.umc.pureum.domain.battle.dto.repsonse.BattleStatusRes;
+import com.umc.pureum.domain.battle.dto.repsonse.CreateChallengedSentenceRes;
+import com.umc.pureum.domain.battle.dto.repsonse.LikeBattleRes;
+import com.umc.pureum.domain.battle.dto.request.BattleStatusReq;
+import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
+import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
+import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import com.umc.pureum.domain.battle.entity.*;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
-import com.umc.pureum.domain.sentence.entity.Sentence;
-import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;

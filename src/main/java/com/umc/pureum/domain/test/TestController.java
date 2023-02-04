@@ -1,19 +1,9 @@
 package com.umc.pureum.domain.test;
 
-import com.umc.pureum.domain.sentence.SentenceDao;
-import com.umc.pureum.domain.sentence.entity.SentenceLike;
-import com.umc.pureum.domain.sentence.entity.mapping.SentenceLikeMapping;
-import com.umc.pureum.domain.sentence.repository.SentenceLikeRepository;
-import com.umc.pureum.domain.sentence.service.SentenceService;
-import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.global.config.BaseResponse;
-import org.hibernate.criterion.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
