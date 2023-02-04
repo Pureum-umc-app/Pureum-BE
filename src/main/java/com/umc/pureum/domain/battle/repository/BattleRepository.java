@@ -5,6 +5,7 @@ import com.umc.pureum.domain.battle.dto.repsonse.GetCompleteBattles;
 import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -12,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +34,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg \n" +
             "from Battle as b \n" +
             "where b.status = :status")
-    List<GetBattlesInterface> findAllByStatus(@Param("status") BattleStatus status);
+    List<GetBattlesInterface> findAllBattles(@Param("status") BattleStatus status, PageRequest pageable);
 
     /* 종료된 대결 리스트 반환 */
     @Query("select b.id as battleId, b.word.id as wordId, b.word.word.word as word, \n" +
