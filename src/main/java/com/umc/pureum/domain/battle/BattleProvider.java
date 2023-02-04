@@ -1,9 +1,9 @@
 package com.umc.pureum.domain.battle;
 
 import com.umc.pureum.domain.battle.dao.BattleDao;
-import com.umc.pureum.domain.battle.dto.repsonse.BattleFighterRes;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattleWordRes;
-import com.umc.pureum.domain.battle.dto.repsonse.*;
+import com.umc.pureum.domain.battle.dto.response.BattleFighterRes;
+import com.umc.pureum.domain.battle.dto.response.GetBattleWordRes;
+import com.umc.pureum.domain.battle.dto.response.*;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
 import com.umc.pureum.domain.battle.entity.BattleWord;

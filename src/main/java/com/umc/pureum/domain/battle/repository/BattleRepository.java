@@ -1,9 +1,9 @@
 package com.umc.pureum.domain.battle.repository;
 
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattleInfoRes;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
-import com.umc.pureum.domain.battle.dto.repsonse.GetCompleteBattles;
-import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
+import com.umc.pureum.domain.battle.dto.response.GetBattleInfoRes;
+import com.umc.pureum.domain.battle.dto.response.GetBattlesInterface;
+import com.umc.pureum.domain.battle.dto.response.GetCompleteBattles;
+import com.umc.pureum.domain.battle.dto.response.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
 import org.springframework.data.domain.PageRequest;

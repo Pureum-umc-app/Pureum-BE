@@ -1,6 +1,6 @@
 package com.umc.pureum.domain.battle.repository;
 
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattleLikeInterface;
+import com.umc.pureum.domain.battle.dto.response.GetBattleLikeInterface;
 import com.umc.pureum.domain.battle.entity.BattleLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
