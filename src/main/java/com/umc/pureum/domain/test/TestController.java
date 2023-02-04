@@ -1,20 +1,9 @@
 package com.umc.pureum.domain.test;
 
-import com.umc.pureum.domain.battle.BattleService;
-import com.umc.pureum.domain.sentence.SentenceDao;
-import com.umc.pureum.domain.sentence.entity.SentenceLike;
-import com.umc.pureum.domain.sentence.entity.mapping.SentenceLikeMapping;
-import com.umc.pureum.domain.sentence.repository.SentenceLikeRepository;
-import com.umc.pureum.domain.sentence.service.SentenceService;
-import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.global.config.BaseResponse;
-import org.hibernate.criterion.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.time.LocalDateTime;
 
 @ApiIgnore
 @RestController
@@ -61,6 +52,7 @@ public class TestController {
 //        System.out.println(sentenceLikeRepository.findByStatus( "A", PageRequest.of(0,1,Sort.by(Sort.Order.desc("id")))).getContent());
 
 //        sentenceLikeMappings.forEach(System.out::println);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(UserId));
+        LocalDateTime now = LocalDateTime.now();
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(UserId+" \n"+now));
     }
 }

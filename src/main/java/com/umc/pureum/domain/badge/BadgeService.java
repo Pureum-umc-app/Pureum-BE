@@ -1,6 +1,9 @@
 package com.umc.pureum.domain.badge;
 
 
+import com.umc.pureum.domain.badge.entity.Badge;
+import com.umc.pureum.domain.user.UserDao;
+import com.umc.pureum.domain.user.entity.UserAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,4 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class BadgeService {
 
     private final BadgeDao badgeDao;
+    private final UserDao userDao;
+
+    // 배지 저장
+    public void saveBadge(Long userId, int badge){
+        UserAccount userAccount = userDao.find(userId);
+        badgeDao.save(new Badge(userAccount, badge));
+    }
 }
