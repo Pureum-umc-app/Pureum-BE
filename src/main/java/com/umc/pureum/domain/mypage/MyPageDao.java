@@ -2,7 +2,6 @@ package com.umc.pureum.domain.mypage;
 
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.SentenceLike;
-import com.umc.pureum.domain.sentence.entity.Word;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
