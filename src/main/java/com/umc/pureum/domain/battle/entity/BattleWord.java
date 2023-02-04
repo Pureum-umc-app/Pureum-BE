@@ -1,6 +1,5 @@
 package com.umc.pureum.domain.battle.entity;
 
-import com.sun.istack.NotNull;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.global.entity.BaseEntity;
 import com.umc.pureum.global.entity.Status;
@@ -9,9 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Data
 @SuperBuilder
@@ -20,7 +17,7 @@ import javax.persistence.OneToOne;
 public class BattleWord extends BaseEntity {
     @OneToOne @JoinColumn(name = "word_id")
     private Word word;
-    @NotNull
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @Builder

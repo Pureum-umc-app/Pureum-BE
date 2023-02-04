@@ -2,9 +2,7 @@ package com.umc.pureum.domain.sentence.entity;
 
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -13,6 +11,8 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class SentenceLike extends BaseEntity {
     @ManyToOne @JoinColumn(name = "user_id")
     private UserAccount user;
