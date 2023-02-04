@@ -1,8 +1,8 @@
 package com.umc.pureum.domain.mypage;
 
-import com.umc.pureum.domain.mypage.dto.reponse.GetMySentencesRes;
+import com.umc.pureum.domain.mypage.dto.response.GetMySentencesRes;
 import com.umc.pureum.domain.mypage.dto.request.PostUpdateSentenceReq;
-import com.umc.pureum.domain.mypage.dto.reponse.GetProfileResponseDto;
+import com.umc.pureum.domain.mypage.dto.response.GetProfileResponseDto;
 import com.umc.pureum.domain.mypage.dto.request.PatchEditProfileReq;
 import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;

@@ -1,7 +1,7 @@
 package com.umc.pureum.domain.mypage;
 
-import com.umc.pureum.domain.mypage.dto.reponse.GetMySentencesRes;
-import com.umc.pureum.domain.mypage.dto.reponse.MySentenceDto;
+import com.umc.pureum.domain.mypage.dto.response.GetMySentencesRes;
+import com.umc.pureum.domain.mypage.dto.response.MySentenceDto;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
