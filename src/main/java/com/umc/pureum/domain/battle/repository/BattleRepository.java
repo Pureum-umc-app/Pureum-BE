@@ -95,8 +95,9 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "        when(r.user.id = b.challenged.id) then b.challenged.image \n" +
             "        else b.challenger.image \n" +
             "        end as winnerProfileImg, \n" +
-            "   case when(r.user.id = 0) then b.challenged.image \n" +
-            "        else '' \n" +
+            "   case when(r.user.id = b.challenger.id) then '' \n" +
+            "        when(r.user.id = b.challenged.id) then '' \n" +
+            "        else b.challenged.image \n" +
             "        end as otherProfileImg \n" +
             "from Battle as b \n" +
             "left join BattleResult r \n" +
@@ -104,5 +105,5 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "where (b.challenged.id = :userId or b.challenger.id = :userId) \n" +
             "   and b.status = 'C' \n" +
             "   and r.status = 'A'")
-    List<GetCompleteBattles> findAllByComplete(Long userId);
+    List<GetCompleteBattles> findAllMyCompleteBattles(Long userId, PageRequest request);
 }
