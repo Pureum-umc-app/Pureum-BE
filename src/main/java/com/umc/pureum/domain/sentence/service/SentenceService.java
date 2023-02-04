@@ -1,11 +1,11 @@
 package com.umc.pureum.domain.sentence.service;
 
-import com.umc.pureum.domain.sentence.SentenceDao;
-import com.umc.pureum.domain.sentence.SentenceLikeDao;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import com.umc.pureum.domain.sentence.dao.SentenceDao;
+import com.umc.pureum.domain.sentence.dao.SentenceLikeDao;
+import com.umc.pureum.domain.sentence.dto.request.CreateSentenceReq;
+import com.umc.pureum.domain.sentence.dto.response.CreateSentenceRes;
+import com.umc.pureum.domain.sentence.dto.request.LikeSentenceReq;
+import com.umc.pureum.domain.sentence.dto.response.LikeSentenceRes;
 import com.umc.pureum.domain.sentence.dto.response.SentenceListRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Sentence;
@@ -16,7 +16,6 @@ import com.umc.pureum.domain.sentence.function.TimeGeneralization;
 import com.umc.pureum.domain.sentence.repository.KeywordRepository;
 import com.umc.pureum.domain.sentence.repository.SentenceRepository;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
-import com.umc.pureum.domain.sentence.service.SentenceLikeService;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
