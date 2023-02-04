@@ -121,7 +121,7 @@ public class BattleProvider {
     }
 
     /* 나의 진행 중인 대결 리스트 반환 API */
-    public List<GetBattlesRes> getMyBattles(Long userId) throws BaseException {
+    public List<GetBattlesRes> getMyBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> user = userRepository.findByIdAndStatus(userId, "A");
         if(user.isEmpty()) {
@@ -129,7 +129,8 @@ public class BattleProvider {
         }
 
         // 배틀 정보를 받아옴
-        List<GetBattlesInterface> battles = battleRepository.findAllByUserIdAndStatus(userId, BattleStatus.I);
+        PageRequest request = PageRequest.of(page, limit);
+        List<GetBattlesInterface> battles = battleRepository.findAllMyBattles(userId, request);
 
         // 좋아요 정보를 추가해서 배열을 만들어줌
         if(!battles.isEmpty()) {
