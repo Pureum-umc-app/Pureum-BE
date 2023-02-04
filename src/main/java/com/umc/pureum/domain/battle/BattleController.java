@@ -274,14 +274,14 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/list")
-    public BaseResponse<List<GetBattlesRes>> getBattles() {
+    public BaseResponse<List<GetBattlesRes>> getBattles(@RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
             Long userIdByAuth = Long.parseLong(user);
 
-            List<GetBattlesRes> battlesRes = battleProvider.getBattles(userIdByAuth);
+            List<GetBattlesRes> battlesRes = battleProvider.getBattles(userIdByAuth, page, limit);
             return new BaseResponse<>(battlesRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -306,14 +306,14 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/complete-list")
-    public BaseResponse<List<GetCompleteBattles>> getCompleteBattles() {
+    public BaseResponse<List<GetCompleteBattles>> getCompleteBattles(@RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
             Long userIdByAuth = Long.parseLong(user);
 
-            List<GetCompleteBattles> battlesRes = battleProvider.getCompleteBattles(userIdByAuth);
+            List<GetCompleteBattles> battlesRes = battleProvider.getCompleteBattles(userIdByAuth, page, limit);
             return new BaseResponse<>(battlesRes);
         }
         catch(BaseException e) {
@@ -323,7 +323,7 @@ public class BattleController {
 
     /**
      * 나의 대기 중인 대결 리스트 반환
-     * [GET] /battles/wait-list
+     * [GET] /battles/wait-list/{userId}
      * @param userId
      * @return
      */
@@ -340,7 +340,7 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/wait-list/{userId}")
-    public BaseResponse<List<GetWaitBattlesRes>> getWaitBattles(@PathVariable Long userId) {
+    public BaseResponse<List<GetWaitBattlesRes>> getWaitBattles(@PathVariable Long userId, @RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
@@ -351,7 +351,7 @@ public class BattleController {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
-            List<GetWaitBattlesRes> battlesRes = battleProvider.getWaitBattles(userId);
+            List<GetWaitBattlesRes> battlesRes = battleProvider.getWaitBattles(userId, page, limit);
             return new BaseResponse<>(battlesRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -360,7 +360,7 @@ public class BattleController {
 
     /**
      * 나의 진행 중인 대결 리스트 반환 (최신순)
-     * [GET] /battles/my-list
+     * [GET] /battles/list/{userId}
      * @return 진행 중인 대결 리스트
      */
     @ApiOperation("나의 진행 중인 대결 리스트 반환")
@@ -376,7 +376,7 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/list/{userId}")
-    public BaseResponse<List<GetBattlesRes>> getMyBattles(@PathVariable Long userId) {
+    public BaseResponse<List<GetBattlesRes>> getMyBattles(@PathVariable Long userId, @RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
@@ -387,7 +387,7 @@ public class BattleController {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
-            List<GetBattlesRes> battlesRes = battleProvider.getMyBattles(userIdByAuth);
+            List<GetBattlesRes> battlesRes = battleProvider.getMyBattles(userIdByAuth, page, limit);
             return new BaseResponse<>(battlesRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -412,7 +412,7 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/complete-list/{userId}")
-    public BaseResponse<List<GetCompleteBattles>> getMyCompleteBattles(@PathVariable Long userId) {
+    public BaseResponse<List<GetCompleteBattles>> getMyCompleteBattles(@PathVariable Long userId, @RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
@@ -423,7 +423,7 @@ public class BattleController {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
-            List<GetCompleteBattles> battlesRes = battleProvider.getMyCompleteBattles(userId);
+            List<GetCompleteBattles> battlesRes = battleProvider.getMyCompleteBattles(userId, page, limit);
             return new BaseResponse<>(battlesRes);
         }
         catch(BaseException e) {
