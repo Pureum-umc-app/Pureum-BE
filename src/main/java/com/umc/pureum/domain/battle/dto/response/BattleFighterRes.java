@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.battle.dto.repsonse;
+package com.umc.pureum.domain.battle.dto.response;
 
 
 import lombok.AllArgsConstructor;
@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetBattleWordRes {
+public class BattleFighterRes {
 
-    private Long wordId;
-    private String word;
-    private String meaning;
+    private Long userId;
+    private String nickname;
+    private String image;
+
 }
