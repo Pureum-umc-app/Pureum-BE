@@ -1,11 +1,13 @@
 package com.umc.pureum.domain.battle;
 
 
-import com.umc.pureum.domain.battle.dto.*;
+import com.umc.pureum.domain.battle.dao.BattleDao;
+import com.umc.pureum.domain.battle.dao.BattleSentenceDao;
 import com.umc.pureum.domain.battle.dto.repsonse.*;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
-import com.umc.pureum.domain.sentence.entity.Word;
+import com.umc.pureum.domain.battle.dto.request.BattleStatusReq;
+import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
+import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
+import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Objects;
 

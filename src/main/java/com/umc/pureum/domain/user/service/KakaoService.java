@@ -2,7 +2,7 @@ package com.umc.pureum.domain.user.service;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
+import com.umc.pureum.domain.user.dto.request.KakaoAccessTokenInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
