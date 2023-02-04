@@ -28,4 +28,5 @@ public interface UseRepository extends JpaRepository<UsePhone, Long> {
             "and u.status = 'A'")
     List<UsePhone> existUsageTime(@Param("id")Long id, Pageable limitOne);
 
+    List<UsePhone> findByUserId(Long id);
 }
