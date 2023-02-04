@@ -269,14 +269,14 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/list")
-    public BaseResponse<List<GetBattlesRes>> getBattles() {
+    public BaseResponse<List<GetBattlesRes>> getBattles(@RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
             Long userIdByAuth = Long.parseLong(user);
 
-            List<GetBattlesRes> battlesRes = battleProvider.getBattles(userIdByAuth);
+            List<GetBattlesRes> battlesRes = battleProvider.getBattles(userIdByAuth, page, limit);
             return new BaseResponse<>(battlesRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -355,7 +355,7 @@ public class BattleController {
 
     /**
      * 나의 진행 중인 대결 리스트 반환 (최신순)
-     * [GET] /battles/my-list
+     * [GET] /battles/list/{userId}
      * @return 진행 중인 대결 리스트
      */
     @ApiOperation("나의 진행 중인 대결 리스트 반환")
