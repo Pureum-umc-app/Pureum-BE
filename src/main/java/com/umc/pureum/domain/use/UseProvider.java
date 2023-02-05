@@ -1,9 +1,9 @@
 package com.umc.pureum.domain.use;
 
-import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
-import com.umc.pureum.domain.use.dto.GetHomeListRes;
-import com.umc.pureum.domain.use.dto.GoalResult;
-import com.umc.pureum.domain.use.dto.rank.RankerInformationDto;
+import com.umc.pureum.domain.use.dto.response.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.response.GetHomeListRes;
+import com.umc.pureum.domain.use.dto.response.GoalResult;
+import com.umc.pureum.domain.use.dto.response.RankerInformationDto;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
@@ -11,7 +11,6 @@ import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.build.Plugin;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,13 +46,12 @@ public class UseProvider {
         List<UsePhone> uses = useRepository.findAllByConditions(userId, getNextDay());
 
         // 결과 매핑
-        GetGoalResultsRes goalResultsRes = new GetGoalResultsRes(userId, uses.stream()
+
+        return new GetGoalResultsRes(userId, uses.stream()
                 .map(d -> GoalResult.builder()
                         .date(getYesterday(d.getUpdatedAt()))
                         .isSuccess(getSuccess(d.getUseTime(), d.getPurposeTime())).build())
                 .collect(Collectors.toList()));
-
-        return goalResultsRes;
     }
 
     /* 다음 날 구하기 */
@@ -80,7 +78,7 @@ public class UseProvider {
         return format.format(cal.getTime());
     }
 
-    /* 날짜 계산 (-9시간) */
+    /* 날짜 계산 */
     public String getToday(Timestamp createdAt) {
         Date date = new Date(createdAt.getTime());
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -89,7 +87,11 @@ public class UseProvider {
     }
 
     /* 성공 여부 계산 */
-    public int getSuccess(Time use_time, Time purpose_time) {
+    public Integer getSuccess(Time use_time, Time purpose_time) {
+        if(use_time == null || purpose_time == null) {
+            return null;
+        }
+
         if(use_time.after(purpose_time)) {
             return 0;  // 실패
         } else {
