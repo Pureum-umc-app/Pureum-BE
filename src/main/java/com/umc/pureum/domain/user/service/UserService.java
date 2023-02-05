@@ -7,6 +7,7 @@ import com.umc.pureum.domain.use.UseRepository;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.use.entity.UseStatus;
 import com.umc.pureum.domain.user.UserRepository;
+import com.umc.pureum.domain.user.dto.request.FCMDto;
 import com.umc.pureum.domain.user.dto.request.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
 import com.umc.pureum.domain.mypage.dto.response.GetProfileResponseDto;
@@ -67,12 +68,14 @@ public class UserService {
     public boolean validationDuplicateKakaoId(Long kakaoId) {
         return userRepository.existsByKakaoIdAndStatus(kakaoId,"A");
     }
-
+    @Transactional
     public Long getUserId(Long kakaoId) {
         return userRepository.findByKakaoIdAndStatus(kakaoId,"A").getId();
     }
-    public LogInResponseDto userLogIn(Long id) {
+    public LogInResponseDto userLogIn(Long id, FCMDto fcmDto) {
         String jwt = jwtTokenProvider.createAccessToken(Long.toString(id));
+        Optional<UserAccount> userAccount = userRepository.findByIdAndStatus(id,"A");
+        userAccount.get().setFcmId(fcmDto.getFcmId());
         return new LogInResponseDto(jwt);
     }
 
