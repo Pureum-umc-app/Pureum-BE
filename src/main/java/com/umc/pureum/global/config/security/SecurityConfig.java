@@ -27,13 +27,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
     private static final String[] PERMITTED_URLS = {
-            "/user/signin",//로그인
-            "/user/signup", //회원가입
-            "/user/kakao/auth", //토큰받는 api
+            "/users/signin",//로그인
+            "/users/signup", //회원가입
+            "/users/kakao/auth", //토큰받는 api
             "/v2/api-docs/**",  //swagger
             "/swagger-ui/**", //swagger
             "/swagger-resources/**", //swagger
-            "/user/nickname/{nickname}/validation"
+            "/users/nickname/{nickname}/validation"
     };
 
     @Bean
@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .exceptionHandling(config -> config
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
-                .authorizeRequests(ant -> ant
+                .authorizeHttpRequests(ant -> ant
                         .antMatchers(PERMITTED_URLS).permitAll() // 해당 문자열 배열에 저장된 uri 요청은 제외
                         .anyRequest().authenticated() // 모든 요청은 Auth 받아야함
                 );
@@ -89,13 +89,5 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationCheckFilter jwtAuthenticationCheckFilter(JwtTokenProvider jwtTokenProvider) {
         return new JwtAuthenticationCheckFilter(jwtTokenProvider);
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web
-                .ignoring().antMatchers(
-                        PERMITTED_URLS
-                );
     }
 }
