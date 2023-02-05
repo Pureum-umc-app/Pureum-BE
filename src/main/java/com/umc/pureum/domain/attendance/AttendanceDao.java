@@ -1,13 +1,10 @@
 package com.umc.pureum.domain.attendance;
 
 import com.umc.pureum.domain.attendance.entity.AttendanceCheck;
-import com.umc.pureum.domain.sentence.entity.Keyword;
-import com.umc.pureum.domain.sentence.entity.Sentence;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
