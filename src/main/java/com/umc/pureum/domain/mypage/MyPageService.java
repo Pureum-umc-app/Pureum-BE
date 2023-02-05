@@ -1,17 +1,18 @@
 package com.umc.pureum.domain.mypage;
 
-import com.umc.pureum.domain.mypage.dto.PostUpdateSentenceReq;
+import com.umc.pureum.domain.mypage.dto.request.PostUpdateSentenceReq;
 import com.umc.pureum.domain.mypage.dto.request.PatchEditProfileReq;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.service.S3Service;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)

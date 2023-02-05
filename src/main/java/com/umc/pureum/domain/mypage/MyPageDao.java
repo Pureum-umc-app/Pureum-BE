@@ -2,7 +2,6 @@ package com.umc.pureum.domain.mypage;
 
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.SentenceLike;
-import com.umc.pureum.domain.sentence.entity.Word;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +22,7 @@ public class MyPageDao {
 
     // 문장 테이블 외래키를 통한 문장 조회
     public List<Sentence> findByFk(Long userId){
-       return em.createQuery("select s from Sentence s where s.user.id = :userId", Sentence.class)
+       return em.createQuery("select s from Sentence s where s.user.id = :userId and s.status != 'D'", Sentence.class)
                 .setParameter("userId",userId)
                 .getResultList();
     }
