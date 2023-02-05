@@ -67,6 +67,9 @@ dependencies {
     //spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    implementation group: 'com.google.firebase', name: 'firebase-admin', version: '6.8.1'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+
 }
 
 tasks.named('test') {
