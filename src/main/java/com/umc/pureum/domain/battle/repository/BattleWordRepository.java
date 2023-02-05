@@ -1,6 +1,5 @@
 package com.umc.pureum.domain.battle.repository;
 
-import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleWord;
 import com.umc.pureum.global.entity.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
