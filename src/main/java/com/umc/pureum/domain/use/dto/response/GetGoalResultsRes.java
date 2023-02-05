@@ -12,10 +12,10 @@ import java.util.List;
 public class GetGoalResultsRes {
     @ApiModelProperty(example = "1")
     private Long userId;
-    private List<GoalResultRes> goalResultRes;
+    private List<GoalResult> goalResultRes;
 
     @Builder
-    public GetGoalResultsRes(Long userId, List<GoalResultRes> goalResultRes) {
+    public GetGoalResultsRes(Long userId, List<GoalResult> goalResultRes) {
         this.userId = userId;
         this.goalResultRes = goalResultRes;
     }
