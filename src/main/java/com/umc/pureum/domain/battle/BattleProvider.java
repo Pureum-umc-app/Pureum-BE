@@ -1,16 +1,15 @@
 package com.umc.pureum.domain.battle;
 
-import com.umc.pureum.domain.battle.dto.BattleFighterRes;
-import com.umc.pureum.domain.battle.dto.GetBattleWordRes;
-import com.umc.pureum.domain.battle.dto.repsonse.*;
+import com.umc.pureum.domain.battle.dao.BattleDao;
+import com.umc.pureum.domain.battle.dto.response.BattleFighterRes;
+import com.umc.pureum.domain.battle.dto.response.GetBattleWordRes;
+import com.umc.pureum.domain.battle.dto.response.*;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
 import com.umc.pureum.domain.battle.entity.BattleWord;
 import com.umc.pureum.domain.battle.repository.BattleLikeRepository;
 import com.umc.pureum.domain.battle.repository.BattleRepository;
 import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
-import com.umc.pureum.domain.sentence.entity.Keyword;
-import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
@@ -19,15 +18,11 @@ import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.umc.pureum.global.entity.Status.A;
 

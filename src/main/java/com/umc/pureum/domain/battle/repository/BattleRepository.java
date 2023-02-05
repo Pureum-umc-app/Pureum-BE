@@ -1,22 +1,18 @@
 package com.umc.pureum.domain.battle.repository;
 
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattleInfoRes;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
-import com.umc.pureum.domain.battle.dto.repsonse.GetCompleteBattles;
-import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
+import com.umc.pureum.domain.battle.dto.response.GetBattleInfoRes;
+import com.umc.pureum.domain.battle.dto.response.GetBattlesInterface;
+import com.umc.pureum.domain.battle.dto.response.GetCompleteBattles;
+import com.umc.pureum.domain.battle.dto.response.GetWaitBattlesRes;
 import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
 import org.springframework.data.domain.PageRequest;
-import com.umc.pureum.domain.battle.entity.mapping.EndBattle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
-import java.awt.print.Pageable;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,10 +21,11 @@ import java.util.Optional;
 public interface BattleRepository extends JpaRepository<Battle, Long> {
     /* 이미 신청한 키워드인지 확인 */
     @Query("select b from Battle as b \n" +
-            "where (b.challenged.id = :userId or b.challenger.id = :userId) \n " +
+            "where ((b.challenger.id = :erId and b.challenged.id = :edId) \n" +
+            "   or (b.challenger.id = :edId and b.challenged.id = :erId)) \n " +
             "   and b.word.id = :wordId \n " +
             "   and b.status <> 'D'")
-    Optional<Battle> findByUserIdAndWordId(@Param("userId") Long userId, @Param("wordId") Long wordId);
+    Optional<Battle> findByUserIdAndWordId(@Param("erId") Long erId, @Param("edId") Long edId, @Param("wordId") Long wordId);
 
     /* 진행 중인 대결 리스트 반환 */
     @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
