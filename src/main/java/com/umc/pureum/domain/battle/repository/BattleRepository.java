@@ -21,10 +21,11 @@ import java.util.Optional;
 public interface BattleRepository extends JpaRepository<Battle, Long> {
     /* 이미 신청한 키워드인지 확인 */
     @Query("select b from Battle as b \n" +
-            "where (b.challenged.id = :userId or b.challenger.id = :userId) \n " +
+            "where ((b.challenger.id = :erId and b.challenged.id = :edId) \n" +
+            "   or (b.challenger.id = :edId and b.challenged.id = :erId)) \n " +
             "   and b.word.id = :wordId \n " +
             "   and b.status <> 'D'")
-    Optional<Battle> findByUserIdAndWordId(@Param("userId") Long userId, @Param("wordId") Long wordId);
+    Optional<Battle> findByUserIdAndWordId(@Param("erId") Long erId, @Param("edId") Long edId, @Param("wordId") Long wordId);
 
     /* 진행 중인 대결 리스트 반환 */
     @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
