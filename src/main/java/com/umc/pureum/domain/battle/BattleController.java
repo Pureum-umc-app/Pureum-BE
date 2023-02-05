@@ -9,6 +9,7 @@ import com.umc.pureum.domain.battle.dto.request.BattleStatusReq;
 import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
 import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
 import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
+import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
@@ -36,7 +37,7 @@ public class BattleController {
     private final BattleService battleService;
     private final BattleDao battleDao;
     private final BattleSentenceDao battleSentenceDao;
-
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     /**
      * 대결 수락 API
@@ -130,7 +131,7 @@ public class BattleController {
 
         try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
-            if (userId != battleDao.findOne(request.getBattleId()).getChallenged().getId() ||
+            if (userId != battleDao.findOne(request.getBattleId()).getChallenged().getId() &&
                     userId != battleDao.findOne(request.getBattleId()).getChallenger().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
 
@@ -168,7 +169,6 @@ public class BattleController {
         String UserId = loggedInUser.getName();
 
         long userId = Long.parseLong(UserId);
-
 
         try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
