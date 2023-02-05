@@ -3,6 +3,10 @@ package com.umc.pureum.domain.user.service;
 import com.umc.pureum.domain.attendance.AttendanceRepository;
 import com.umc.pureum.domain.attendance.entity.AttendanceCheck;
 import com.umc.pureum.domain.attendance.entity.AttendanceStatus;
+import com.umc.pureum.domain.sentence.entity.Sentence;
+import com.umc.pureum.domain.sentence.entity.SentenceLike;
+import com.umc.pureum.domain.sentence.repository.SentenceLikeRepository;
+import com.umc.pureum.domain.sentence.repository.SentenceRepository;
 import com.umc.pureum.domain.use.UseRepository;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.use.entity.UseStatus;
@@ -38,7 +42,8 @@ public class UserService {
     private final KakaoService kakaoService;
     private final UseRepository useRepository;
     private final AttendanceRepository attendanceRepository;
-
+    private final SentenceRepository sentenceRepository;
+    private final SentenceLikeRepository sentenceLikeRepository;
     /**
      * access token으로 유저 정보 가져온 후 회원가입
      *
@@ -88,6 +93,8 @@ public class UserService {
             Optional<UserAccount> userAccount = userRepository.findByIdAndStatus(userId, "A");
             List<UsePhone> usePhones = useRepository.findByUserId(userId);
             List<AttendanceCheck> attendanceChecks = attendanceRepository.findByUserId(userId);
+            List<Sentence> sentences = sentenceRepository.findByUserId(userId);
+            List<SentenceLike> sentenceLikes = sentenceLikeRepository.findByUserId(userId);
             if (userAccount.isPresent()) {
                 userAccount.get().setStatus("D");
                 for (UsePhone usePhone : usePhones) {
@@ -95,6 +102,16 @@ public class UserService {
                 }
                 for (AttendanceCheck attendanceCheck : attendanceChecks) {
                     attendanceCheck.setStatus(AttendanceStatus.D);
+                }
+                for (Sentence sentence : sentences) {
+                    sentence.setStatus("D");
+                    List<SentenceLike> sentenceLikes1 = sentenceLikeRepository.findBySentenceId(sentence.getId());
+                    for (SentenceLike sentenceLike: sentenceLikes1){
+                        sentenceLike.setStatus("D");
+                    }
+                }
+                for (SentenceLike sentenceLike: sentenceLikes){
+                    sentenceLike.setStatus("D");
                 }
             } else
                 throw new BaseException(POST_USERS_NO_EXISTS_USER);
