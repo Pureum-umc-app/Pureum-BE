@@ -4,22 +4,26 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umc.pureum.domain.sentence.dto.*;
+import com.umc.pureum.domain.sentence.dao.SentenceDao;
+import com.umc.pureum.domain.sentence.dto.request.CreateSentenceReq;
+import com.umc.pureum.domain.sentence.dto.request.LikeSentenceReq;
+import com.umc.pureum.domain.sentence.dto.response.CreateSentenceRes;
+import com.umc.pureum.domain.sentence.dto.response.GetKeywordRes;
+import com.umc.pureum.domain.sentence.dto.response.LikeSentenceRes;
+import com.umc.pureum.domain.sentence.dto.response.SentenceListRes;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
-import com.umc.pureum.domain.user.service.KakaoService;
-import com.umc.pureum.domain.user.service.UserService;
+import com.umc.pureum.domain.sentence.service.SentenceService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.json.XML;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -48,9 +52,6 @@ public class SentenceController {
     private final SentenceService sentenceService;
     private final WordRepository wordRepository;
     private final SentenceDao sentenceDao;
-    private final SentenceLikeDao sentenceLikeDao;
-    private final KakaoService kakaoService;
-    private final UserService userService;
 
     /**
      * 한국어 기초 사전 API 연동
@@ -99,7 +100,7 @@ public class SentenceController {
                 GetMeansRes getMeansRes = mapper.readValue(jsonObject.toString(), GetMeansRes.class);
                 System.out.println(getMeansRes);
 
-                if(getMeansRes.getChannel().getItem().isEmpty()) continue;
+                if (getMeansRes.getChannel().getItem().isEmpty()) continue;
 
                 // DB에 뜻 저장
                 String meaning = getMeansRes.getChannel().getItem().get(0).getSense().get(0).getDefinition();
@@ -122,25 +123,30 @@ public class SentenceController {
      */
     @ApiOperation("오늘의 작성 전 단어 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class)
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
+            @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다.")
     })
     @ResponseBody
     @GetMapping("/incomplete/{userId}")
     public BaseResponse<List<GetKeywordRes>> getIncompleteKeyWords(@PathVariable Long userId) {
-        try{
+        try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
             Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(userId, userIdByAuth)){
+            if (!Objects.equals(userId, userIdByAuth)) {
                 return new BaseResponse<>(INVALID_JWT);
-            }
-            else{
+            } else {
                 List<GetKeywordRes> getKeywordRes = sentenceProvider.getInCompleteKeyword(userId);
                 return new BaseResponse<>(getKeywordRes);
             }
-        } catch(BaseException e){
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
@@ -152,25 +158,30 @@ public class SentenceController {
      */
     @ApiOperation("오늘의 작성 완료 단어 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class)
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
+            @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다.")
     })
     @ResponseBody
     @GetMapping("/complete/{userId}")
     public BaseResponse<List<GetKeywordRes>> getCompleteKeywords(@PathVariable Long userId) {
-        try{
+        try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
 
             Long userIdByAuth = Long.parseLong(user);
 
-            if(!Objects.equals(userId, userIdByAuth)){
+            if (!Objects.equals(userId, userIdByAuth)) {
                 return new BaseResponse<>(INVALID_JWT);
-            }
-            else{
+            } else {
                 List<GetKeywordRes> getKeywordRes = sentenceProvider.getCompleteKeyword(userId);
                 return new BaseResponse<>(getKeywordRes);
             }
-        } catch(BaseException e){
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
@@ -181,8 +192,8 @@ public class SentenceController {
      */
     @ApiOperation("문장 작성 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "CreateSentenceReq", paramType = "body", value = "문장 작성 Request")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "request", paramType = "body", value = "문장 작성 Request", dataTypeClass = CreateSentenceReq.class)
     })
     @ResponseBody
     @PostMapping("/write")
@@ -193,10 +204,14 @@ public class SentenceController {
 
         long userId = Long.parseLong(UserId);
 
-        try{
-            CreateSentenceRes write = sentenceService.write(userId , request);
-            return new BaseResponse<>(write);
-        }catch (BaseException e){
+        try {
+            if (userId != request.getUserId()) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            } else {
+                CreateSentenceRes write = sentenceService.write(userId, request);
+                return new BaseResponse<>(write);
+            }
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
 
@@ -208,32 +223,61 @@ public class SentenceController {
      */
     @ApiOperation("문장 좋아요 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "LikeSentenceReq", paramType = "body", value = "문장 좋아요 Request")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "request", paramType = "body", value = "문장 좋아요 Request", dataTypeClass = LikeSentenceReq.class)
     })
     @ResponseBody
     @PostMapping("/like")
-    public BaseResponse<LikeSentenceRes> likeSentence(@RequestBody LikeSentenceReq request) throws BaseException{
+    public BaseResponse<LikeSentenceRes> likeSentence(@RequestBody LikeSentenceReq request) throws BaseException {
 
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
 
         long userId = Long.parseLong(UserId);
 
-        try{
+        try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 sentence 에서 찾은 userId 비교
-            if(userId != sentenceDao.findOne(request.getSentenceId()).getUser().getId()){
+            if (userId != sentenceDao.findOne(request.getSentenceId()).getUser().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else{
+            } else {
                 // 문장 좋아요 저장
-                LikeSentenceRes likeSentenceRes = sentenceService.like(userId , request);
+                LikeSentenceRes likeSentenceRes = sentenceService.like(userId, request);
                 return new BaseResponse<>(likeSentenceRes);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
+    }
 
+    @ApiOperation("단어별 문장 리스트 반환 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 id", example = "1"),
+            @ApiImplicitParam(name = "word_id", dataTypeClass = Long.class, paramType = "query", value = "단어 id"),
+            @ApiImplicitParam(name = "page", dataTypeClass = Integer.class, paramType = "query", value = "페이지"),
+            @ApiImplicitParam(name = "limit", dataTypeClass = Integer.class, paramType = "query", value = "페이지 별  객체 수"),
+            @ApiImplicitParam(name = "sort", dataTypeClass = String.class, paramType = "query", value = "정렬 조건(like, date")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2042, message = "정렬 방식이 잘못되었습니다.")
+    })
+    @GetMapping("/{userId}")
+    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@PathVariable long userId, @RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long id = Long.parseLong(principal.getUsername());
+        try {
+            if (id != userId)
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
+            if (!(sort.equals("date") || sort.equals("like")))
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(GET_SENTENCE_INVALID_SORT_METHOD));
+            List<SentenceListRes> sentenceListRes = sentenceService.getSentenceList(userId, word_id, page, limit, sort);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(sentenceListRes));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(DATABASE_ERROR));
+        }
     }
 }

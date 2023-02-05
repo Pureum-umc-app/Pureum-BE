@@ -2,7 +2,7 @@ package com.umc.pureum.domain.user.service;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
+import com.umc.pureum.domain.user.dto.request.KakaoAccessTokenInfoDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -37,7 +37,7 @@ public class KakaoService {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream()));
             String sb = "grant_type=authorization_code" +
                     "&client_id=633bdb4f088357e5fe5cde61b4543053" +
-                    "&redirect_uri=http://localhost:9000/user/kakao/auth" +
+                    "&redirect_uri=http://localhost:9000/users/kakao/auth" +
                     "&code=" + code;
 
             bw.write(sb);

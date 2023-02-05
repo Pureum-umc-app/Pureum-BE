@@ -1,17 +1,12 @@
 package com.umc.pureum.domain.use;
 
 
-import com.umc.pureum.domain.mypage.dto.GetMySentencesRes;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
-import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
-import com.umc.pureum.domain.use.dto.GetHomeListRes;
-import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
-import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
-import com.umc.pureum.domain.use.dto.rank.RankInformationDto;
-import com.umc.pureum.domain.use.dto.rank.RankerInformationDto;
-import com.umc.pureum.domain.use.dto.request.ReturnGradeReq;
+import com.umc.pureum.domain.use.dto.response.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.response.GetHomeListRes;
+import com.umc.pureum.domain.use.dto.request.PostUseTimeAndCountReq;
+import com.umc.pureum.domain.use.dto.response.PostUseTimeAndCountRes;
+import com.umc.pureum.domain.use.dto.response.RankInformationDto;
+import com.umc.pureum.domain.use.dto.response.RankerInformationDto;
 import com.umc.pureum.domain.use.dto.request.ReturnGradeRes;
 import com.umc.pureum.domain.use.dto.request.SetUsageTimeReq;
 import com.umc.pureum.domain.user.UserDao;
@@ -26,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Time;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,27 +41,25 @@ public class UseController {
      */
     @ApiOperation("일일 사용 시간, 휴대폰 켠 횟수 저장")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "user_idx", paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "hour", paramType = "formData", value = "일일 사용 시간(시)"),
-            @ApiImplicitParam(name = "minute", paramType = "formData", value = "일일 사용 시간(분)"),
-            @ApiImplicitParam(name = "count", paramType = "formData", value = "휴대폰 켠 횟수"),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1", dataTypeClass = Long.class),
+            @ApiImplicitParam(name = "postUseTimeAndCountReq", paramType = "body", value = "일일 사용 시간, 휴대폰 화면 켠 횟수", dataTypeClass = PostUseTimeAndCountReq.class),
     })
     @ResponseBody
-    @PostMapping("/{user_idx}/useTimeAndCount")
-    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long user_idx, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq) {
+    @PostMapping("/{userId}/useTimeAndCount")
+    public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long userId, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq) {
         // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String springSecurityUserId = principal.getUsername();
-        Long userId = Long.parseLong(springSecurityUserId);
+        Long userIdx = Long.parseLong(springSecurityUserId);
         try {
-            if (userId != user_idx) {
+            if (userIdx != userId) {
                 return new BaseResponse<>(INVALID_JWT);
             } else {
-                PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(userId, postUseTimeAndCountReq);
+                PostUseTimeAndCountRes postUseTimeAndCountRes = useService.saveTimeAndCount(userIdx, postUseTimeAndCountReq);
                 return new BaseResponse<>(postUseTimeAndCountRes);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
@@ -76,13 +68,19 @@ public class UseController {
     /**
      * 목표 달성 여부 반환 API
      * 캘린더에 O, X로 표시되고 회원가입 이후의 모든 여부를 반환
-     * [GET] /uses/{user_idx}/goals/result
+     * [GET] /uses/{userId}/goals/result
      * String date = updated_at - 1
      * int isSuccess = 0, 1
      */
     @ApiOperation("목표 달성 여부 반환")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class)
+    })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
+            @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다.")
     })
     @ResponseBody
     @GetMapping("/{userId}/goals/result")
@@ -106,9 +104,9 @@ public class UseController {
 
     @ApiOperation("목표 사용 시간 설정 api")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "SetUsageTimeReq", paramType = "body", value = "목표사용시간")
+            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class , paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataTypeClass = Integer.class, paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "setUsageTimeReq", dataTypeClass = SetUsageTimeReq.class, paramType = "body", value = "목표사용시간")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
@@ -116,7 +114,7 @@ public class UseController {
             @ApiResponse(code = 2051, message = "이미 목표시간을 설정하였습니다.")
     })
     @ResponseBody
-    @PostMapping("/{userId}/set_usage_time")
+    @PostMapping("/{userId}/set-usage-time")
     public ResponseEntity<BaseResponse<String>> setUsageTime(@PathVariable Long userId, @RequestBody SetUsageTimeReq setUsageTimeReq) throws BaseException {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String user = principal.getUsername();
@@ -131,26 +129,26 @@ public class UseController {
 
     /**
      * 홈 화면 리스트 반환 API
-     * [GET] uses/{userIdx}
+     * [GET] uses/{userId}
      */
     @ApiOperation("홈 화면 리스트 반환 api")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userIdx", paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1", dataTypeClass = Long.class),
     })
-    @GetMapping("/{userIdx}")
-    public BaseResponse<List<GetHomeListRes>> getHomeList(@PathVariable Long userIdx) {
+    @GetMapping("/{userId}")
+    public BaseResponse<List<GetHomeListRes>> getHomeList(@PathVariable Long userId) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String springSecurityUserId = principal.getUsername();
-        Long userId = Long.parseLong(springSecurityUserId);
+        Long userIdx = Long.parseLong(springSecurityUserId);
         try {
             if (userId != userIdx) {
                 return new BaseResponse<>(INVALID_JWT);
             } else {
-                List<GetHomeListRes> homeListRes = useProvider.getHomeListRes(userId);
+                List<GetHomeListRes> homeListRes = useProvider.getHomeListRes(userIdx);
                 return new BaseResponse<>(homeListRes);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
@@ -159,11 +157,11 @@ public class UseController {
 
     /**
      * 나의 학년 카테고리 반환 API
-     * [GET] /{userId}/uses/grade
+     * [GET] /uses/{userId}/grade
      */
     @ApiOperation("나의 학년 카테고리 반환 API ")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class)
     })
     @ResponseBody
     @GetMapping("/{userId}/grade")
@@ -174,18 +172,18 @@ public class UseController {
 
         long id = Long.parseLong(UserId);
 
-        try{
+        try {
             // springsecurity 로 찾은 userId 랑 request 에서 찾은 userId 비교
-            if(id != userId){
+            if (id != userId) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else{
+            } else if (!"A".equals(userDao.findByUserId(userId).getStatus())) {
+                return new BaseResponse<>(INVALID_USER);
+            } else {
                 // user 의 grade 찾기
                 ReturnGradeRes returnGradeRes = useService.returnGrade(userId);
                 return new BaseResponse<>(returnGradeRes);
-
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
@@ -202,12 +200,12 @@ public class UseController {
     @GetMapping("/rankInSameGrade")
     @ApiOperation("날짜 별 랭킹(같은 카테고리(학년) 내) 조회 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "date", paramType = "query", value = "날짜", example = "2023-01-18", dataType = "string"),
-            @ApiImplicitParam(name = "date", paramType = "query", value = "페이지", example = "0", dataType = "int"),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "date", paramType = "query", value = "날짜", example = "2023-01-18", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "date", paramType = "query", value = "페이지", example = "0", dataTypeClass = Integer.class),
     })
-    public BaseResponse<RankInformationDto> getRankInSameGrade(@RequestParam String date, @RequestParam int page) throws BaseException{
-        try{
+    public BaseResponse<RankInformationDto> getRankInSameGrade(@RequestParam String date, @RequestParam int page) throws BaseException {
+        try {
             // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String springSecurityUserId = principal.getUsername();
@@ -234,12 +232,12 @@ public class UseController {
     @GetMapping("/rankInAllGrade")
     @ApiOperation("날짜 별 랭킹(같은 카테고리(학년) 내) 조회 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "date", paramType = "query", value = "날짜", example = "2023-01-18", dataType = "string"),
-            @ApiImplicitParam(name = "date", paramType = "query", value = "페이지", example = "0", dataType = "int"),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "date", paramType = "query", value = "날짜", example = "2023-01-18", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "date", paramType = "query", value = "페이지", example = "0", dataTypeClass = Integer.class),
     })
-    public BaseResponse<RankInformationDto> getRankInAllGrade(@RequestParam String date, @RequestParam int page) throws BaseException{
-        try{
+    public BaseResponse<RankInformationDto> getRankInAllGrade(@RequestParam String date, @RequestParam int page) throws BaseException {
+        try {
             // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String springSecurityUserId = principal.getUsername();
