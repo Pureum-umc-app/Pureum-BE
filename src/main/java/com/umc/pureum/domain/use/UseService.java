@@ -1,9 +1,8 @@
 package com.umc.pureum.domain.use;
 
 
-import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
-import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
-import com.umc.pureum.domain.use.dto.request.ReturnGradeReq;
+import com.umc.pureum.domain.use.dto.request.PostUseTimeAndCountReq;
+import com.umc.pureum.domain.use.dto.response.PostUseTimeAndCountRes;
 import com.umc.pureum.domain.use.dto.request.ReturnGradeRes;
 import com.umc.pureum.domain.use.dto.request.SetUsageTimeReq;
 import com.umc.pureum.domain.use.entity.UsePhone;
