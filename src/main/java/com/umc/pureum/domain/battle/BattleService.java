@@ -1,16 +1,19 @@
 package com.umc.pureum.domain.battle;
 
-import com.umc.pureum.domain.battle.dto.*;
-import com.umc.pureum.domain.battle.dto.repsonse.*;
+import com.google.firebase.database.DatabaseException;
+import com.umc.pureum.domain.battle.dao.BattleDao;
+import com.umc.pureum.domain.battle.dao.BattleLikeDao;
+import com.umc.pureum.domain.battle.dao.BattleSentenceDao;
+import com.umc.pureum.domain.battle.dto.response.ReturnFinishBattleRes;
+import com.umc.pureum.domain.battle.dto.response.*;
+import com.umc.pureum.domain.battle.dto.request.BattleStatusReq;
+import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
+import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
+import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import com.umc.pureum.domain.battle.entity.*;
-import com.umc.pureum.domain.battle.entity.mapping.EndBattle;
-
 import com.umc.pureum.domain.battle.repository.*;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
 import com.umc.pureum.domain.sentence.entity.Keyword;
-import com.umc.pureum.domain.sentence.entity.Sentence;
-import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
@@ -22,15 +25,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_EMPTY;
-import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_EXISTS_KEYWORD;
-import static com.umc.pureum.global.entity.Status.A;
-
-import java.util.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.entity.Status.A;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -39,15 +42,14 @@ public class BattleService {
     private final BattleDao battleDao;
     private final BattleSentenceDao battleSentenceDao;
     private final UserRepository userRepository;
-    private final BattleProvider battleProvider;
     private final BattleRepository battleRepository;
     private final BattleWordRepository battleWordRepository;
     private final BattleSentenceRepository battleSentenceRepository;
     private final BattleLikeDao battleLikeDao;
     private final BattleLikeRepository likeRepository;
     private final BattleResultRepository battleResultRepository;
-
     private final BattleLikeRepository battleLikeRepository;
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
     // accept : 대결 수락
     @Transactional
     public BattleStatusRes accept(BattleStatusReq request) {
@@ -64,28 +66,36 @@ public class BattleService {
 
     // reject : 대결 거절
     @Transactional
-    public BattleStatusRes reject(BattleStatusReq request) {
+    public BattleStatusRes reject(BattleStatusReq request) throws BaseException {
 
         // request 로 받은 battleId 로 battle 찾기
         Battle battle = battleDao.findOne(request.getBattleId());
 
         // battle 상태를 수락 완료로 바꾸기
         battle.setStatus(BattleStatus.D);
-
+        try {
+            firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 거절했어요.","거절했어요");
+        } catch (IOException e) {
+            throw new BaseException(BaseResponseStatus.FCM_ERROR);
+        }
         // battle ID , Status 값
         return new BattleStatusRes(battle.getId(), battle.getStatus());
     }
 
     // cancel : 대결 취소
     @Transactional
-    public BattleStatusRes cancel(BattleStatusReq request) {
+    public BattleStatusRes cancel(BattleStatusReq request) throws BaseException {
 
         // request 로 받은 battleId 로 battle 찾기
         Battle battle = battleDao.findOne(request.getBattleId());
 
         // battle 상태를 수락 완료로 바꾸기
         battle.setStatus(BattleStatus.D);
-
+        try {
+            firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 취소했어요.","취소했어요");
+        } catch (IOException e) {
+            throw new BaseException(BaseResponseStatus.FCM_ERROR);
+        }
         // battle ID , Status 값
         return new BattleStatusRes(battle.getId(), battle.getStatus());
     }
@@ -104,11 +114,11 @@ public class BattleService {
         }
         // 키워드 예외 처리
         Optional<BattleWord> word = battleWordRepository.findByIdAndStatus(postBattleReq.getWordId(), Status.A);
-        if (word.isEmpty()) {
+        if (word.isEmpty()) {  // 존재하지 않는 키워드
             throw new BaseException(BaseResponseStatus.POST_BATTLE_NO_EXIST_KEYWORD);
         }
-        Optional<Battle> battle = battleRepository.findByUserIdAndWordId(postBattleReq.getChallengerId(), postBattleReq.getWordId());
-        if (battle.isPresent()) {
+        Optional<Battle> battle = battleRepository.findByUserIdAndWordId(postBattleReq.getChallengerId(), postBattleReq.getChallengedId(), postBattleReq.getWordId());
+        if (battle.isPresent()) {  // 이미 대결에 사용한 키워드
             throw new BaseException(BaseResponseStatus.POST_BATTLE_ALREADY_EXIST_KEYWORD);
         }
 
@@ -120,7 +130,14 @@ public class BattleService {
         BattleSentence sentence = new BattleSentence(savedBattle, challenger.get(),
                 postBattleReq.getSentence(), word.get(), Status.A);
         battleSentenceRepository.save(sentence);
-
+        try {
+            firebaseCloudMessageService.sendMessageTo(
+                    postBattleReq.getChallengedId(),
+                    "대결장이 도착했어요",
+                    userRepository.findByIdAndStatus(postBattleReq.getChallengerId(),"A").get().getNickname()+"님이 보낸 대결장을 지금 확인해보세요");
+        } catch (IOException e) {
+            throw new BaseException(BaseResponseStatus.FCM_ERROR);
+        }
         return savedBattle.getId();
     }
 
@@ -162,7 +179,11 @@ public class BattleService {
 
         BattleSentence battleSentence = new BattleSentence(battle, userAccount, writingSentence, battleWord, Status.A);
         battleSentenceDao.save(battleSentence);
-
+        try {
+            firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 수락했어요.","이겨보아요");
+        } catch (IOException e) {
+            throw new BaseException(BaseResponseStatus.FCM_ERROR);
+        }
         return new CreateChallengedSentenceRes(battleSentence.getId(), battle.getId(), battle.getStatus());
     }
 
@@ -336,9 +357,10 @@ public class BattleService {
         }
 
     }
+
     @Transactional
     @Scheduled(cron = "0 0 1 * * *")
-    public void setResult() {
+    public void setResult() throws BaseException {
         List<Battle> battleIdList = battleRepository.findByEndBattle();
         long challengedBattleSentenceId;
         long challengerBattleSentenceId;
@@ -370,6 +392,12 @@ public class BattleService {
                         .status(Status.A)
                         .build();
                 battleResultRepository.save(battleResult);
+            }
+            try {
+                firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"대결이 종료되었어요.","결과를 확인해 보아요");
+                firebaseCloudMessageService.sendMessageTo(battle.getChallenged().getId(),"대결이 종료되었어요.","결과를 확인해 보아요");
+            } catch (IOException e) {
+                throw new BaseException(BaseResponseStatus.FCM_ERROR);
             }
         }
     }
