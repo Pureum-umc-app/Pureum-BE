@@ -103,11 +103,11 @@ public class BattleService {
         }
         // 키워드 예외 처리
         Optional<BattleWord> word = battleWordRepository.findByIdAndStatus(postBattleReq.getWordId(), Status.A);
-        if (word.isEmpty()) {
+        if (word.isEmpty()) {  // 존재하지 않는 키워드
             throw new BaseException(BaseResponseStatus.POST_BATTLE_NO_EXIST_KEYWORD);
         }
-        Optional<Battle> battle = battleRepository.findByUserIdAndWordId(postBattleReq.getChallengerId(), postBattleReq.getWordId());
-        if (battle.isPresent()) {
+        Optional<Battle> battle = battleRepository.findByUserIdAndWordId(postBattleReq.getChallengerId(), postBattleReq.getChallengedId(), postBattleReq.getWordId());
+        if (battle.isPresent()) {  // 이미 대결에 사용한 키워드
             throw new BaseException(BaseResponseStatus.POST_BATTLE_ALREADY_EXIST_KEYWORD);
         }
 

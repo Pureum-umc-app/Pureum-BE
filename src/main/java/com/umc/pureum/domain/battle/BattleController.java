@@ -205,7 +205,7 @@ public class BattleController {
             @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다."),
             @ApiResponse(code = 2050, message = "대결 문장을 입력해야 합니다."),
             @ApiResponse(code = 2051, message = "존재하지 않는 키워드입니다."),
-            @ApiResponse(code = 2052, message = "이미 대결에 사용한 단어입니다.")
+            @ApiResponse(code = 2052, message = "이미 대결에 사용한 키워드입니다.")
     })
     @ResponseBody
     @PostMapping("")
