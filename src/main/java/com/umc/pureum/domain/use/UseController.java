@@ -1,17 +1,12 @@
 package com.umc.pureum.domain.use;
 
 
-import com.umc.pureum.domain.mypage.dto.GetMySentencesRes;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
-import com.umc.pureum.domain.use.dto.GetGoalResultsRes;
-import com.umc.pureum.domain.use.dto.GetHomeListRes;
-import com.umc.pureum.domain.use.dto.PostUseTimeAndCountReq;
-import com.umc.pureum.domain.use.dto.PostUseTimeAndCountRes;
-import com.umc.pureum.domain.use.dto.rank.RankInformationDto;
-import com.umc.pureum.domain.use.dto.rank.RankerInformationDto;
-import com.umc.pureum.domain.use.dto.request.ReturnGradeReq;
+import com.umc.pureum.domain.use.dto.response.GetGoalResultsRes;
+import com.umc.pureum.domain.use.dto.response.GetHomeListRes;
+import com.umc.pureum.domain.use.dto.request.PostUseTimeAndCountReq;
+import com.umc.pureum.domain.use.dto.response.PostUseTimeAndCountRes;
+import com.umc.pureum.domain.use.dto.response.RankInformationDto;
+import com.umc.pureum.domain.use.dto.response.RankerInformationDto;
 import com.umc.pureum.domain.use.dto.request.ReturnGradeRes;
 import com.umc.pureum.domain.use.dto.request.SetUsageTimeReq;
 import com.umc.pureum.domain.user.UserDao;
@@ -26,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Time;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,7 +37,7 @@ public class UseController {
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
-     * [POST] /uses/{user_id}/useTimeAndCount
+     * [POST] /uses/{user_id}/use-time-and-count
      */
     @ApiOperation("일일 사용 시간, 휴대폰 켠 횟수 저장")
     @ApiImplicitParams({
@@ -52,7 +46,7 @@ public class UseController {
             @ApiImplicitParam(name = "postUseTimeAndCountReq", paramType = "body", value = "일일 사용 시간, 휴대폰 화면 켠 횟수", dataTypeClass = PostUseTimeAndCountReq.class),
     })
     @ResponseBody
-    @PostMapping("/{userId}/useTimeAndCount")
+    @PostMapping("/{userId}/use-time-and-count")
     public BaseResponse<PostUseTimeAndCountRes> saveUseTimeAndCount(@PathVariable Long userId, @RequestBody PostUseTimeAndCountReq postUseTimeAndCountReq) {
         // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -74,7 +68,7 @@ public class UseController {
     /**
      * 목표 달성 여부 반환 API
      * 캘린더에 O, X로 표시되고 회원가입 이후의 모든 여부를 반환
-     * [GET] /uses/{user_idx}/goals/result
+     * [GET] /uses/{userId}/goals/result
      * String date = updated_at - 1
      * int isSuccess = 0, 1
      */
@@ -199,11 +193,11 @@ public class UseController {
     /**
      * 날짜 별 랭킹(같은 카테고리(학년) 내) 조회 API
      * 그 랭킹에서 자신의 랭킹 정보 또한 조회
-     * [GET] /uses/rankInSameGrade
+     * [GET] /uses/rank-same-grade
      * 페이징 처리함!(25개 씩)
      * 파라미터 인자로 날짜( ex)"2023-01-31" ), 페이지를 받음.
      */
-    @GetMapping("/rankInSameGrade")
+    @GetMapping("/rank-same-grade")
     @ApiOperation("날짜 별 랭킹(같은 카테고리(학년) 내) 조회 API")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
@@ -231,11 +225,11 @@ public class UseController {
     /**
      * 날짜 별 랭킹(전체) 조회 API
      * 그 랭킹에서 자신의 랭킹 정보 또한 조회
-     * [GET] /uses/rankInAllGrade
+     * [GET] /uses/rank-all-grade
      * 페이징 처리함!(25개 씩)
      * 파라미터 인자로 날짜( ex)"2023-01-31" ), 페이지를 받음.
      */
-    @GetMapping("/rankInAllGrade")
+    @GetMapping("/rank-all-grade")
     @ApiOperation("날짜 별 랭킹(같은 카테고리(학년) 내) 조회 API")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),

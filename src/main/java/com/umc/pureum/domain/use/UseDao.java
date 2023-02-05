@@ -1,12 +1,10 @@
 package com.umc.pureum.domain.use;
 
 import com.umc.pureum.domain.use.entity.UsePhone;
-import com.umc.pureum.domain.user.entity.UserAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
