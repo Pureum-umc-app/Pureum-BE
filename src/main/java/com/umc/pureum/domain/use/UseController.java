@@ -68,7 +68,7 @@ public class UseController {
     /**
      * 목표 달성 여부 반환 API
      * 캘린더에 O, X로 표시되고 회원가입 이후의 모든 여부를 반환
-     * [GET] /uses/{user_idx}/goals/result
+     * [GET] /uses/{userId}/goals/result
      * String date = updated_at - 1
      * int isSuccess = 0, 1
      */
