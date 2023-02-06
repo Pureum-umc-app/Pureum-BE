@@ -3,19 +3,18 @@ package com.umc.pureum.domain.badge.entity;
 
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+
 @Data
 @SuperBuilder
 @NoArgsConstructor
+@DynamicInsert
 @Entity
 public class Badge extends BaseEntity {
 
@@ -24,6 +23,7 @@ public class Badge extends BaseEntity {
 
     private int badge;
 
+    @ColumnDefault("A")
     private String status;
 
     public Badge(UserAccount user, int badge){
