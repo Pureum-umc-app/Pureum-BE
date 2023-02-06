@@ -2,7 +2,6 @@ package com.umc.pureum.domain.badge;
 
 
 import com.umc.pureum.domain.badge.dto.SaveBadgeReq;
-import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -31,25 +30,20 @@ public class BadgeController {
             @ApiImplicitParam(name = "saveBadgeReq", paramType = "body", value = "배지(int)", example = "0", dataTypeClass = SaveBadgeReq.class),
     })
     @PostMapping("/{userId}")
-    public BaseResponse<String> saveBadge(@PathVariable Long userId, @RequestBody SaveBadgeReq saveBadgeReq) throws BaseException{
-        try {
-            // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String springSecurityUserId = principal.getUsername();
-            Long userIdSC = Long.parseLong(springSecurityUserId);
-            if (userId != userIdSC) {
-                return new BaseResponse<>(INVALID_JWT);
+    public BaseResponse<String> saveBadge(@PathVariable Long userId, @RequestBody SaveBadgeReq saveBadgeReq) {
+        // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userIdSC = Long.parseLong(springSecurityUserId);
+        if (userId != userIdSC) {
+            return new BaseResponse<>(INVALID_JWT);
+        } else {
+            if (badgeProvider.inquireBadge(userIdSC, saveBadgeReq.getBadge())) { // 배지가 존재하는지 확인
+                badgeService.saveBadge(userIdSC, saveBadgeReq.getBadge());
+                return new BaseResponse<>(SUCCESS);
             } else {
-                if(badgeProvider.inquireBadge(userId,saveBadgeReq.getBadge())){ // 배지가 존재하는지 확인
-                    badgeService.saveBadge(userId,saveBadgeReq.getBadge());
-                    return new BaseResponse<>(SUCCESS);
-                }
-                else{
-                    return new BaseResponse<>(POST_BADGE_EXITS);
-                }
+                return new BaseResponse<>(POST_BADGE_EXITS);
             }
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
         }
     }
 }
