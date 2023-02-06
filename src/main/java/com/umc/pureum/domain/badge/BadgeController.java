@@ -2,7 +2,6 @@ package com.umc.pureum.domain.badge;
 
 
 import com.umc.pureum.domain.badge.dto.SaveBadgeReq;
-import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
