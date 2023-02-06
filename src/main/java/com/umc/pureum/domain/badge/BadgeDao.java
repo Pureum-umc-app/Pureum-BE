@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,10 +21,12 @@ public class BadgeDao {
     }
 
     // 배지 조회
-    public Badge find(Long userId, int badge){
-        return em.createQuery("select b from Badge b where b.userAccount.id = :userId and b.badge = :badge", Badge.class)
+    public Optional<Badge> findBadge(Long userId, int badge){
+        List<Badge> badges = em.createQuery("select b from Badge b where b.user.id = :userId and b.badge = :badge", Badge.class)
                 .setParameter("userId", userId)
                 .setParameter("badge", badge)
-                .getSingleResult();
+                .getResultList();
+        return badges.stream().findAny();
+
     }
 }
