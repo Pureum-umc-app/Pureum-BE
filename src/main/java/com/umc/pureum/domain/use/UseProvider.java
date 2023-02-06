@@ -112,16 +112,6 @@ public class UseProvider {
                 .collect(Collectors.toList());
     }
 
-    // NullPointerException 해결
-    public String preventNullError(Time time){
-        if(ObjectUtils.isEmpty(time)){
-            return "00:00:00";
-        }
-        else{
-            return time.toString();
-        }
-    }
-
     // 랭킹 Top 10 사용자 정보 조회(같은 카테고리(학년) 내)
     public List<RankerInformationDto> getRankerInformation(Timestamp updateAt, int grade){
         AtomicInteger num = new AtomicInteger(1);
@@ -202,6 +192,7 @@ public class UseProvider {
         return Integer.parseInt(split[0]) * 60 + Integer.parseInt(split[1]);
     }
 
+    // String to int(날짜)
     public DateToInt stringToIntForDate(String date){
         String[] split = date.split("-");
         return DateToInt.builder()
@@ -209,6 +200,16 @@ public class UseProvider {
                 .month(Integer.parseInt(split[1]))
                 .day(Integer.parseInt(split[2]))
                 .build();
+    }
+
+    // NullPointerException 해결
+    public String preventNullError(Time time){
+        if(ObjectUtils.isEmpty(time)){
+            return "00:00:00";
+        }
+        else{
+            return time.toString();
+        }
     }
 
 }

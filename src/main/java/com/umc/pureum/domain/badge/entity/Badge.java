@@ -7,17 +7,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
 @Data
+@DynamicInsert
 public class Badge extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,6 +26,7 @@ public class Badge extends BaseEntity {
 
     private int badge;
 
+    @ColumnDefault("A")
     private String status;
 
     public Badge(UserAccount userAccount, int badge){
