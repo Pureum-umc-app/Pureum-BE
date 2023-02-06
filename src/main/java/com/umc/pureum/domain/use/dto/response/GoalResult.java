@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class GoalResultRes {
+public class GoalResult {
     @ApiModelProperty(example = "2023-01-19")
     private String date;
-    @ApiModelProperty(example = "1")
-    private int isSuccess;
+    @ApiModelProperty(example = "성공 : 1, 실패 : 0, 목표 사용 시간을 설정하지 않은 경우 : null")
+    private Integer isSuccess;
 
     @Builder
-    public GoalResultRes(String date, int isSuccess) {
+    public GoalResult(String date, Integer isSuccess) {
         this.date = date;
         this.isSuccess = isSuccess;
     }
