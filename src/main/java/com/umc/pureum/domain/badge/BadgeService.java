@@ -17,8 +17,10 @@ public class BadgeService {
     private final UserDao userDao;
 
     // 배지 저장
+    @Transactional
     public void saveBadge(Long userId, int badge){
         UserAccount userAccount = userDao.find(userId);
-        badgeDao.save(new Badge(userAccount, badge));
+        Badge badgeOne = new Badge(userAccount, badge);
+        badgeDao.save(badgeOne);
     }
 }
