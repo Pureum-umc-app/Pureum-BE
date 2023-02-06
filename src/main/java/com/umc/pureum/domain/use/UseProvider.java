@@ -1,5 +1,6 @@
 package com.umc.pureum.domain.use;
 
+import com.umc.pureum.domain.use.dto.time.DateToInt;
 import com.umc.pureum.domain.use.dto.response.GetGoalResultsRes;
 import com.umc.pureum.domain.use.dto.response.GetHomeListRes;
 import com.umc.pureum.domain.use.dto.response.GoalResult;
@@ -13,6 +14,7 @@ import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -103,9 +105,9 @@ public class UseProvider {
     public List<GetHomeListRes> getHomeListRes(Long userId){
         List<UsePhone> useAll = useDao.findAll(userId);
         return useAll.stream().map(u -> GetHomeListRes.builder()
-                        .date(getYesterday(u.getUpdatedAt()))
-                        .useTime(u.getUseTime())
-                        .purposeTime(u.getPurposeTime())
+                        .date(stringToIntForDate(getYesterday(u.getUpdatedAt())))
+                        .useTime(stringToIntForTime(preventNullError(u.getUseTime())))
+                        .purposeTime(stringToIntForTime(preventNullError(u.getPurposeTime())))
                         .rank(getRankerInformation(u.getUpdatedAt(), u.getUser().getGrade())).build())
                 .collect(Collectors.toList());
     }
@@ -118,7 +120,7 @@ public class UseProvider {
                         .rankNum(num.getAndIncrement())
                         .nickname(r.getUser().getNickname())
                         .image(r.getUser().getImage())
-                        .useTime(r.getUseTime()).build())
+                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
                 .collect(Collectors.toList());
     }
 
@@ -133,7 +135,7 @@ public class UseProvider {
                         .rankNum(num.getAndIncrement())
                         .nickname(r.getUser().getNickname())
                         .image(r.getUser().getImage())
-                        .useTime(r.getUseTime()).build())
+                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
                     .collect(Collectors.toList());
         } else {
             List<UsePhone> rankOverZero = useDao.findRankOverZeroInSameGrade(getDate,grade,page);
@@ -141,7 +143,7 @@ public class UseProvider {
                         .rankNum(num.getAndIncrement())
                         .nickname(r.getUser().getNickname())
                         .image(r.getUser().getImage())
-                        .useTime(r.getUseTime()).build())
+                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
                     .collect(Collectors.toList());
         }
     }
@@ -156,7 +158,7 @@ public class UseProvider {
                             .rankNum(num.getAndIncrement())
                             .nickname(r.getUser().getNickname())
                             .image(r.getUser().getImage())
-                            .useTime(r.getUseTime()).build())
+                            .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
                     .collect(Collectors.toList());
         } else {
             List<UsePhone> rankOverZero = useDao.findRankOverZeroInAllGrade(getDate,page);
@@ -164,7 +166,7 @@ public class UseProvider {
                             .rankNum(num.getAndIncrement())
                             .nickname(r.getUser().getNickname())
                             .image(r.getUser().getImage())
-                            .useTime(r.getUseTime()).build())
+                            .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
                     .collect(Collectors.toList());
         }
     }
@@ -181,6 +183,32 @@ public class UseProvider {
             return Timestamp.valueOf(new_date);
         } catch (ParseException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    // String to int(목표시간, 이용시간)
+    public int stringToIntForTime(String time){
+        String[] split = time.split(":");
+        return Integer.parseInt(split[0]) * 60 + Integer.parseInt(split[1]);
+    }
+
+    // String to int(날짜)
+    public DateToInt stringToIntForDate(String date){
+        String[] split = date.split("-");
+        return DateToInt.builder()
+                .year(Integer.parseInt(split[0]))
+                .month(Integer.parseInt(split[1]))
+                .day(Integer.parseInt(split[2]))
+                .build();
+    }
+
+    // NullPointerException 해결
+    public String preventNullError(Time time){
+        if(ObjectUtils.isEmpty(time)){
+            return "00:00:00";
+        }
+        else{
+            return time.toString();
         }
     }
 
