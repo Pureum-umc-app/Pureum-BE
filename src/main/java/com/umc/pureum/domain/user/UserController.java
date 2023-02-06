@@ -63,7 +63,7 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-ACCESS-TOKEN"),
             @ApiImplicitParam(name = "nickname", dataTypeClass = String.class, paramType = "formData", value = "nickname"),
-            @ApiImplicitParam(name = "grade", dataTypeClass = Integer.class, paramType = "formData", value = "grade"),
+            @ApiImplicitParam(name = "grade", dataTypeClass = Integer.class, paramType = "formData", value = "grade",example = "1"),
             @ApiImplicitParam(name = "image", dataTypeClass = Integer.class, paramType = "formData", value = "image")
     })
     @ApiResponses({
@@ -104,7 +104,8 @@ public class UserController {
      */
     @ApiOperation("로그인 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class , paramType = "header", value = "kakao-access token"),
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-access token"),
+            @ApiImplicitParam(name = "FCMDto", dataTypeClass = FCMDto.class, paramType = "body", value = "fcm access token")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = LogInResponseDto.class),
@@ -119,7 +120,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
         }
         Long id = userService.getUserId(kakaoAccessTokenInfoDto.getId());
-        LogInResponseDto logInResponseDto = userService.userLogIn(id,fcmDto);
+        LogInResponseDto logInResponseDto = userService.userLogIn(id, fcmDto);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(logInResponseDto));
     }
 
