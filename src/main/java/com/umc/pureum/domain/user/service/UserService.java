@@ -5,6 +5,10 @@ import com.umc.pureum.domain.attendance.entity.AttendanceCheck;
 import com.umc.pureum.domain.attendance.entity.AttendanceStatus;
 import com.umc.pureum.domain.badge.BadgeRepository;
 import com.umc.pureum.domain.badge.entity.Badge;
+import com.umc.pureum.domain.battle.entity.Battle;
+import com.umc.pureum.domain.battle.entity.BattleStatus;
+import com.umc.pureum.domain.battle.repository.BattleRepository;
+import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.repository.SentenceLikeRepository;
@@ -21,6 +25,7 @@ import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.entity.mapping.UserProfileMapping;
 import com.umc.pureum.global.config.BaseException;
+import com.umc.pureum.global.config.BaseResponseStatus;
 import com.umc.pureum.global.config.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +52,8 @@ public class UserService {
     private final SentenceRepository sentenceRepository;
     private final SentenceLikeRepository sentenceLikeRepository;
     private final BadgeRepository badgeRepository;
+    private final BattleRepository battleRepository;
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     /**
      * access token으로 유저 정보 가져온 후 회원가입
@@ -105,6 +112,7 @@ public class UserService {
         List<Sentence> sentences = sentenceRepository.findByUserId(userId);
         List<SentenceLike> sentenceLikes = sentenceLikeRepository.findByUserId(userId);
         List<Badge> badges = badgeRepository.findByUserId(userId);
+        List<Battle> battles = battleRepository.findByChallengerIdOrChallengedId(userId, userId);
         if (userAccount.isPresent()) {
             userAccount.get().setStatus("D");
             for (UsePhone usePhone : usePhones) {
@@ -128,6 +136,23 @@ public class UserService {
             }
             for (Badge badge : badges) {
                 badge.setStatus("D");
+            }
+            for (Battle battle : battles) {
+                if (battle.getChallenger().getId() == userId && (battle.getStatus() == BattleStatus.A || battle.getStatus() == BattleStatus.I)) {
+                    battle.setStatus(BattleStatus.D);
+                    try {
+                        firebaseCloudMessageService.sendMessageTo(battle.getChallenged().getId(), "상대가 대결을 취소했어요.", "취소했어요");
+                    } catch (IOException e) {
+                        throw new BaseException(BaseResponseStatus.FCM_ERROR);
+                    }
+                } else if (battle.getChallenged().getId() == userId && (battle.getStatus() == BattleStatus.A || battle.getStatus() == BattleStatus.I)) {
+                    battle.setStatus(BattleStatus.D);
+                    try {
+                        firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(), "상대가 대결을 취소했어요.", "취소했어요");
+                    } catch (IOException e) {
+                        throw new BaseException(BaseResponseStatus.FCM_ERROR);
+                    }
+                }
             }
         } else
             throw new BaseException(POST_USERS_NO_EXISTS_USER);
