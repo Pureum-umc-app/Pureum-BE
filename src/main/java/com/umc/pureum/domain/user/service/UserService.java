@@ -115,6 +115,7 @@ public class UserService {
         List<Battle> battles = battleRepository.findByChallengerIdOrChallengedId(userId, userId);
         if (userAccount.isPresent()) {
             userAccount.get().setStatus("D");
+            userAccount.get().setFcmId(null);
             for (UsePhone usePhone : usePhones) {
                 usePhone.setStatus(UseStatus.D);
             }
