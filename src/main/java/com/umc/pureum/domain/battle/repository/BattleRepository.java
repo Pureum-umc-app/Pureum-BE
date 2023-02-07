@@ -70,7 +70,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
     List<GetCompleteBattles> findAllCompleteBattles(PageRequest request);
 
     /* 나의 대기 중인 대결 리스트 반환 */
-    @Query("select b.id as battleId, \n" +
+    @Query("select b.id as battleId, b.status as status, \n" +
             "   case when(b.challenger.id = :userId) then b.challenged.id \n" +
             "        else b.challenger.id \n" +
             "        end as otherId, \n" +
