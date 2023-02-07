@@ -1,16 +1,14 @@
 package com.umc.pureum.domain.attendance;
 
-import com.umc.pureum.domain.attendance.dto.AttendanceCheckReq;
-import com.umc.pureum.domain.attendance.dto.AttendanceCheckRes;
-import com.umc.pureum.domain.attendance.dto.GetStampRes;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import com.umc.pureum.domain.attendance.dto.request.AttendanceCheckReq;
+import com.umc.pureum.domain.attendance.dto.response.AttendanceCheckRes;
+import com.umc.pureum.domain.attendance.dto.response.GetStampRes;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,11 +28,11 @@ public class AttendanceController {
     /**
      * 도장 개수 반환 API
      * 전체 도장 개수 & 현재 스탬프지의 도장 개수 반환
-     * [GET] /attendances/{userIdx}
+     * [GET] /attendances/{userId}
      */
     @ApiOperation("도장 개수 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class)
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -69,8 +67,8 @@ public class AttendanceController {
      */
     @ApiOperation("출석 체크 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "AttendanceCheckReq", paramType = "body", value = "출석 체크 Request")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "request", paramType = "body", value = "출석 체크 Request", dataTypeClass = AttendanceCheckReq.class)
     })
     @ResponseBody
     @PostMapping("/check")

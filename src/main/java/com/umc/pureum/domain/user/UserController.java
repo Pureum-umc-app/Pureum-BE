@@ -1,6 +1,7 @@
 package com.umc.pureum.domain.user;
 
-import com.umc.pureum.domain.user.dto.KakaoAccessTokenInfoDto;
+import com.umc.pureum.domain.user.dto.request.FCMDto;
+import com.umc.pureum.domain.user.dto.request.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
 import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.service.KakaoService;
@@ -60,15 +61,16 @@ public class UserController {
      */
     @ApiOperation("회원가입 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", paramType = "header", value = "kakao-ACCESS-TOKEN"),
-            @ApiImplicitParam(name = "nickname", paramType = "formData", value = "nickname"),
-            @ApiImplicitParam(name = "grade", paramType = "formData", value = "grade"),
-            @ApiImplicitParam(name = "image", paramType = "formData", value = "image")
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-ACCESS-TOKEN"),
+            @ApiImplicitParam(name = "nickname", dataTypeClass = String.class, paramType = "formData", value = "nickname"),
+            @ApiImplicitParam(name = "grade", dataTypeClass = Integer.class, paramType = "formData", value = "grade", example = "1"),
+            @ApiImplicitParam(name = "image", dataTypeClass = Integer.class, paramType = "formData", value = "image")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
             @ApiResponse(code = 2031, message = "중복된 닉네임입니다."),
-            @ApiResponse(code = 2033, message = "이미 가입된 회원입니다.")
+            @ApiResponse(code = 2033, message = "이미 가입된 회원입니다."),
+            @ApiResponse(code = 2005, message = "이미지파일이 아닙니다")
     })
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -102,7 +104,8 @@ public class UserController {
      */
     @ApiOperation("로그인 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", paramType = "header", value = "kakao-access token"),
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-access token"),
+            @ApiImplicitParam(name = "FCMDto", dataTypeClass = FCMDto.class, paramType = "body", value = "fcm access token")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = LogInResponseDto.class),
@@ -110,20 +113,20 @@ public class UserController {
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다.")
     })
     @PostMapping(value = "/signin")
-    public ResponseEntity<BaseResponse<LogInResponseDto>> userLogIn() {
+    public ResponseEntity<BaseResponse<LogInResponseDto>> userLogIn(@RequestBody FCMDto fcmDto) {
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(accessToken);
         if (!userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
         }
         Long id = userService.getUserId(kakaoAccessTokenInfoDto.getId());
-        LogInResponseDto logInResponseDto = userService.userLogIn(id);
+        LogInResponseDto logInResponseDto = userService.userLogIn(id, fcmDto);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(logInResponseDto));
     }
 
     @ApiOperation("닉네임 유효성 체크 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "nickname", paramType = "path", value = "닉네임"),
+            @ApiImplicitParam(name = "nickname", dataTypeClass = String.class, paramType = "path", value = "닉네임"),
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
@@ -140,11 +143,12 @@ public class UserController {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
     @ApiOperation("회원 탈퇴 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", paramType = "header", value = "kakao-access token")
+            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-access token")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
@@ -155,10 +159,9 @@ public class UserController {
         try {
             String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
             if (!userService.validationDuplicateUserId(userId)) {
-                System.out.println(userId);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
             }
-            userService.UserResign(userId,accessToken);
+            userService.UserResign(userId, accessToken);
             return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원탈퇴되었습니다."));
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
