@@ -1,6 +1,6 @@
 package com.umc.pureum.domain.mypage;
 
-import com.umc.pureum.domain.mypage.dto.PostUpdateSentenceReq;
+import com.umc.pureum.domain.mypage.dto.request.PostUpdateSentenceReq;
 import com.umc.pureum.domain.mypage.dto.request.PatchEditProfileReq;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.user.UserRepository;
