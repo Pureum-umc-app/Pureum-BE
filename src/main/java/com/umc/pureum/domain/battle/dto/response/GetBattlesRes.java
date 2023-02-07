@@ -20,13 +20,15 @@ public class GetBattlesRes {
     private String challengedProfileImg;
     private int isChallengedLike;
     private Long challengedLikeCnt;
+    private String duration;
 
     @Builder
     public GetBattlesRes(Long battleId, Long keywordId, String keyword,
                          Long challengerId, String challengerNickname, String challengerProfileImg,
                          int isChallengerLike, Long challengerLikeCnt,
                          Long challengedId, String challengedNickname, String challengedProfileImg,
-                         int isChallengedLike, Long challengedLikeCnt) {
+                         int isChallengedLike, Long challengedLikeCnt,
+                         String duration) {
         this.battleId = battleId;
         this.keywordId = keywordId;
         this.keyword = keyword;
@@ -40,5 +42,6 @@ public class GetBattlesRes {
         this.challengedProfileImg = challengedProfileImg;
         this.isChallengedLike = isChallengedLike;
         this.challengedLikeCnt = challengedLikeCnt;
+        this.duration = duration;
     }
 }
