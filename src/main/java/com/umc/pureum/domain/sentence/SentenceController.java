@@ -4,22 +4,24 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umc.pureum.domain.sentence.dto.*;
+import com.umc.pureum.domain.sentence.dao.SentenceDao;
+import com.umc.pureum.domain.sentence.dto.request.CreateSentenceReq;
+import com.umc.pureum.domain.sentence.dto.request.LikeSentenceReq;
+import com.umc.pureum.domain.sentence.dto.response.CreateSentenceRes;
+import com.umc.pureum.domain.sentence.dto.response.GetKeywordRes;
+import com.umc.pureum.domain.sentence.dto.response.LikeSentenceRes;
 import com.umc.pureum.domain.sentence.dto.response.SentenceListRes;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
 import com.umc.pureum.domain.sentence.service.SentenceService;
-import com.umc.pureum.domain.user.service.KakaoService;
-import com.umc.pureum.domain.user.service.UserService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.json.XML;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -50,9 +52,6 @@ public class SentenceController {
     private final SentenceService sentenceService;
     private final WordRepository wordRepository;
     private final SentenceDao sentenceDao;
-    private final SentenceLikeDao sentenceLikeDao;
-    private final KakaoService kakaoService;
-    private final UserService userService;
 
     /**
      * 한국어 기초 사전 API 연동
@@ -124,7 +123,7 @@ public class SentenceController {
      */
     @ApiOperation("오늘의 작성 전 단어 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class)
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -159,7 +158,7 @@ public class SentenceController {
      */
     @ApiOperation("오늘의 작성 완료 단어 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class)
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -193,8 +192,8 @@ public class SentenceController {
      */
     @ApiOperation("문장 작성 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "CreateSentenceReq", paramType = "body", value = "문장 작성 Request")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "request", paramType = "body", value = "문장 작성 Request", dataTypeClass = CreateSentenceReq.class)
     })
     @ResponseBody
     @PostMapping("/write")
@@ -205,15 +204,14 @@ public class SentenceController {
 
         long userId = Long.parseLong(UserId);
 
-        try{
-            if(userId != request.getUserId()){
+        try {
+            if (userId != request.getUserId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else{
-                CreateSentenceRes write = sentenceService.write(userId , request);
+            } else {
+                CreateSentenceRes write = sentenceService.write(userId, request);
                 return new BaseResponse<>(write);
             }
-        }catch (BaseException e){
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
 
@@ -225,8 +223,8 @@ public class SentenceController {
      */
     @ApiOperation("문장 좋아요 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "LikeSentenceReq", paramType = "body", value = "문장 좋아요 Request")
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "request", paramType = "body", value = "문장 좋아요 Request", dataTypeClass = LikeSentenceReq.class)
     })
     @ResponseBody
     @PostMapping("/like")
@@ -254,12 +252,12 @@ public class SentenceController {
 
     @ApiOperation("단어별 문장 리스트 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "word_id", paramType = "query", value = "nickname"),
-            @ApiImplicitParam(name = "page", paramType = "query", value = "image"),
-            @ApiImplicitParam(name = "limit", paramType = "query", value = "nickname"),
-            @ApiImplicitParam(name = "sort", paramType = "query", value = "image")
+            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 id", example = "1"),
+            @ApiImplicitParam(name = "word_id", dataTypeClass = Long.class, paramType = "query", value = "단어 id",example = "1"),
+            @ApiImplicitParam(name = "page", dataTypeClass = Integer.class, paramType = "query", value = "페이지",example = "1"),
+            @ApiImplicitParam(name = "limit", dataTypeClass = Integer.class, paramType = "query", value = "페이지 별  객체 수",example = "20"),
+            @ApiImplicitParam(name = "sort", dataTypeClass = String.class, paramType = "query", value = "정렬 조건(like, date")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -267,7 +265,7 @@ public class SentenceController {
             @ApiResponse(code = 2042, message = "정렬 방식이 잘못되었습니다.")
     })
     @GetMapping("/{userId}")
-    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@PathVariable long userId, @RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort) throws BaseException {
+    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@PathVariable long userId, @RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = Long.parseLong(principal.getUsername());
         try {
