@@ -1,34 +1,28 @@
 package com.umc.pureum.domain.battle;
 
-import com.umc.pureum.domain.battle.dto.BattleFighterRes;
-import com.umc.pureum.domain.battle.dto.GetBattleWordRes;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattleLikeInterface;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesInterface;
-import com.umc.pureum.domain.battle.dto.repsonse.GetBattlesRes;
-import com.umc.pureum.domain.battle.dto.repsonse.GetWaitBattlesRes;
+import com.umc.pureum.domain.battle.dao.BattleDao;
+import com.umc.pureum.domain.battle.dto.response.BattleFighterRes;
+import com.umc.pureum.domain.battle.dto.response.GetBattleWordRes;
+import com.umc.pureum.domain.battle.dto.response.*;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.battle.entity.BattleStatus;
 import com.umc.pureum.domain.battle.entity.BattleWord;
 import com.umc.pureum.domain.battle.repository.BattleLikeRepository;
 import com.umc.pureum.domain.battle.repository.BattleRepository;
 import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
-import com.umc.pureum.domain.sentence.entity.Keyword;
-import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.umc.pureum.global.entity.Status.A;
 
@@ -43,7 +37,7 @@ public class BattleProvider {
     private final UserDao userDao;
 
     /* 진행 중인 대결 리스트 반환 API */
-    public List<GetBattlesRes> getBattles(Long userId) throws BaseException {
+    public List<GetBattlesRes> getBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> user = userRepository.findByIdAndStatus(userId, "A");
         if(user.isEmpty()) {
@@ -51,7 +45,8 @@ public class BattleProvider {
         }
 
         // 배틀 정보를 받아옴
-        List<GetBattlesInterface> battles = battleRepository.findAllByStatus(BattleStatus.I);
+        PageRequest request = PageRequest.of(page, limit);
+        List<GetBattlesInterface> battles = battleRepository.findAllBattles(BattleStatus.I, request);
 
         // 좋아요 정보를 추가해서 배열을 만들어줌
         if(!battles.isEmpty()) {
@@ -96,19 +91,32 @@ public class BattleProvider {
         }
     }
 
-    /* 대기 중인 대결 리스트 반환 API */
-    public List<GetWaitBattlesRes> getWaitBattles(Long userId) throws BaseException {
+    /* 종료된 대결 리스트 반환 */
+    public List<GetCompleteBattles> getCompleteBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
         if(myInfo.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
-        return battleRepository.findAllByWaitBattles(userId, BattleStatus.W);
+        PageRequest request = PageRequest.of(page, limit);
+        return battleRepository.findAllCompleteBattles(request);
+    }
+
+    /* 나의 대기 중인 대결 리스트 반환 API */
+    public List<GetWaitBattlesRes> getWaitBattles(Long userId, int page, int limit) throws BaseException {
+        // 유저 예외 처리
+        Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
+        if(myInfo.isEmpty()) {
+            throw new BaseException(BaseResponseStatus.INVALID_USER);
+        }
+
+        PageRequest request = PageRequest.of(page, limit);
+        return battleRepository.findAllMyWaitBattles(userId, request);
     }
 
     /* 나의 진행 중인 대결 리스트 반환 API */
-    public List<GetBattlesRes> getMyBattles(Long userId) throws BaseException {
+    public List<GetBattlesRes> getMyBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> user = userRepository.findByIdAndStatus(userId, "A");
         if(user.isEmpty()) {
@@ -116,7 +124,8 @@ public class BattleProvider {
         }
 
         // 배틀 정보를 받아옴
-        List<GetBattlesInterface> battles = battleRepository.findAllByUserIdAndStatus(userId, BattleStatus.I);
+        PageRequest request = PageRequest.of(page, limit);
+        List<GetBattlesInterface> battles = battleRepository.findAllMyBattles(userId, request);
 
         // 좋아요 정보를 추가해서 배열을 만들어줌
         if(!battles.isEmpty()) {
@@ -158,6 +167,18 @@ public class BattleProvider {
         } else {  // 대결이 없으면 빈 배열을 리턴함
             return new ArrayList<>();
         }
+    }
+
+    /* 나의 종료된 대결 리스트 반환 */
+    public List<GetCompleteBattles> getMyCompleteBattles(Long userId, int page, int limit) throws BaseException {
+        // 유저 예외 처리
+        Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
+        if(myInfo.isEmpty()) {
+            throw new BaseException(BaseResponseStatus.INVALID_USER);
+        }
+
+        PageRequest request = PageRequest.of(page, limit);
+        return battleRepository.findAllMyCompleteBattles(userId, request);
     }
 
     /* 대결 상대 리스트 반환 API */
