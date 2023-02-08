@@ -16,4 +16,5 @@ public class CreateUserDto {
     String nickname;
     MultipartFile image;
     int grade;
+    String kakaoToken;
 }
