@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class FCMDto {
-    String fcmId;
+public class LoginDto {
+//    String fcmId;
+    String kakaoToken;
 }
