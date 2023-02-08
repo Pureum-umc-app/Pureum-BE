@@ -164,19 +164,22 @@ public class BattleService {
         Long battleId = request.getBattleId();
         String writingSentence = request.getSentence();
 
-        // request 로 받은 battleId 로 배틀 찾기
-        Battle battle = battleDao.findOne(battleId);
+        GetBattleWriteSentenceInterface getBattleWriteSentenceInterface = battleSentenceRepository.findInfoByBattleId(battleId).stream().findAny().get();
 
-        // battle 상태 바꾸기
-        battle.setStatus(BattleStatus.I);
+        Battle battle = getBattleWriteSentenceInterface.getBattle();
+        BattleWord battleWord = getBattleWriteSentenceInterface.getBattleWord();
+        String writingWord = getBattleWriteSentenceInterface.getKeyword();
+        BattleStatus battleStatus = getBattleWriteSentenceInterface.getBattleStatus();
+        Status challengedStatus = getBattleWriteSentenceInterface.getChallengedStatus();
+        Status challengerStatus = getBattleWriteSentenceInterface.getChallengerStatus();
 
-        // request 로 받은 battleWordId 로 단어 찾기
-        BattleWord battleWord = battle.getWord();
-        Word word = battleWord.getWord();
-        String writingWord = word.getWord();
+        // 탈퇴한 회원 여부 확인
+        if(battleStatus == BattleStatus.C || battleStatus == BattleStatus.D || challengedStatus != Status.A || challengerStatus != Status.A){
+            throw new BaseException(GET_BATTLE_FINISH_STATUS);
+        }
 
         // 작성한 문장 존재 여부 확인
-        if (writingSentence == "") {
+        else if (writingSentence == "") {
             throw new BaseException(POST_SENTENCE_EMPTY);
         }
 
