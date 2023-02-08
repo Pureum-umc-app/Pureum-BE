@@ -1,5 +1,6 @@
 package com.umc.pureum.domain.user;
 
+import com.umc.pureum.domain.user.dto.request.FCMDto;
 import com.umc.pureum.domain.user.dto.request.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
 import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
@@ -62,7 +63,7 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-ACCESS-TOKEN"),
             @ApiImplicitParam(name = "nickname", dataTypeClass = String.class, paramType = "formData", value = "nickname"),
-            @ApiImplicitParam(name = "grade", dataTypeClass = Integer.class, paramType = "formData", value = "grade"),
+            @ApiImplicitParam(name = "grade", dataTypeClass = Integer.class, paramType = "formData", value = "grade", example = "1"),
             @ApiImplicitParam(name = "image", dataTypeClass = Integer.class, paramType = "formData", value = "image")
     })
     @ApiResponses({
@@ -103,7 +104,8 @@ public class UserController {
      */
     @ApiOperation("로그인 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class , paramType = "header", value = "kakao-access token"),
+            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-access token"),
+            @ApiImplicitParam(name = "FCMDto", dataTypeClass = FCMDto.class, paramType = "body", value = "fcm access token")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = LogInResponseDto.class),
@@ -111,14 +113,14 @@ public class UserController {
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다.")
     })
     @PostMapping(value = "/signin")
-    public ResponseEntity<BaseResponse<LogInResponseDto>> userLogIn() {
+    public ResponseEntity<BaseResponse<LogInResponseDto>> userLogIn(@RequestBody FCMDto fcmDto) {
         String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
         KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(accessToken);
         if (!userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
         }
         Long id = userService.getUserId(kakaoAccessTokenInfoDto.getId());
-        LogInResponseDto logInResponseDto = userService.userLogIn(id);
+        LogInResponseDto logInResponseDto = userService.userLogIn(id, fcmDto);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(logInResponseDto));
     }
 
@@ -157,7 +159,6 @@ public class UserController {
         try {
             String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
             if (!userService.validationDuplicateUserId(userId)) {
-                System.out.println(userId);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
             }
             userService.UserResign(userId, accessToken);
