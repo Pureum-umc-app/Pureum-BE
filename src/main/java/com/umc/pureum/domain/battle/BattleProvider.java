@@ -75,12 +75,17 @@ public class BattleProvider {
 
                 if(erl.isEmpty() || edl.isEmpty()) throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
 
+                String duration = "";
+                if(battle.getDuration() > 0) duration = "D-" + battle.getDuration();
+                else if(battle.getDuration() == 0) duration = "D-DAY";
+                else duration = "D+" + -battle.getDuration();
+
                 // 배열에 값 넣기
                 getBattlesRes.add(new GetBattlesRes(battle.getBattleId(), battle.getKeywordId(), battle.getKeyword(),
                         battle.getChallengerId(), battle.getChallengerNickname(), battle.getChallengerProfileImg(),
                         erl.get().getIsLike(), erl.get().getLikeCnt(),
                         battle.getChallengedId(), battle.getChallengedNickname(), battle.getChallengedProfileImg(),
-                        edl.get().getIsLike(), edl.get().getLikeCnt()));
+                        edl.get().getIsLike(), edl.get().getLikeCnt(), duration));
 
             }
 
@@ -153,12 +158,17 @@ public class BattleProvider {
 
                 if(erl.isEmpty() || edl.isEmpty()) throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
 
+                String duration = "";
+                if(battle.getDuration() > 0) duration = "D-" + battle.getDuration();
+                else if(battle.getDuration() == 0) duration = "D-DAY";
+                else duration = "D+" + -battle.getDuration();
+
                 // 배열에 값 넣기
                 getBattlesRes.add(new GetBattlesRes(battle.getBattleId(), battle.getKeywordId(), battle.getKeyword(),
                         battle.getChallengerId(), battle.getChallengerNickname(), battle.getChallengerProfileImg(),
                         erl.get().getIsLike(), erl.get().getLikeCnt(),
                         battle.getChallengedId(), battle.getChallengedNickname(), battle.getChallengedProfileImg(),
-                        edl.get().getIsLike(), edl.get().getLikeCnt()));
+                        edl.get().getIsLike(), edl.get().getLikeCnt(), duration));
 
             }
 
