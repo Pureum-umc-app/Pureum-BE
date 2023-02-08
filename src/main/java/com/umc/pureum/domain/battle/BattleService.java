@@ -259,6 +259,7 @@ public class BattleService {
             LocalDateTime currentLocalDateTime = LocalDateTime.now();
             long differ = (Timestamp.valueOf(currentLocalDateTime).getTime() - updateAt.getTime()) / (24*60*60*1000);
 
+
             Long challengedId = battleInfo.getChallengedId();
             Long challengerId = battleInfo.getChallengerId();
 
@@ -268,6 +269,20 @@ public class BattleService {
             Long challengedSentenceId = challengedSentenceInfo.getBattleSentenceId();
             Long challengerSentenceId = challengerSentenceInfo.getBattleSentenceId();
 
+
+            String remainDuration = "D-";
+
+            if(battleInfo.getDuration() - Long.valueOf(differ).intValue() > 0 ){
+                remainDuration = remainDuration +  Integer.toString(battleInfo.getDuration() - Long.valueOf(differ).intValue());
+            }
+            else if(battleInfo.getDuration() - Long.valueOf(differ).intValue() == 0 ){
+                remainDuration = "D-DAY";
+            }
+            else {
+                throw new BaseException(GET_BATTLE_FINISH_STATUS);
+            }
+
+
             if (userId == challengedId) {
 
                 GetBattleLikeInterface challengedLikeInterface = likeRepository.findByUserId(challengedId, challengedSentenceId).stream().findAny().get();
@@ -275,7 +290,7 @@ public class BattleService {
                 GetBattleLikeInterface oppLikeInterface = likeRepository.findByUserId(challengedId, challengerSentenceId).stream().findAny().get();
 
 
-                return new ReturnRunBattleRes(battleInfo.getBattleId(), battleInfo.getKeywordId(), battleInfo.getKeyword(), battleInfo.getDuration() -  Long.valueOf(differ).intValue(),
+                return new ReturnRunBattleRes(battleInfo.getBattleId(), battleInfo.getKeywordId(), battleInfo.getKeyword(), remainDuration,
                         battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
                         battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
                         battleInfo.getDuration(), battleInfo.getBattleStatus(),
@@ -291,7 +306,7 @@ public class BattleService {
                 GetBattleLikeInterface oppLikeInterface = likeRepository.findByUserId(challengerId, challengedSentenceId).stream().findAny().get();
 
 
-                return new ReturnRunBattleRes(battleInfo.getBattleId(), battleInfo.getKeywordId(), battleInfo.getKeyword(), battleInfo.getDuration() - Long.valueOf(differ).intValue(),
+                return new ReturnRunBattleRes(battleInfo.getBattleId(), battleInfo.getKeywordId(), battleInfo.getKeyword(), remainDuration,
                         battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
                         battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
                         battleInfo.getDuration(), battleInfo.getBattleStatus(),
