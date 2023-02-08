@@ -28,5 +28,6 @@ public class GetHomeListRes {
 
     @ApiModelProperty(example = "1")
     private int count;
-    private List<RankerInformationDto> rank = new ArrayList<>();
+    @Builder.Default
+    private final List<RankerInformationDto> rank = new ArrayList<>();
 }
