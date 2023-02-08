@@ -115,7 +115,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
         }
         Long id = userService.getUserId(kakaoAccessTokenInfoDto.getId());
-        LogInResponseDto logInResponseDto = userService.userLogIn(id, loginDto.getFcmId());
+        LogInResponseDto logInResponseDto = userService.userLogIn(id);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(logInResponseDto));
     }
 
