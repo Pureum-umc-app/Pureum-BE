@@ -91,10 +91,10 @@ public class UserService {
         return userRepository.findByKakaoIdAndStatus(kakaoId, "A").getId();
     }
 
-    public LogInResponseDto userLogIn(Long id, String fcmId) {
+    public LogInResponseDto userLogIn(Long id) {
         String jwt = jwtTokenProvider.createAccessToken(Long.toString(id));
-        Optional<UserAccount> userAccount = userRepository.findByIdAndStatus(id, "A");
-        userAccount.get().setFcmId(fcmId);
+//        Optional<UserAccount> userAccount = userRepository.findByIdAndStatus(id, "A");
+//        userAccount.get().setFcmId(fcmId);
         return new LogInResponseDto(jwt);
     }
 
