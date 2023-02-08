@@ -1,6 +1,6 @@
 package com.umc.pureum.domain.use;
 
-import com.umc.pureum.domain.use.dto.time.DateToInt;
+import com.umc.pureum.domain.use.dto.time.TimeInfo;
 import com.umc.pureum.domain.use.dto.response.GetGoalResultsRes;
 import com.umc.pureum.domain.use.dto.response.GetHomeListRes;
 import com.umc.pureum.domain.use.dto.response.GoalResult;
@@ -120,7 +120,8 @@ public class UseProvider {
                         .rankNum(num.getAndIncrement())
                         .nickname(r.getUser().getNickname())
                         .image(r.getUser().getImage())
-                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
+                        .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                        .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
                 .collect(Collectors.toList());
     }
 
@@ -132,18 +133,20 @@ public class UseProvider {
         if (page == 0){
             List<UsePhone> rankZero = useDao.findRankZeroInSameGrade(getDate,grade);
             return rankZero.stream().map(r -> RankerInformationDto.builder()
-                        .rankNum(num.getAndIncrement())
-                        .nickname(r.getUser().getNickname())
-                        .image(r.getUser().getImage())
-                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
+                            .rankNum(num.getAndIncrement())
+                            .nickname(r.getUser().getNickname())
+                            .image(r.getUser().getImage())
+                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
                     .collect(Collectors.toList());
         } else {
             List<UsePhone> rankOverZero = useDao.findRankOverZeroInSameGrade(getDate,grade,page);
             return rankOverZero.stream().map(r -> RankerInformationDto.builder()
-                        .rankNum(num.getAndIncrement())
-                        .nickname(r.getUser().getNickname())
-                        .image(r.getUser().getImage())
-                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
+                            .rankNum(num.getAndIncrement())
+                            .nickname(r.getUser().getNickname())
+                            .image(r.getUser().getImage())
+                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
                     .collect(Collectors.toList());
         }
     }
@@ -158,7 +161,8 @@ public class UseProvider {
                             .rankNum(num.getAndIncrement())
                             .nickname(r.getUser().getNickname())
                             .image(r.getUser().getImage())
-                            .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
+                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
                     .collect(Collectors.toList());
         } else {
             List<UsePhone> rankOverZero = useDao.findRankOverZeroInAllGrade(getDate,page);
@@ -166,7 +170,8 @@ public class UseProvider {
                             .rankNum(num.getAndIncrement())
                             .nickname(r.getUser().getNickname())
                             .image(r.getUser().getImage())
-                            .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
+                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
                     .collect(Collectors.toList());
         }
     }
@@ -187,15 +192,16 @@ public class UseProvider {
     }
 
     // String to int(목표시간, 이용시간)
-    public int stringToIntForTime(String time){
+    public TimeInfo stringToIntForTime(String time){
         String[] split = time.split(":");
-        return Integer.parseInt(split[0]) * 60 + Integer.parseInt(split[1]);
+        return TimeInfo.builder()
+                .minutes(Integer.parseInt(split[0]) * 60 + Integer.parseInt(split[1])).build();
     }
 
     // String to int(날짜)
-    public DateToInt stringToIntForDate(String date){
+    public TimeInfo stringToIntForDate(String date){
         String[] split = date.split("-");
-        return DateToInt.builder()
+        return TimeInfo.builder()
                 .year(Integer.parseInt(split[0]))
                 .month(Integer.parseInt(split[1]))
                 .day(Integer.parseInt(split[2]))
