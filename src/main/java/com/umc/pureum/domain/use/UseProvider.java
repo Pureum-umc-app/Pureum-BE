@@ -1,6 +1,6 @@
 package com.umc.pureum.domain.use;
 
-import com.umc.pureum.domain.use.dto.time.DateToInt;
+import com.umc.pureum.domain.use.dto.time.TimeInfo;
 import com.umc.pureum.domain.use.dto.response.GetGoalResultsRes;
 import com.umc.pureum.domain.use.dto.response.GetHomeListRes;
 import com.umc.pureum.domain.use.dto.response.GoalResult;
@@ -192,15 +192,16 @@ public class UseProvider {
     }
 
     // String to int(목표시간, 이용시간)
-    public int stringToIntForTime(String time){
+    public TimeInfo stringToIntForTime(String time){
         String[] split = time.split(":");
-        return Integer.parseInt(split[0]) * 60 + Integer.parseInt(split[1]);
+        return TimeInfo.builder()
+                .minutes(Integer.parseInt(split[0]) * 60 + Integer.parseInt(split[1])).build();
     }
 
     // String to int(날짜)
-    public DateToInt stringToIntForDate(String date){
+    public TimeInfo stringToIntForDate(String date){
         String[] split = date.split("-");
-        return DateToInt.builder()
+        return TimeInfo.builder()
                 .year(Integer.parseInt(split[0]))
                 .month(Integer.parseInt(split[1]))
                 .day(Integer.parseInt(split[2]))
