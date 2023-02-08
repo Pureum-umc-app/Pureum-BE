@@ -1,12 +1,10 @@
 package com.umc.pureum.domain.battle.entity;
 
-import com.sun.istack.NotNull;
-import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
-import com.umc.pureum.global.entity.Status;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -16,12 +14,17 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
+
 public class Battle extends BaseEntity {
-    @ManyToOne @JoinColumn(name = "challenger_id")
+    @ManyToOne
+    @JoinColumn(name = "challenger_id")
     private UserAccount challenger;
-    @ManyToOne @JoinColumn(name = "challenged_id")
+    @ManyToOne
+    @JoinColumn(name = "challenged_id")
     private UserAccount challenged;
-    @ManyToOne @JoinColumn(name = "battle_word_id")
+    @ManyToOne
+    @JoinColumn(name = "battle_word_id")
     private BattleWord word;
     private int duration;
     @Enumerated(EnumType.STRING)
