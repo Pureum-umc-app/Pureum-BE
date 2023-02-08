@@ -1,9 +1,8 @@
 package com.umc.pureum.domain.badge;
 
 
-import com.umc.pureum.domain.badge.dto.SaveBadgeReq;
+import com.umc.pureum.domain.badge.dto.request.SaveBadgeReq;
 import com.umc.pureum.domain.badge.dto.response.ReturnBadgesRes;
-import com.umc.pureum.domain.battle.dto.response.ReturnRunBattleRes;
 import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
