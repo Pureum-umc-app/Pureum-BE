@@ -114,15 +114,8 @@ public class UseProvider {
 
     // 랭킹 Top 10 사용자 정보 조회(같은 카테고리(학년) 내)
     public List<RankerInformationDto> getRankerInformation(Timestamp updateAt, int grade){
-        AtomicInteger num = new AtomicInteger(1);
         List<UsePhone> rankTopTen = useDao.findRankTopTen(updateAt, grade);
-        return rankTopTen.stream().map(r -> RankerInformationDto.builder()
-                        .rankNum(num.getAndIncrement())
-                        .nickname(r.getUser().getNickname())
-                        .image(r.getUser().getImage())
-                        .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
-                        .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
-                .collect(Collectors.toList());
+        return moveUsePhoneToRankerInfo(rankTopTen);
     }
 
     // 날짜 별 랭킹 전체 조회(같은 카테고리(학년) 내)
@@ -132,47 +125,22 @@ public class UseProvider {
         int grade = userDao.find(userId).getGrade();
         if (page == 0){
             List<UsePhone> rankZero = useDao.findRankZeroInSameGrade(getDate,grade);
-            return rankZero.stream().map(r -> RankerInformationDto.builder()
-                            .rankNum(num.getAndIncrement())
-                            .nickname(r.getUser().getNickname())
-                            .image(r.getUser().getImage())
-                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
-                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
-                    .collect(Collectors.toList());
+            return moveUsePhoneToRankerInfo(rankZero);
         } else {
             List<UsePhone> rankOverZero = useDao.findRankOverZeroInSameGrade(getDate,grade,page);
-            return rankOverZero.stream().map(r -> RankerInformationDto.builder()
-                            .rankNum(num.getAndIncrement())
-                            .nickname(r.getUser().getNickname())
-                            .image(r.getUser().getImage())
-                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
-                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
-                    .collect(Collectors.toList());
+            return moveUsePhoneToRankerInfo(rankOverZero);
         }
     }
 
     // 날짜 별 랭킹 전체 조회
     public List<RankerInformationDto> getRankerInformationByDateInAllGrade(String date, int page){
-        AtomicInteger num = new AtomicInteger(1);
         Timestamp getDate = getTimeStampFromString(date);
         if (page == 0){
             List<UsePhone> rankZero = useDao.findRankZeroInAllGrade(getDate);
-            return rankZero.stream().map(r -> RankerInformationDto.builder()
-                            .rankNum(num.getAndIncrement())
-                            .nickname(r.getUser().getNickname())
-                            .image(r.getUser().getImage())
-                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
-                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
-                    .collect(Collectors.toList());
+            return moveUsePhoneToRankerInfo(rankZero);
         } else {
             List<UsePhone> rankOverZero = useDao.findRankOverZeroInAllGrade(getDate,page);
-            return rankOverZero.stream().map(r -> RankerInformationDto.builder()
-                            .rankNum(num.getAndIncrement())
-                            .nickname(r.getUser().getNickname())
-                            .image(r.getUser().getImage())
-                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
-                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
-                    .collect(Collectors.toList());
+            return moveUsePhoneToRankerInfo(rankOverZero);
         }
     }
 
@@ -216,6 +184,17 @@ public class UseProvider {
         else{
             return time.toString();
         }
+    }
+
+    public List<RankerInformationDto> moveUsePhoneToRankerInfo(List<UsePhone> list){
+        AtomicInteger num = new AtomicInteger(1);
+        return list.stream().map(r -> RankerInformationDto.builder()
+                        .rankNum(num.getAndIncrement())
+                        .nickname(r.getUser().getNickname())
+                        .image(r.getUser().getImage())
+                        .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                        .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
+                .collect(Collectors.toList());
     }
 
 }
