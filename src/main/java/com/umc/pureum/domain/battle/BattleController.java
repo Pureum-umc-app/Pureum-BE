@@ -9,6 +9,9 @@ import com.umc.pureum.domain.battle.dto.request.BattleStatusReq;
 import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
 import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
 import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
+import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
+import com.umc.pureum.domain.user.UserDao;
+import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
@@ -36,6 +39,8 @@ public class BattleController {
     private final BattleService battleService;
     private final BattleDao battleDao;
     private final BattleSentenceDao battleSentenceDao;
+    private final UserDao userDao;
+    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     /**
      * 대결 수락 API
@@ -514,17 +519,15 @@ public class BattleController {
             if (userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
                     userId != battleDao.findOne(battleIdx).getChallenger().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            } else if (!"A".equals(battleDao.findOne(battleIdx).getChallenged().getStatus()) &&
-                    !"A".equals(battleDao.findOne(battleIdx).getChallenger().getStatus())) {
+            } else if (!"A".equals(userDao.findByUserId(userId).getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
             } else {
-                // user 의 grade 찾기
+                // battle 값 return
                 ReturnRunBattleRes returnRunBattleRes = battleService.returnRunBattle(battleIdx, userId);
                 return new BaseResponse<>(returnRunBattleRes);
             }
-        } catch (BaseException e) {
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
         }
 
     }
@@ -552,17 +555,15 @@ public class BattleController {
             if (userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
                     userId != battleDao.findOne(battleIdx).getChallenger().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            } else if (!"A".equals(battleDao.findOne(battleIdx).getChallenged().getStatus()) &&
-                    !"A".equals(battleDao.findOne(battleIdx).getChallenger().getStatus())) {
+            } else if (!"A".equals(userDao.findByUserId(userId).getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
             } else {
-                // user 의 grade 찾기
+                // battle 값 return
                 ReturnFinishBattleRes returnFinishBattleRes = battleService.returnFinishBattle(battleIdx, userId);
                 return new BaseResponse<>(returnFinishBattleRes);
             }
-        } catch (BaseException e) {
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
         }
 
     }
