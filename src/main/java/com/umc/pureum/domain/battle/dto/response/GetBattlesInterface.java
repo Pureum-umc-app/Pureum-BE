@@ -10,4 +10,5 @@ public interface GetBattlesInterface {
     Long getChallengedId();
     String getChallengedNickname();
     String getChallengedProfileImg();
+    int getDuration();
 }
