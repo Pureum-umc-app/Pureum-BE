@@ -1,6 +1,6 @@
 package com.umc.pureum.domain.use;
 
-import com.umc.pureum.domain.use.dto.time.DateToInt;
+import com.umc.pureum.domain.use.dto.time.TimeInfo;
 import com.umc.pureum.domain.use.dto.response.GetGoalResultsRes;
 import com.umc.pureum.domain.use.dto.response.GetHomeListRes;
 import com.umc.pureum.domain.use.dto.response.GoalResult;
@@ -114,14 +114,8 @@ public class UseProvider {
 
     // 랭킹 Top 10 사용자 정보 조회(같은 카테고리(학년) 내)
     public List<RankerInformationDto> getRankerInformation(Timestamp updateAt, int grade){
-        AtomicInteger num = new AtomicInteger(1);
         List<UsePhone> rankTopTen = useDao.findRankTopTen(updateAt, grade);
-        return rankTopTen.stream().map(r -> RankerInformationDto.builder()
-                        .rankNum(num.getAndIncrement())
-                        .nickname(r.getUser().getNickname())
-                        .image(r.getUser().getImage())
-                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
-                .collect(Collectors.toList());
+        return moveUsePhoneToRankerInfo(rankTopTen);
     }
 
     // 날짜 별 랭킹 전체 조회(같은 카테고리(학년) 내)
@@ -131,43 +125,22 @@ public class UseProvider {
         int grade = userDao.find(userId).getGrade();
         if (page == 0){
             List<UsePhone> rankZero = useDao.findRankZeroInSameGrade(getDate,grade);
-            return rankZero.stream().map(r -> RankerInformationDto.builder()
-                        .rankNum(num.getAndIncrement())
-                        .nickname(r.getUser().getNickname())
-                        .image(r.getUser().getImage())
-                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
-                    .collect(Collectors.toList());
+            return moveUsePhoneToRankerInfo(rankZero);
         } else {
             List<UsePhone> rankOverZero = useDao.findRankOverZeroInSameGrade(getDate,grade,page);
-            return rankOverZero.stream().map(r -> RankerInformationDto.builder()
-                        .rankNum(num.getAndIncrement())
-                        .nickname(r.getUser().getNickname())
-                        .image(r.getUser().getImage())
-                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
-                    .collect(Collectors.toList());
+            return moveUsePhoneToRankerInfo(rankOverZero);
         }
     }
 
     // 날짜 별 랭킹 전체 조회
     public List<RankerInformationDto> getRankerInformationByDateInAllGrade(String date, int page){
-        AtomicInteger num = new AtomicInteger(1);
         Timestamp getDate = getTimeStampFromString(date);
         if (page == 0){
             List<UsePhone> rankZero = useDao.findRankZeroInAllGrade(getDate);
-            return rankZero.stream().map(r -> RankerInformationDto.builder()
-                            .rankNum(num.getAndIncrement())
-                            .nickname(r.getUser().getNickname())
-                            .image(r.getUser().getImage())
-                            .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
-                    .collect(Collectors.toList());
+            return moveUsePhoneToRankerInfo(rankZero);
         } else {
             List<UsePhone> rankOverZero = useDao.findRankOverZeroInAllGrade(getDate,page);
-            return rankOverZero.stream().map(r -> RankerInformationDto.builder()
-                            .rankNum(num.getAndIncrement())
-                            .nickname(r.getUser().getNickname())
-                            .image(r.getUser().getImage())
-                            .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
-                    .collect(Collectors.toList());
+            return moveUsePhoneToRankerInfo(rankOverZero);
         }
     }
 
@@ -187,15 +160,16 @@ public class UseProvider {
     }
 
     // String to int(목표시간, 이용시간)
-    public int stringToIntForTime(String time){
+    public TimeInfo stringToIntForTime(String time){
         String[] split = time.split(":");
-        return Integer.parseInt(split[0]) * 60 + Integer.parseInt(split[1]);
+        return TimeInfo.builder()
+                .minutes(Integer.parseInt(split[0]) * 60 + Integer.parseInt(split[1])).build();
     }
 
     // String to int(날짜)
-    public DateToInt stringToIntForDate(String date){
+    public TimeInfo stringToIntForDate(String date){
         String[] split = date.split("-");
-        return DateToInt.builder()
+        return TimeInfo.builder()
                 .year(Integer.parseInt(split[0]))
                 .month(Integer.parseInt(split[1]))
                 .day(Integer.parseInt(split[2]))
@@ -210,6 +184,17 @@ public class UseProvider {
         else{
             return time.toString();
         }
+    }
+
+    public List<RankerInformationDto> moveUsePhoneToRankerInfo(List<UsePhone> list){
+        AtomicInteger num = new AtomicInteger(1);
+        return list.stream().map(r -> RankerInformationDto.builder()
+                        .rankNum(num.getAndIncrement())
+                        .nickname(r.getUser().getNickname())
+                        .image(r.getUser().getImage())
+                        .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                        .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
+                .collect(Collectors.toList());
     }
 
 }

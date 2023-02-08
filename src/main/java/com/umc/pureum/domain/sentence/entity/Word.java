@@ -5,6 +5,7 @@ import com.umc.pureum.global.entity.BaseEntity;
 import com.umc.pureum.global.entity.Status;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -16,6 +17,8 @@ import javax.persistence.Enumerated;
 @SuperBuilder
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
+
 public class Word extends BaseEntity {
     @NotNull
     private String word;

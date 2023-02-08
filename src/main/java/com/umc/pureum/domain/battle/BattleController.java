@@ -295,7 +295,7 @@ public class BattleController {
      */
     @ApiOperation("종료된 대결 리스트 반환")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization",dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -403,7 +403,7 @@ public class BattleController {
      */
     @ApiOperation("나의 종료된 대결 리스트 반환")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization",dataTypeClass=String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -502,7 +502,7 @@ public class BattleController {
      */
     @ApiOperation("대결 정보 반환 API (대기 중, 진행 중)")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization",dataTypeClass=String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
     })
     @ResponseBody
     @GetMapping("/run/{battleIdx}")
@@ -538,7 +538,7 @@ public class BattleController {
      */
     @ApiOperation("대결 정보 반환 API (종료)")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization",dataTypeClass=String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
     })
     @ResponseBody
     @GetMapping("/finish/{battleIdx}")
