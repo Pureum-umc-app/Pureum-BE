@@ -11,13 +11,15 @@ import javax.persistence.*;
 @Data
 @SuperBuilder
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+
 public class AttendanceCheck extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private UserAccount user;
     @Enumerated(EnumType.STRING)
     private AttendanceStatus status;
-    
+
     @Builder
     public AttendanceCheck(UserAccount user, AttendanceStatus status) {
         this.user = user;
