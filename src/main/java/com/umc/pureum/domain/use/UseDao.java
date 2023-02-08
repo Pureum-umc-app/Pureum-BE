@@ -20,7 +20,9 @@ public class UseDao {
 
     // 사용 테이블의 외래키를 통한 최근에 생성된 사용 테이블 단건 조회
     public UsePhone findOneByFk(Long userId){
-        return em.createQuery("select u from UsePhone u where u.user.id = :userId order by u.createdAt desc", UsePhone.class)
+        return em.createQuery("select u from UsePhone u " +
+                        "join fetch u.user m " +
+                        "where m.id = :userId order by u.createdAt desc", UsePhone.class)
                 .setParameter("userId",userId)
                 .setMaxResults(1)
                 .getSingleResult();
@@ -28,14 +30,19 @@ public class UseDao {
 
     // 사용 테이블의 외래키를 통한 사용 테이블 모두 조회
     public List<UsePhone> findAll(Long user_id){
-        return em.createQuery("select u from UsePhone u where u.user.id = :user_id", UsePhone.class)
+        return em.createQuery("select u from UsePhone u " +
+                        "join fetch u.user m " +
+                        "where m.id = :user_id", UsePhone.class)
                 .setParameter("user_id",user_id)
                 .getResultList();
     }
 
     // 날짜별 사용시간 적은 순 사용 top 10(같은 카테고리 내) 가져오기
     public List<UsePhone> findRankTopTen(Timestamp updateAt, int grade){
-        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt and u.user.grade = :grade order by u.useTime", UsePhone.class)
+        return em.createQuery("select u from UsePhone u " +
+                        "join fetch u.user m " +
+                        "where u.updatedAt = :updateAt " +
+                        "and m.grade = :grade order by u.useTime", UsePhone.class)
                 .setParameter("updateAt", updateAt)
                 .setParameter("grade", grade)
                 .setMaxResults(10)
@@ -44,7 +51,10 @@ public class UseDao {
 
     // 날짜별 사용시간 적은 순 같은 학년 내 사용 랭킹(페이지 0 일 경우) 가져오기
     public List<UsePhone> findRankZeroInSameGrade(Timestamp updateAt, int grade){
-        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt and u.user.grade = :grade order by u.useTime", UsePhone.class)
+        return em.createQuery("select u from UsePhone u " +
+                        "join fetch u.user m " +
+                        "where u.updatedAt = :updateAt " +
+                        "and m.grade = :grade order by u.useTime", UsePhone.class)
                 .setParameter("updateAt", updateAt)
                 .setParameter("grade", grade)
                 .setFirstResult(0)
@@ -54,7 +64,10 @@ public class UseDao {
 
     // 날짜별 사용시간 적은 순 같은 학년 내 사용 랭킹(페이지 0 초과) 가져오기
     public List<UsePhone> findRankOverZeroInSameGrade(Timestamp updateAt, int grade, int page){
-        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt and u.user.grade = :grade order by u.useTime", UsePhone.class)
+        return em.createQuery("select u from UsePhone u " +
+                        "join fetch u.user m " +
+                        "where u.updatedAt = :updateAt " +
+                        "and m.grade = :grade order by u.useTime", UsePhone.class)
                 .setParameter("updateAt", updateAt)
                 .setParameter("grade", grade)
                 .setFirstResult((page-1)*25)
