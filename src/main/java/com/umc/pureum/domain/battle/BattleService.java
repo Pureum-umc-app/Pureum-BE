@@ -1,6 +1,6 @@
 package com.umc.pureum.domain.battle;
 
-import com.google.firebase.database.DatabaseException;
+//import com.google.firebase.database.DatabaseException;
 import com.umc.pureum.domain.battle.dao.BattleDao;
 import com.umc.pureum.domain.battle.dao.BattleLikeDao;
 import com.umc.pureum.domain.battle.dao.BattleSentenceDao;
@@ -12,7 +12,7 @@ import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
 import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import com.umc.pureum.domain.battle.entity.*;
 import com.umc.pureum.domain.battle.repository.*;
-import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
+//import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserRepository;
@@ -25,7 +25,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +48,7 @@ public class BattleService {
     private final BattleLikeRepository likeRepository;
     private final BattleResultRepository battleResultRepository;
     private final BattleLikeRepository battleLikeRepository;
-    private final FirebaseCloudMessageService firebaseCloudMessageService;
+//    private final FirebaseCloudMessageService firebaseCloudMessageService;
     // accept : 대결 수락
     @Transactional
     public BattleStatusRes accept(BattleStatusReq request) {
@@ -73,11 +72,13 @@ public class BattleService {
 
         // battle 상태를 수락 완료로 바꾸기
         battle.setStatus(BattleStatus.D);
+        /*
         try {
             firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 거절했어요.","거절했어요");
         } catch (IOException e) {
             throw new BaseException(BaseResponseStatus.FCM_ERROR);
         }
+         */
         // battle ID , Status 값
         return new BattleStatusRes(battle.getId(), battle.getStatus());
     }
@@ -91,11 +92,14 @@ public class BattleService {
 
         // battle 상태를 수락 완료로 바꾸기
         battle.setStatus(BattleStatus.D);
+        /*
         try {
             firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 취소했어요.","취소했어요");
         } catch (IOException e) {
             throw new BaseException(BaseResponseStatus.FCM_ERROR);
         }
+
+         */
         // battle ID , Status 값
         return new BattleStatusRes(battle.getId(), battle.getStatus());
     }
@@ -130,6 +134,7 @@ public class BattleService {
         BattleSentence sentence = new BattleSentence(savedBattle, challenger.get(),
                 postBattleReq.getSentence(), word.get(), Status.A);
         battleSentenceRepository.save(sentence);
+        /*
         try {
             firebaseCloudMessageService.sendMessageTo(
                     postBattleReq.getChallengedId(),
@@ -138,6 +143,7 @@ public class BattleService {
         } catch (IOException e) {
             throw new BaseException(BaseResponseStatus.FCM_ERROR);
         }
+         */
         return savedBattle.getId();
     }
 
@@ -179,11 +185,14 @@ public class BattleService {
 
         BattleSentence battleSentence = new BattleSentence(battle, userAccount, writingSentence, battleWord, Status.A);
         battleSentenceDao.save(battleSentence);
+        /*
         try {
             firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 수락했어요.","이겨보아요");
         } catch (IOException e) {
             throw new BaseException(BaseResponseStatus.FCM_ERROR);
         }
+
+         */
         return new CreateChallengedSentenceRes(battleSentence.getId(), battle.getId(), battle.getStatus());
     }
 
@@ -393,12 +402,15 @@ public class BattleService {
                         .build();
                 battleResultRepository.save(battleResult);
             }
+            /*
             try {
                 firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"대결이 종료되었어요.","결과를 확인해 보아요");
                 firebaseCloudMessageService.sendMessageTo(battle.getChallenged().getId(),"대결이 종료되었어요.","결과를 확인해 보아요");
             } catch (IOException e) {
                 throw new BaseException(BaseResponseStatus.FCM_ERROR);
             }
+
+             */
         }
     }
 }
