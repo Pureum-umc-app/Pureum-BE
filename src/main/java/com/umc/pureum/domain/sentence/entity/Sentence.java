@@ -4,10 +4,7 @@ import com.sun.istack.NotNull;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -17,6 +14,8 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
+
 public class Sentence extends BaseEntity {
     @ManyToOne @JoinColumn(name = "user_id")
     private UserAccount user;
