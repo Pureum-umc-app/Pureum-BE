@@ -1,11 +1,11 @@
 package com.umc.pureum.domain.battle.entity;
 
-import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
 import com.umc.pureum.global.entity.Status;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -15,6 +15,8 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
+
 public class BattleLike extends BaseEntity {
     @ManyToOne @JoinColumn(name = "battle_sentence_id")
     private BattleSentence sentence;
