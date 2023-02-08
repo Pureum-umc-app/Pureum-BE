@@ -1,6 +1,7 @@
 package com.umc.pureum.domain.battle.repository;
 
 import com.umc.pureum.domain.battle.dto.response.GetBattleSentenceInterface;
+import com.umc.pureum.domain.battle.dto.response.GetBattleWriteSentenceInterface;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.global.entity.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,6 +34,13 @@ public interface BattleSentenceRepository extends JpaRepository<BattleSentence, 
             "where b.battle.id = :battleId" +
             "    and b.user.id = :userId")
     List<GetBattleSentenceInterface> findInfoByBattleIdAndUserId(@Param("battleId") Long battleId , @Param("userId") Long userId);
+
+
+    @Query("select b.battle as battle , b.battle.word as battleWord ,b.battle.word.word.word as keyword, b.battle.status as battleStatus, \n" +
+            "   b.battle.challenged.status as challengedStatus, b.battle.challenger.status as challengerStatus \n" +
+            "from BattleSentence b \n" +
+            "where b.battle.id = :battleId")
+    List<GetBattleWriteSentenceInterface> findInfoByBattleId(@Param("battleId") Long battleId);
 
     List<BattleSentence> findByUserId(long userId);
 }
