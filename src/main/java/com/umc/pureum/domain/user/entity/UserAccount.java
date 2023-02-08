@@ -22,6 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 @SuperBuilder
 @NoArgsConstructor(access = PROTECTED)
 @ToString
+
 public class UserAccount extends BaseEntity {
     private String name;
     private String nickname;

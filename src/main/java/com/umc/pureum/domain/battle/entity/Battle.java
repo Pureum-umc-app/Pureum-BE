@@ -16,6 +16,7 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @Entity
+
 public class Battle extends BaseEntity {
     @ManyToOne @JoinColumn(name = "challenger_id")
     private UserAccount challenger;

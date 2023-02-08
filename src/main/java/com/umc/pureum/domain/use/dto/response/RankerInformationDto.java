@@ -17,5 +17,5 @@ public class RankerInformationDto {
     private int rankNum;
     private String nickname;
     private String image;
-    private Time useTime;
+    private int useTime;
 }
