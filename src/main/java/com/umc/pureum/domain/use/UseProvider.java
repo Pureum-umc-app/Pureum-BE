@@ -120,7 +120,8 @@ public class UseProvider {
                         .rankNum(num.getAndIncrement())
                         .nickname(r.getUser().getNickname())
                         .image(r.getUser().getImage())
-                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
+                        .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                        .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
                 .collect(Collectors.toList());
     }
 
@@ -132,18 +133,20 @@ public class UseProvider {
         if (page == 0){
             List<UsePhone> rankZero = useDao.findRankZeroInSameGrade(getDate,grade);
             return rankZero.stream().map(r -> RankerInformationDto.builder()
-                        .rankNum(num.getAndIncrement())
-                        .nickname(r.getUser().getNickname())
-                        .image(r.getUser().getImage())
-                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
+                            .rankNum(num.getAndIncrement())
+                            .nickname(r.getUser().getNickname())
+                            .image(r.getUser().getImage())
+                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
                     .collect(Collectors.toList());
         } else {
             List<UsePhone> rankOverZero = useDao.findRankOverZeroInSameGrade(getDate,grade,page);
             return rankOverZero.stream().map(r -> RankerInformationDto.builder()
-                        .rankNum(num.getAndIncrement())
-                        .nickname(r.getUser().getNickname())
-                        .image(r.getUser().getImage())
-                        .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
+                            .rankNum(num.getAndIncrement())
+                            .nickname(r.getUser().getNickname())
+                            .image(r.getUser().getImage())
+                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
                     .collect(Collectors.toList());
         }
     }
@@ -158,7 +161,8 @@ public class UseProvider {
                             .rankNum(num.getAndIncrement())
                             .nickname(r.getUser().getNickname())
                             .image(r.getUser().getImage())
-                            .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
+                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
                     .collect(Collectors.toList());
         } else {
             List<UsePhone> rankOverZero = useDao.findRankOverZeroInAllGrade(getDate,page);
@@ -166,7 +170,8 @@ public class UseProvider {
                             .rankNum(num.getAndIncrement())
                             .nickname(r.getUser().getNickname())
                             .image(r.getUser().getImage())
-                            .useTime(stringToIntForTime(preventNullError(r.getUseTime()))).build())
+                            .useTime(stringToIntForTime(preventNullError(r.getUseTime())))
+                            .purposeTime(stringToIntForTime(preventNullError(r.getPurposeTime()))).build())
                     .collect(Collectors.toList());
         }
     }
