@@ -9,7 +9,6 @@ import com.umc.pureum.domain.battle.dto.request.BattleStatusReq;
 import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
 import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
 import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
-import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
@@ -37,7 +36,6 @@ public class BattleController {
     private final BattleService battleService;
     private final BattleDao battleDao;
     private final BattleSentenceDao battleSentenceDao;
-    private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     /**
      * 대결 수락 API
