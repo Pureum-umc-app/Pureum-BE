@@ -17,7 +17,6 @@ import com.umc.pureum.domain.use.UseRepository;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.use.entity.UseStatus;
 import com.umc.pureum.domain.user.UserRepository;
-import com.umc.pureum.domain.user.dto.request.FCMDto;
 import com.umc.pureum.domain.user.dto.request.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
 import com.umc.pureum.domain.mypage.dto.response.GetProfileResponseDto;
@@ -92,10 +91,10 @@ public class UserService {
         return userRepository.findByKakaoIdAndStatus(kakaoId, "A").getId();
     }
 
-    public LogInResponseDto userLogIn(Long id, FCMDto fcmDto) {
+    public LogInResponseDto userLogIn(Long id) {
         String jwt = jwtTokenProvider.createAccessToken(Long.toString(id));
-        Optional<UserAccount> userAccount = userRepository.findByIdAndStatus(id, "A");
-        userAccount.get().setFcmId(fcmDto.getFcmId());
+//        Optional<UserAccount> userAccount = userRepository.findByIdAndStatus(id, "A");
+//        userAccount.get().setFcmId(fcmId);
         return new LogInResponseDto(jwt);
     }
 
@@ -105,7 +104,7 @@ public class UserService {
     }
 
     @Transactional
-    public void UserResign(long userId, String accessToken) throws BaseException {
+    public void UserResign(long userId) throws BaseException {
         Optional<UserAccount> userAccount = userRepository.findByIdAndStatus(userId, "A");
         List<UsePhone> usePhones = useRepository.findByUserId(userId);
         List<AttendanceCheck> attendanceChecks = attendanceRepository.findByUserId(userId);
@@ -157,6 +156,5 @@ public class UserService {
             }
         } else
             throw new BaseException(POST_USERS_NO_EXISTS_USER);
-        kakaoService.unlink(accessToken);
     }
 }

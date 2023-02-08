@@ -4,6 +4,7 @@ import com.sun.istack.NotNull;
 import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -15,6 +16,8 @@ import javax.persistence.OneToOne;
 @SuperBuilder
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
+
 public class Keyword extends BaseEntity {
     @OneToOne @JoinColumn(name = "word_id")
     private Word word;
