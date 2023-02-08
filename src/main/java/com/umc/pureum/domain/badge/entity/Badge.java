@@ -4,6 +4,7 @@ package com.umc.pureum.domain.badge.entity;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
@@ -16,9 +17,12 @@ import javax.persistence.*;
 @NoArgsConstructor
 @DynamicInsert
 @Entity
+@EqualsAndHashCode(callSuper = true)
+
 public class Badge extends BaseEntity {
 
-    @ManyToOne @JoinColumn(name = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private UserAccount user;
 
     private int badge;
@@ -26,7 +30,7 @@ public class Badge extends BaseEntity {
     @ColumnDefault("A")
     private String status;
 
-    public Badge(UserAccount user, int badge){
+    public Badge(UserAccount user, int badge) {
         this.user = user;
         this.badge = badge;
     }
