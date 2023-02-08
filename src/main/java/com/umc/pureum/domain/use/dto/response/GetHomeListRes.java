@@ -1,7 +1,7 @@
 package com.umc.pureum.domain.use.dto.response;
 
 
-import com.umc.pureum.domain.use.dto.time.DateToInt;
+import com.umc.pureum.domain.use.dto.time.TimeInfo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,15 +18,16 @@ import java.util.List;
 public class GetHomeListRes {
 
     @ApiModelProperty(example = "2023-01-19")
-    private DateToInt date;
+    private TimeInfo date;
 
     @ApiModelProperty(example = "450")
-    private int useTime;
+    private TimeInfo useTime;
 
     @ApiModelProperty(example = "300")
-    private int purposeTime;
+    private TimeInfo purposeTime;
 
     @ApiModelProperty(example = "1")
     private int count;
-    private List<RankerInformationDto> rank = new ArrayList<>();
+    @Builder.Default
+    private final List<RankerInformationDto> rank = new ArrayList<>();
 }
