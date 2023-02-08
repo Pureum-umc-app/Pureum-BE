@@ -1,7 +1,5 @@
 package com.umc.pureum.domain.battle;
 
-import com.google.firebase.database.DatabaseException;
-import com.google.protobuf.TimestampProto;
 import com.umc.pureum.domain.battle.dao.BattleDao;
 import com.umc.pureum.domain.battle.dao.BattleLikeDao;
 import com.umc.pureum.domain.battle.dao.BattleSentenceDao;
@@ -317,11 +315,16 @@ public class BattleService {
     public ReturnFinishBattleRes returnFinishBattle(long battleIdx , Long userId) throws BaseException {
         GetBattleInfoRes battleInfo = battleRepository.findInfoByBattleId(battleIdx).stream().findAny().get();
 
+        GetBattleResultInterface getBattleResultInterface;
+        Long winnerUserId ;
+
         if (battleInfo.getBattleStatus().equals(BattleStatus.C) || battleInfo.getBattleStatus().equals(BattleStatus.D)) {
 
             if(battleResultRepository.findBattleResultByBattleId(battleIdx).get(0) != null){
 
-                GetBattleResultInterface getBattleResultInterface = battleResultRepository.findBattleResultByBattleId(battleIdx).stream().findAny().get();
+                getBattleResultInterface = battleResultRepository.findBattleResultByBattleId(battleIdx).stream().findAny().get();
+
+                winnerUserId = getBattleResultInterface.getUserId();
 
                 Long challengedId = battleInfo.getChallengedId();
                 Long challengerId = battleInfo.getChallengerId();
@@ -332,13 +335,13 @@ public class BattleService {
                 Long challengedSentenceId = challengedSentenceInfo.getBattleSentenceId();
                 Long challengerSentenceId = challengerSentenceInfo.getBattleSentenceId();
 
-                if (userId == challengedId) {
+                if (winnerUserId == challengedId) {
 
                     GetBattleLikeInterface challengedLikeInterface = likeRepository.findByUserId(challengedId, challengedSentenceId).stream().findAny().get();
                     GetBattleLikeInterface challengerLikeInterface = likeRepository.findByUserId(challengerId, challengerSentenceId).stream().findAny().get();
                     GetBattleLikeInterface oppLikeInterface = likeRepository.findByUserId(challengedId, challengerSentenceId).stream().findAny().get();
 
-                    return new ReturnFinishBattleRes(battleIdx , getBattleResultInterface.getUserId(),
+                    return new ReturnFinishBattleRes(battleIdx, situation(winnerUserId , userId) ,winnerUserId,
                             battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
                             battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
                             battleInfo.getDuration(),
@@ -347,19 +350,19 @@ public class BattleService {
                             challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
                             challengerLikeInterface.getIsLike(), oppLikeInterface.getIsLike()
                     );
-                } else if (userId == challengerId) {
+                } else if (winnerUserId == challengerId) {
 
                     GetBattleLikeInterface challengedLikeInterface = likeRepository.findByUserId(challengedId, challengedSentenceId).stream().findAny().get();
                     GetBattleLikeInterface challengerLikeInterface = likeRepository.findByUserId(challengerId, challengerSentenceId).stream().findAny().get();
                     GetBattleLikeInterface oppLikeInterface = likeRepository.findByUserId(challengerId, challengedSentenceId).stream().findAny().get();
 
-                    return new ReturnFinishBattleRes(battleIdx , getBattleResultInterface.getUserId(),
-                            battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
+                    return new ReturnFinishBattleRes(battleIdx, situation(winnerUserId , userId), winnerUserId,
                             battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
+                            battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
                             battleInfo.getDuration(),
-                            challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
                             challengerSentenceInfo.getBattleSentenceId(), challengerSentenceInfo.getBattleSentence(),
-                            challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
+                            challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
+                            challengerLikeInterface.getLikeCnt(), challengedLikeInterface.getLikeCnt(),
                             challengerLikeInterface.getIsLike(), oppLikeInterface.getIsLike()
                     );
                 }
@@ -381,7 +384,7 @@ public class BattleService {
                     GetBattleLikeInterface challengerLikeInterface = likeRepository.findByUserId(challengerId, challengerSentenceId).stream().findAny().get();
                     GetBattleLikeInterface oppLikeInterface = likeRepository.findByUserId(challengedId, challengerSentenceId).stream().findAny().get();
 
-                    return new ReturnFinishBattleRes(battleIdx , 0L,
+                    return new ReturnFinishBattleRes(battleIdx,2 ,0L,
                             battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
                             battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
                             battleInfo.getDuration(),
@@ -396,13 +399,13 @@ public class BattleService {
                     GetBattleLikeInterface challengerLikeInterface = likeRepository.findByUserId(challengerId, challengerSentenceId).stream().findAny().get();
                     GetBattleLikeInterface oppLikeInterface = likeRepository.findByUserId(challengerId, challengedSentenceId).stream().findAny().get();
 
-                    return new ReturnFinishBattleRes(battleIdx , 0L,
-                            battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
+                    return new ReturnFinishBattleRes(battleIdx, 2, 0L,
                             battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
+                            battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
                             battleInfo.getDuration(),
-                            challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
                             challengerSentenceInfo.getBattleSentenceId(), challengerSentenceInfo.getBattleSentence(),
-                            challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
+                            challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
+                            challengerLikeInterface.getLikeCnt(), challengedLikeInterface.getLikeCnt(),
                             challengerLikeInterface.getIsLike(), oppLikeInterface.getIsLike()
                     );
                 }
@@ -413,6 +416,11 @@ public class BattleService {
             throw new BaseException(Get_BATTLE_RUN_STATUS);
         }
         return null;
+    }
+
+    public int situation(Long winnerUserId , Long userId){
+        if(winnerUserId == userId) return 0;
+        else return 1;
     }
 
     @Transactional
