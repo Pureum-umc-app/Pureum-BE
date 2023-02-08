@@ -254,9 +254,9 @@ public class SentenceController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
             @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 id", example = "1"),
-            @ApiImplicitParam(name = "word_id", dataTypeClass = Long.class, paramType = "query", value = "단어 id"),
-            @ApiImplicitParam(name = "page", dataTypeClass = Integer.class, paramType = "query", value = "페이지"),
-            @ApiImplicitParam(name = "limit", dataTypeClass = Integer.class, paramType = "query", value = "페이지 별  객체 수"),
+            @ApiImplicitParam(name = "word_id", dataTypeClass = Long.class, paramType = "query", value = "단어 id",example = "1"),
+            @ApiImplicitParam(name = "page", dataTypeClass = Integer.class, paramType = "query", value = "페이지",example = "1"),
+            @ApiImplicitParam(name = "limit", dataTypeClass = Integer.class, paramType = "query", value = "페이지 별  객체 수",example = "20"),
             @ApiImplicitParam(name = "sort", dataTypeClass = String.class, paramType = "query", value = "정렬 조건(like, date")
     })
     @ApiResponses({
