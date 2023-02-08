@@ -37,20 +37,28 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
 
     /* 종료된 대결 리스트 반환 */
     @Query("select b.id as battleId, b.word.id as wordId, b.word.word.word as word, \n" +
-            "   case when(r.user.id = b.challenger.id) then b.challenger.id \n" +
-            "        when(r.user.id = b.challenged.id) then b.challenged.id \n" +
+            "   case when(r.user.id = b.challenger.id and r.user.status = 'A') then b.challenger.id \n" +
+            "        when(r.user.id = b.challenger.id and r.user.status = 'D') then '' \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'A') then b.challenged.id \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'D') then '' \n" +
             "        else 0 \n" +
             "        end as winnerId, \n" +
-            "   case when(r.user.id = b.challenger.id) then b.challenger.nickname \n" +
-            "        when(r.user.id = b.challenged.id) then b.challenged.nickname \n" +
+            "   case when(r.user.id = b.challenger.id and r.user.status = 'A') then b.challenger.nickname \n" +
+            "        when(r.user.id = b.challenger.id and r.user.status = 'D') then '' \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'A') then b.challenged.nickname \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'D') then '' \n" +
             "        else '' \n" +
             "        end as winnerNickname, \n" +
-            "   case when(r.user.id = b.challenger.id) then b.challenger.image \n" +
-            "        when(r.user.id = b.challenged.id) then b.challenged.image \n" +
+            "   case when(r.user.id = b.challenger.id and r.user.status = 'A') then b.challenger.image \n" +
+            "        when(r.user.id = b.challenger.id and r.user.status = 'D') then '' \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'A') then b.challenged.image \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'D') then '' \n" +
             "        else b.challenger.image \n" +
             "        end as winnerProfileImg, \n" +
-            "   case when(r.user.id = b.challenger.id) then '' \n" +
-            "        when(r.user.id = b.challenged.id) then '' \n" +
+            "   case when(r.user.id = b.challenger.id and r.user.status = 'A') then '' \n" +
+            "        when(r.user.id = b.challenger.id and r.user.status = 'D') then '' \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'A') then '' \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'D') then '' \n" +
             "        else b.challenged.image \n" +
             "        end as otherProfileImg \n" +
             "from Battle as b \n" +
@@ -62,10 +70,16 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
 
     /* 나의 대기 중인 대결 리스트 반환 */
     @Query("select b.id as battleId, \n" +
-            "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
-            "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg, \n" +
-            "   b.word.id as keywordId, b.word.word.word as keyword, \n" +
-            "   b.duration as duration \n" +
+            "   case when(b.challenger.id = :userId) then b.challenged.id \n" +
+            "        else b.challenger.id \n" +
+            "        end as otherId, \n" +
+            "   case when(b.challenger.id = :userId) then b.challenged.nickname \n" +
+            "        else b.challenger.nickname \n" +
+            "        end as otherNickname, \n" +
+            "   case when(b.challenger.id = :userId) then b.challenged.image \n" +
+            "        else b.challenger.image \n" +
+            "        end as otherProfileImg, \n" +
+            "   b.word.id as wordId, b.word.word.word as word, b.duration as duration \n" +
             "from Battle as b \n" +
             "where (b.challenged.id = :userId or b.challenger.id = :userId) \n" +
             "    and (b.status = 'W' or b.status = 'A')")
@@ -88,20 +102,28 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
 
     /* 나의 종료된 대결 리스트 반환 */
     @Query("select b.id as battleId, b.word.id as wordId, b.word.word.word as word, \n" +
-            "   case when(r.user.id = b.challenger.id) then b.challenger.id \n" +
-            "        when(r.user.id = b.challenged.id) then b.challenged.id \n" +
+            "   case when(r.user.id = b.challenger.id and r.user.status = 'A') then b.challenger.id \n" +
+            "        when(r.user.id = b.challenger.id and r.user.status = 'D') then '' \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'A') then b.challenged.id \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'D') then '' \n" +
             "        else 0 \n" +
             "        end as winnerId, \n" +
-            "   case when(r.user.id = b.challenger.id) then b.challenger.nickname \n" +
-            "        when(r.user.id = b.challenged.id) then b.challenged.nickname \n" +
+            "   case when(r.user.id = b.challenger.id and r.user.status = 'A') then b.challenger.nickname \n" +
+            "        when(r.user.id = b.challenger.id and r.user.status = 'D') then '' \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'A') then b.challenged.nickname \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'D') then '' \n" +
             "        else '' \n" +
             "        end as winnerNickname, \n" +
-            "   case when(r.user.id = b.challenger.id) then b.challenger.image \n" +
-            "        when(r.user.id = b.challenged.id) then b.challenged.image \n" +
+            "   case when(r.user.id = b.challenger.id and r.user.status = 'A') then b.challenger.image \n" +
+            "        when(r.user.id = b.challenger.id and r.user.status = 'D') then '' \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'A') then b.challenged.image \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'D') then '' \n" +
             "        else b.challenger.image \n" +
             "        end as winnerProfileImg, \n" +
-            "   case when(r.user.id = b.challenger.id) then '' \n" +
-            "        when(r.user.id = b.challenged.id) then '' \n" +
+            "   case when(r.user.id = b.challenger.id and r.user.status = 'A') then '' \n" +
+            "        when(r.user.id = b.challenger.id and r.user.status = 'D') then '' \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'A') then '' \n" +
+            "        when(r.user.id = b.challenged.id and r.user.status = 'D') then '' \n" +
             "        else b.challenged.image \n" +
             "        end as otherProfileImg \n" +
             "from Battle as b \n" +
@@ -112,11 +134,29 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "   and r.status = 'A'")
     List<GetCompleteBattles> findAllMyCompleteBattles(Long userId, PageRequest request);
 
-    @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
-            "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
-            "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg, \n" +
+    @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, b.updatedAt as updateAt, \n" +
+            "   b.challenged.id as challengedId, \n" +
+            "case when(b.challenged.status = 'A') then b.challenged.nickname \n" +
+            "     when(b.challenged.status = 'D') then '' \n" +
+            "     else '' \n" +
+            "     end as challengedNickname, \n" +
+            "case when(b.challenged.status = 'A') then b.challenged.image \n" +
+            "     when(b.challenged.status = 'D') then '' \n" +
+            "     else '' \n" +
+            "     end as challengedProfileImg, \n" +
+            "   b.challenger.id as challengerId, \n" +
+            "case when(b.challenger.status = 'A') then b.challenger.nickname \n" +
+            "     when(b.challenger.status = 'D') then '' \n" +
+            "     else '' \n" +
+            "     end as challengerNickname, \n" +
+            "case when(b.challenger.status = 'A') then b.challenger.image \n" +
+            "     when(b.challenger.status = 'D') then '' \n" +
+            "     else '' \n" +
+            "     end as challengerProfileImg, \n" +
             "   b.duration as duration, b.status as battleStatus \n" +
             "from Battle as b \n" +
             "where b.id = :battleId")
     List<GetBattleInfoRes> findInfoByBattleId(@Param("battleId") Long battleId);
+
+    List<Battle> findByChallengerIdOrChallengedId(long userId, long userId1);
 }
