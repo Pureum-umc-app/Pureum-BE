@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class ReturnFinishBattleRes {
 
     private Long battleId;
+    private int situation;
     private Long winnerUserId;
     private Long winnerId;
     private String winnerNickname;
