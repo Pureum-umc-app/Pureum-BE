@@ -105,7 +105,7 @@ public class UserService {
     }
 
     @Transactional
-    public void UserResign(long userId, String accessToken) throws BaseException {
+    public void UserResign(long userId) throws BaseException {
         Optional<UserAccount> userAccount = userRepository.findByIdAndStatus(userId, "A");
         List<UsePhone> usePhones = useRepository.findByUserId(userId);
         List<AttendanceCheck> attendanceChecks = attendanceRepository.findByUserId(userId);
@@ -157,6 +157,5 @@ public class UserService {
             }
         } else
             throw new BaseException(POST_USERS_NO_EXISTS_USER);
-        kakaoService.unlink(accessToken);
     }
 }

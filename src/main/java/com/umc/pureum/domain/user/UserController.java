@@ -148,7 +148,6 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
             @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "kakao-ACCESS-TOKEN", dataTypeClass = String.class, paramType = "header", value = "kakao-access token")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
@@ -157,11 +156,10 @@ public class UserController {
     @PatchMapping(value = "/resign/{userId}")
     public ResponseEntity<BaseResponse<String>> UserResign(@PathVariable long userId) throws BaseException {
         try {
-            String accessToken = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getHeader("kakao-ACCESS-TOKEN");
             if (!userService.validationDuplicateUserId(userId)) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
             }
-            userService.UserResign(userId, accessToken);
+            userService.UserResign(userId);
             return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원탈퇴되었습니다."));
         } catch (Exception exception) {
             throw new BaseException(DATABASE_ERROR);
