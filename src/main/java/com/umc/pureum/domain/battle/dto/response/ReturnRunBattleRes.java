@@ -12,7 +12,7 @@ public class ReturnRunBattleRes {
     private Long battleId;
     private Long keywordId;
     private String keyword;
-    private int remainDuration;
+    private String remainDuration;
     private Long challengedId;
     private String challengedNickname;
     private String challengedImage;
@@ -35,7 +35,7 @@ public class ReturnRunBattleRes {
 
     @Builder
 
-    public ReturnRunBattleRes(Long battleId, Long keywordId, String keyword, int remainDuration,
+    public ReturnRunBattleRes(Long battleId, Long keywordId, String keyword, String remainDuration,
                               Long challengedId, String challengedNickname, String challengedImage,
                               Long challengerId, String challengerNickname, String challengerImage,
                               int duration, BattleStatus status,
