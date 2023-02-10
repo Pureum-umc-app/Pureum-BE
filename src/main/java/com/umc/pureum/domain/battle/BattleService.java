@@ -173,6 +173,8 @@ public class BattleService {
         Status challengedStatus = getBattleWriteSentenceInterface.getChallengedStatus();
         Status challengerStatus = getBattleWriteSentenceInterface.getChallengerStatus();
 
+        List<GetBattleSentenceInterface> infoByBattleWordIdAndUserId = battleSentenceRepository.findInfoByBattleWordIdAndUserId(battleWord.getId(), userId);
+
         // 탈퇴한 회원 여부 확인
         if(battleStatus == BattleStatus.C || battleStatus == BattleStatus.D || challengedStatus != Status.A || challengerStatus != Status.A){
             throw new BaseException(GET_BATTLE_FINISH_STATUS);
@@ -184,8 +186,13 @@ public class BattleService {
         }
 
         // 작성할 문장에 단어 포함 여부 확인
-        else if (!isExist(writingSentence, writingWord)) {
+        else if (!isKeywordExist(writingSentence, writingWord)) {
             throw new BaseException(POST_SENTENCE_NO_EXISTS_KEYWORD);
+        }
+
+        // 작성한 문장이 동일한 문장인지 여부 확인
+        else if (isSentenceExist(writingSentence, infoByBattleWordIdAndUserId)) {
+            throw new BaseException(POST_SENTENCE_EXISTS);
         }
 
         // request 로 받은 userId 로 userAccount 찾기
@@ -206,9 +213,19 @@ public class BattleService {
 
 
     /* Sentence 내에 Keyword 존재여부 검사 */
-    // isExist : 문장에 키워드가 포함되어있는지 확인하는 함수
-    private boolean isExist (String writingSentence, String writingWord){
+    // isKeywordExist : 문장에 키워드가 포함되어있는지 확인하는 함수
+    private boolean isKeywordExist (String writingSentence, String writingWord){
         return writingSentence.contains(writingWord);
+    }
+
+    // isSentenceExist : 대결 단어에 대해 같은 문장의 여부 확인
+    private boolean isSentenceExist(String writingSentence , List<GetBattleSentenceInterface> infoByBattleWordIdAndUserId){
+        for( int i = 0 ; i < infoByBattleWordIdAndUserId.size() ; i++ ){
+            if( infoByBattleWordIdAndUserId.get(i).getBattleSentence().equals(writingSentence) ){
+                return true;
+            }
+        }
+        return false;
     }
 
     // like : 대결 좋아요 DB 에 저장
