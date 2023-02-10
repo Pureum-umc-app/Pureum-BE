@@ -59,7 +59,7 @@ public class UserController {
      */
     @ApiOperation("회원가입 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "data", dataTypeClass = CreateUserDto.class, paramType = "body", value = "CreateUserDto", type = ""),
+            @ApiImplicitParam(name = "data", dataTypeClass = CreateUserDto.class, paramType = "body", value = "CreateUserDto", type = "application/json"),
             @ApiImplicitParam(name = "image", dataTypeClass = Integer.class, paramType = "formData", value = "image")
     })
     @ApiResponses({
