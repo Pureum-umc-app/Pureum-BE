@@ -184,10 +184,8 @@ public class BattleController {
                 return new BaseResponse<>(createChallengedSentenceRes);
             }
         } catch (BaseException e) {
-            e.printStackTrace();
             return new BaseResponse<>(e.getStatus());
         }
-
     }
 
     /**
