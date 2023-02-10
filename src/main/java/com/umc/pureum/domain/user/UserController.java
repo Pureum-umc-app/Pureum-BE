@@ -59,9 +59,7 @@ public class UserController {
      */
     @ApiOperation("회원가입 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "kakaoToken", dataTypeClass = String.class, paramType = "formData", value = "kakaoToken"),
-            @ApiImplicitParam(name = "nickname", dataTypeClass = String.class, paramType = "formData", value = "nickname"),
-            @ApiImplicitParam(name = "grade", dataTypeClass = Integer.class, paramType = "formData", value = "grade", example = "1"),
+            @ApiImplicitParam(name = "data", dataTypeClass = CreateUserDto.class, paramType = "body", value = "CreateUserDto", type = ""),
             @ApiImplicitParam(name = "image", dataTypeClass = Integer.class, paramType = "formData", value = "image")
     })
     @ApiResponses({
@@ -72,7 +70,7 @@ public class UserController {
     })
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<BaseResponse<String>> SignUp(@RequestParam(value = "image", required = false) MultipartFile image, CreateUserDto createUserDto) throws BaseException {
+    public ResponseEntity<BaseResponse<String>> SignUp(@RequestPart(value = "image", required = false) MultipartFile image,@RequestPart(value = "data") CreateUserDto createUserDto) throws BaseException {
         try {
             if (!image.isEmpty()) {
                 if (!checkImage(image))
