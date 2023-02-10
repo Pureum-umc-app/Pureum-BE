@@ -45,7 +45,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final S3Service s3Service;
     private final JwtTokenProvider jwtTokenProvider;
-    private final KakaoService kakaoService;
     private final UseRepository useRepository;
     private final AttendanceRepository attendanceRepository;
     private final SentenceRepository sentenceRepository;
@@ -67,7 +66,7 @@ public class UserService {
                 .name(null)
                 .email(kakaoAccessTokenInfoDto.has_email ? kakaoAccessTokenInfoDto.getEmail() : null)
                 .image(createUserDto.getImage() == null ? null : s3Service.uploadFile(createUserDto.getImage()))
-                .grade(createUserDto.getGrade())
+                .grade(Integer.parseInt(createUserDto.getGrade()))
                 .nickname(createUserDto.getNickname())
                 .kakaoId(kakaoAccessTokenInfoDto.getId())
                 .build();
