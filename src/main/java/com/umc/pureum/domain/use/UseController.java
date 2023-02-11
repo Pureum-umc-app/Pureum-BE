@@ -104,7 +104,7 @@ public class UseController {
 
     @ApiOperation("목표 사용 시간 설정 api")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class , paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
             @ApiImplicitParam(name = "userId", dataTypeClass = Integer.class, paramType = "path", value = "유저 인덱스", example = "1"),
             @ApiImplicitParam(name = "setUsageTimeReq", dataTypeClass = SetUsageTimeReq.class, paramType = "body", value = "목표사용시간")
     })
@@ -115,7 +115,7 @@ public class UseController {
     })
     @ResponseBody
     @PostMapping("/{userId}/set-usage-time")
-    public ResponseEntity<BaseResponse<String>> setUsageTime(@PathVariable Long userId, @RequestBody SetUsageTimeReq setUsageTimeReq) throws BaseException {
+    public ResponseEntity<BaseResponse<String>> setUsageTime(@PathVariable Long userId, @RequestBody SetUsageTimeReq setUsageTimeReq) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String user = principal.getUsername();
         long id = Long.parseLong(user);
