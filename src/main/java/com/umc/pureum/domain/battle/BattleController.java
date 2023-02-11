@@ -11,7 +11,6 @@ import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
 import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
 import com.umc.pureum.domain.user.UserDao;
-import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;

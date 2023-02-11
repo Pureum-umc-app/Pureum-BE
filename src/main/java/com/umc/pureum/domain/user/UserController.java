@@ -70,26 +70,23 @@ public class UserController {
     })
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<BaseResponse<String>> SignUp(@RequestPart(value = "image", required = false) MultipartFile image,@RequestPart(value = "data") CreateUserDto createUserDto) throws BaseException {
-        try {
-            if (!image.isEmpty()) {
-                if (!checkImage(image))
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
-                createUserDto.setImage(image);
-            } else createUserDto.setImage(null);
-            if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
-            }
-            //accessToken로 user 정보 가져오기
-            KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(createUserDto.getKakaoToken());
-            if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
-            }
-            userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
+    public ResponseEntity<BaseResponse<String>> SignUp(@RequestPart(value = "image", required = false) MultipartFile image, @RequestPart(value = "data") CreateUserDto createUserDto) throws BaseException, IOException {
+        if (!image.isEmpty()) {
+            if (!checkImage(image))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
+            createUserDto.setImage(image);
+        } else createUserDto.setImage(null);
+        if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
         }
+        //accessToken로 user 정보 가져오기
+        KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(createUserDto.getKakaoToken());
+        if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
+        }
+        userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
+
     }
 
     /**
@@ -107,7 +104,7 @@ public class UserController {
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다.")
     })
     @PostMapping(value = "/signin")
-    public ResponseEntity<BaseResponse<LogInResponseDto>> userLogIn(@RequestBody LoginDto loginDto) throws BaseException {
+    public ResponseEntity<BaseResponse<LogInResponseDto>> userLogIn(@RequestBody LoginDto loginDto) throws BaseException, IOException {
         KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(loginDto.getKakaoToken());
         if (!userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
@@ -126,15 +123,11 @@ public class UserController {
             @ApiResponse(code = 2031, message = "중복된 닉네임입니다."),
     })
     @GetMapping(value = "/nickname/{nickname}/validation")
-    public ResponseEntity<BaseResponse<String>> ValidationUserNickName(@PathVariable String nickname) throws BaseException {
-        try {
-            if (userService.validationDuplicateUserNickname(nickname)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
-            }
-            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("유효한 닉네임입니다."));
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
+    public ResponseEntity<BaseResponse<String>> ValidationUserNickName(@PathVariable String nickname) {
+        if (userService.validationDuplicateUserNickname(nickname)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
         }
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("유효한 닉네임입니다."));
     }
 
     @ApiOperation("회원 탈퇴 API")
@@ -148,14 +141,10 @@ public class UserController {
     })
     @PatchMapping(value = "/resign/{userId}")
     public ResponseEntity<BaseResponse<String>> UserResign(@PathVariable long userId) throws BaseException {
-        try {
-            if (!userService.validationDuplicateUserId(userId)) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
-            }
-            userService.UserResign(userId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원탈퇴되었습니다."));
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
+        if (!userService.validationDuplicateUserId(userId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
         }
+        userService.UserResign(userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원탈퇴되었습니다."));
     }
 }
