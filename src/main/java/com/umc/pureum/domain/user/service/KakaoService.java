@@ -3,6 +3,8 @@ package com.umc.pureum.domain.user.service;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.umc.pureum.domain.user.dto.request.KakaoAccessTokenInfoDto;
+import com.umc.pureum.global.config.BaseException;
+import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -73,7 +75,7 @@ public class KakaoService {
      * @param token //access token
      * @return // 유저 정보 AccessTokenInfoDto 형태로 리턴
      */
-    public KakaoAccessTokenInfoDto getUserInfoByKakaoToken(String token) {
+    public KakaoAccessTokenInfoDto getUserInfoByKakaoToken(String token) throws BaseException {
 
         String reqURL = "https://kapi.kakao.com/v2/user/me";
 
@@ -88,8 +90,10 @@ public class KakaoService {
             conn.setRequestProperty("Authorization", "Bearer " + token); //전송할 header 작성, access_token전송
 
             //결과 코드가 200이라면 성공
-//            int responseCode = conn.getResponseCode();
-
+            int responseCode = conn.getResponseCode();
+            if(responseCode==401){
+                throw new BaseException(BaseResponseStatus.INVALID_KAKAO_TOKEN);
+            }
             //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line;

@@ -107,7 +107,7 @@ public class UserController {
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다.")
     })
     @PostMapping(value = "/signin")
-    public ResponseEntity<BaseResponse<LogInResponseDto>> userLogIn(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<BaseResponse<LogInResponseDto>> userLogIn(@RequestBody LoginDto loginDto) throws BaseException {
         KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(loginDto.getKakaoToken());
         if (!userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
