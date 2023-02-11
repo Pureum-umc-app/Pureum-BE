@@ -1,6 +1,7 @@
 package com.umc.pureum.global.config;
 
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 /* 에러 코드 관리 */
 @Getter
@@ -19,7 +20,7 @@ public enum BaseResponseStatus {
      */
     SUCCESS(true, 1000, "요청에 성공하였습니다."),
 
-
+    NOT_ALLOW_METHOD(false,1010,"잘못된 메소드입니다."),
     /**
      * 2000 : Request 오류
      */
@@ -29,7 +30,8 @@ public enum BaseResponseStatus {
     INVALID_JWT(false, 2002, "유효하지 않은 JWT입니다."),
     INVALID_USER_JWT(false,2003,"권한이 없는 유저의 접근입니다."),
     INVALID_USER(false, 2004, "존재하지 않는 유저입니다."),
-    INVALID_IMAGE_FILE(false,2005,"이미지파일이 아닙니다"),
+    INVALID_IMAGE_FILE(false,2005,"이미지파일이 아닙니다."),
+    INVALID_KAKAO_TOKEN(false,2006,"유효한 카카오토큰이 아닙니다."),
     // users
     POST_USERS_EMPTY_NICKNAME(false, 2010, "닉네임을 입력해주세요."),
     POST_USERS_EMPTY_AGE(false, 2012, "나이를 입력해주세요."),
