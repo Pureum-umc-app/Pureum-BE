@@ -71,7 +71,6 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestPart(value = "image", required = false) MultipartFile image, @RequestPart(value = "data") CreateUserDto createUserDto) throws BaseException, IOException {
-        try {
             if (!image.isEmpty()) {
                 if (!checkImage(image))
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
@@ -86,9 +85,6 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
             }
             userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
 
 
