@@ -75,13 +75,13 @@ public class KakaoService {
      * @param token //access token
      * @return // 유저 정보 AccessTokenInfoDto 형태로 리턴
      */
-    public KakaoAccessTokenInfoDto getUserInfoByKakaoToken(String token) throws BaseException {
+    public KakaoAccessTokenInfoDto getUserInfoByKakaoToken(String token) throws BaseException, IOException {
 
         String reqURL = "https://kapi.kakao.com/v2/user/me";
 
         //access_token을 이용하여 사용자 정보 조회
         KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = null;
-        try {
+
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -115,10 +115,6 @@ public class KakaoService {
                     .email(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString())
                     .build();
             br.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         //access token으로 받은 유저정보 return
         return kakaoAccessTokenInfoDto;
     }
