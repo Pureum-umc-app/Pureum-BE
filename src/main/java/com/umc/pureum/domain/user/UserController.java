@@ -79,12 +79,13 @@ public class UserController {
         if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
         }
+        System.out.println(createUserDto.getGrade());
         //accessToken로 user 정보 가져오기
         KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(createUserDto.getKakaoToken());
         if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
         }
-        System.out.println(kakaoAccessTokenInfoDto.toString());
+        System.out.println(kakaoAccessTokenInfoDto.getId());
         userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
 
