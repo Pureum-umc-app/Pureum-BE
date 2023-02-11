@@ -72,7 +72,7 @@ public class UserController {
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestPart(value = "image", required = false) MultipartFile image, @RequestPart(value = "data") CreateUserDto createUserDto) throws BaseException, IOException {
         log.info("first {}", createUserDto.getGrade());
-        if (!image.isEmpty()) {
+        if (image != null) {
             log.info("second {}", createUserDto.getGrade());
             if (!checkImage(image)) {
                 log.info("third {}", createUserDto.getGrade());
