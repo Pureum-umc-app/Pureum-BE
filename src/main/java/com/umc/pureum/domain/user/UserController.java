@@ -71,21 +71,28 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestPart(value = "image", required = false) MultipartFile image, @RequestPart(value = "data") CreateUserDto createUserDto) throws BaseException, IOException {
+        log.info("first"+createUserDto.getGrade());
         if (!image.isEmpty()) {
-            if (!checkImage(image))
+            log.info("second"+createUserDto.getGrade());
+            if (!checkImage(image)) {
+                log.info("third"+createUserDto.getGrade());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
+            }
             createUserDto.setImage(image);
-        } else createUserDto.setImage(null);
+        } else {
+            log.info("force"+createUserDto.getGrade());
+            createUserDto.setImage(null);
+        }
         if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
         }
-        log.info(createUserDto.getGrade());
+        log.info("fifth"+createUserDto.getGrade());
         //accessToken로 user 정보 가져오기
         KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(createUserDto.getKakaoToken());
         if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
         }
-        log.info(kakaoAccessTokenInfoDto.getId().toString());
+        log.info("sixth"+kakaoAccessTokenInfoDto.getId().toString());
         userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
 
