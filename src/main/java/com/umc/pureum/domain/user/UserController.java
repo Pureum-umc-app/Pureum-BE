@@ -71,20 +71,21 @@ public class UserController {
     @CrossOrigin
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> SignUp(@RequestPart(value = "image", required = false) MultipartFile image, @RequestPart(value = "data") CreateUserDto createUserDto) throws BaseException, IOException {
-            if (!image.isEmpty()) {
-                if (!checkImage(image))
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
-                createUserDto.setImage(image);
-            } else createUserDto.setImage(null);
-            if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
-            }
-            //accessToken로 user 정보 가져오기
-            KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(createUserDto.getKakaoToken());
-            if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
-            }
-            userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
+        if (!image.isEmpty()) {
+            if (!checkImage(image))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
+            createUserDto.setImage(image);
+        } else createUserDto.setImage(null);
+        if (userService.validationDuplicateUserNickname(createUserDto.getNickname())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
+        }
+        //accessToken로 user 정보 가져오기
+        KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = kakaoService.getUserInfoByKakaoToken(createUserDto.getKakaoToken());
+        if (userService.validationDuplicateKakaoId(kakaoAccessTokenInfoDto.getId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS));
+        }
+        System.out.println(kakaoAccessTokenInfoDto.toString());
+        userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
 
 
