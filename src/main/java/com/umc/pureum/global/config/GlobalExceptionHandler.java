@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<BaseResponse> handleCustomException(final BaseException e) {
         log.error("handleCustomException: {}", e.getStatus());
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.BAD_REQUEST)
                 .body(new BaseResponse(e.getStatus()));
     }
 
@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
         log.error("handleException: {}", e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new BaseResponse(BaseResponseStatus.DATABASE_ERROR));
+                .body(new BaseResponse(BaseResponseStatus.INTERNAL_SERVER_ERROR));
     }
 
 }
