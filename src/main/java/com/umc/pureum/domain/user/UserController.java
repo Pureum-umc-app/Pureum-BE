@@ -95,8 +95,6 @@ public class UserController {
         log.info("sixth {}", kakaoAccessTokenInfoDto.getId().toString());
         userService.createUser(kakaoAccessTokenInfoDto, createUserDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse<>("회원가입완료"));
-
-
     }
 
     /**
@@ -120,7 +118,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_NO_EXISTS_USER));
         }
         Long id = userService.getUserId(kakaoAccessTokenInfoDto.getId());
-        LogInResponseDto logInResponseDto = userService.userLogIn(id);
+        LogInResponseDto logInResponseDto = new LogInResponseDto(userService.getJwt(id),id);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(logInResponseDto));
     }
 
