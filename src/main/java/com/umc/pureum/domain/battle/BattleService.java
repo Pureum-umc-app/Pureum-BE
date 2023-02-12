@@ -5,12 +5,11 @@ import com.google.protobuf.TimestampProto;
 import com.umc.pureum.domain.battle.dao.BattleDao;
 import com.umc.pureum.domain.battle.dao.BattleLikeDao;
 import com.umc.pureum.domain.battle.dao.BattleSentenceDao;
-import com.umc.pureum.domain.battle.dto.response.ReturnFinishBattleRes;
-import com.umc.pureum.domain.battle.dto.response.*;
 import com.umc.pureum.domain.battle.dto.request.BattleStatusReq;
 import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
 import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
 import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
+import com.umc.pureum.domain.battle.dto.response.*;
 import com.umc.pureum.domain.battle.entity.*;
 import com.umc.pureum.domain.battle.repository.*;
 //import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
@@ -131,15 +130,21 @@ public class BattleService {
             throw new BaseException(BaseResponseStatus.POST_BATTLE_ALREADY_EXIST_KEYWORD);
         }
 
+        // 문장 예외 처리
+        Optional<BattleSentence> sentence = battleSentenceRepository.findBySentenceAndUserIdAndWordIdAndStatus(postBattleReq.getSentence(), postBattleReq.getChallengerId(), postBattleReq.getWordId(), A);
+        if(sentence.isPresent()) {
+            throw new BaseException(POST_BATTLE_ALREADY_EXIST_SENTENCE);
+        }
+
         // 대결 저장
         Battle newBattle = new Battle(challenger.get(), challenged.get(), word.get(), postBattleReq.getDuration(), BattleStatus.W);
         Battle savedBattle = battleRepository.save(newBattle);
 
         // 문장 저장
-        BattleSentence sentence = new BattleSentence(savedBattle, challenger.get(),
+        BattleSentence savedSentence = new BattleSentence(savedBattle, challenger.get(),
                 postBattleReq.getSentence(), word.get(), Status.A);
-        battleSentenceRepository.save(sentence);
-        /*
+        battleSentenceRepository.save(savedSentence);
+
         try {
             firebaseCloudMessageService.sendMessageTo(
                     postBattleReq.getChallengedId(),
