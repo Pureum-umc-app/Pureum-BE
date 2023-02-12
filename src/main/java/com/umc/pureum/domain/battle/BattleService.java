@@ -1,7 +1,5 @@
 package com.umc.pureum.domain.battle;
 
-import com.google.protobuf.TimestampProto;
-//import com.google.firebase.database.DatabaseException;
 import com.umc.pureum.domain.battle.dao.BattleDao;
 import com.umc.pureum.domain.battle.dao.BattleLikeDao;
 import com.umc.pureum.domain.battle.dao.BattleSentenceDao;
@@ -12,7 +10,6 @@ import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import com.umc.pureum.domain.battle.dto.response.*;
 import com.umc.pureum.domain.battle.entity.*;
 import com.umc.pureum.domain.battle.repository.*;
-//import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserRepository;
@@ -25,7 +22,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -145,6 +141,7 @@ public class BattleService {
                 postBattleReq.getSentence(), word.get(), Status.A);
         battleSentenceRepository.save(savedSentence);
 
+        /*
         try {
             firebaseCloudMessageService.sendMessageTo(
                     postBattleReq.getChallengedId(),
