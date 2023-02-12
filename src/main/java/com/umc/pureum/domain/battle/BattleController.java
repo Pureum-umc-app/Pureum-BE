@@ -10,6 +10,7 @@ import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
 import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
 import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
+import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
@@ -37,6 +38,7 @@ public class BattleController {
     private final BattleService battleService;
     private final BattleDao battleDao;
     private final BattleSentenceDao battleSentenceDao;
+    private final UserDao userDao;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     /**
@@ -82,7 +84,7 @@ public class BattleController {
     @ApiOperation("대결 거절 API")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
-            @ApiImplicitParam(name = "request", paramType = "body", value = "대결 ID", dataTypeClass = BattleStatusReq.class )
+            @ApiImplicitParam(name = "request", paramType = "body", value = "대결 ID", dataTypeClass = BattleStatusReq.class)
     })
     @ResponseBody
     @PostMapping("/reject")
@@ -117,8 +119,8 @@ public class BattleController {
      */
     @ApiOperation("대결 취소 API ")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰" , dataTypeClass = String.class),
-            @ApiImplicitParam(name = "request", paramType = "body", value = "대결 ID" , dataTypeClass = BattleStatusReq.class)
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "request", paramType = "body", value = "대결 ID", dataTypeClass = BattleStatusReq.class)
     })
     @ResponseBody
     @PostMapping("/cancel")
@@ -135,9 +137,8 @@ public class BattleController {
                     userId != battleDao.findOne(request.getBattleId()).getChallenger().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
 
-            }
-            else if(!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus()) &&
-                    !"A".equals(battleDao.findOne(request.getBattleId()).getChallenger().getStatus())){
+            } else if (!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus()) &&
+                    !"A".equals(battleDao.findOne(request.getBattleId()).getChallenger().getStatus())) {
 
                 return new BaseResponse<>(INVALID_USER);
             } else {
@@ -182,16 +183,14 @@ public class BattleController {
                 return new BaseResponse<>(createChallengedSentenceRes);
             }
         } catch (BaseException e) {
-            e.printStackTrace();
             return new BaseResponse<>(e.getStatus());
         }
-
     }
 
-     /**
-      * 대결 신청 API
-      * 대결 정보를 받아와서 테이블에 저장
-      * [POST] /battles
+    /**
+     * 대결 신청 API
+     * 대결 정보를 받아와서 테이블에 저장
+     * [POST] /battles
      */
     @ApiOperation("대결 신청")
     @ApiImplicitParams({
@@ -236,7 +235,7 @@ public class BattleController {
     @ApiOperation("대결 신청할때 내사진 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스")
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스", example = "1")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = BattleMyProfilePhotoRes.class),
@@ -256,6 +255,7 @@ public class BattleController {
     /**
      * 진행 중인 대결 리스트 반환 (최신순)
      * [GET] /battles/list
+     *
      * @return 대기 중인 대결 리스트
      */
     @ApiOperation("진행 중인 대결 리스트 반환")
@@ -288,11 +288,12 @@ public class BattleController {
     /**
      * 종료된 대결 리스트 반환 (최신순)
      * [GET] /battles/complete-list
+     *
      * @return 종료된 대결 리스트
      */
     @ApiOperation("종료된 대결 리스트 반환")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization",dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -312,8 +313,7 @@ public class BattleController {
 
             List<GetCompleteBattles> battlesRes = battleProvider.getCompleteBattles(userIdByAuth, page, limit);
             return new BaseResponse<>(battlesRes);
-        }
-        catch(BaseException e) {
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
@@ -321,6 +321,7 @@ public class BattleController {
     /**
      * 나의 대기 중인 대결 리스트 반환
      * [GET] /battles/wait-list/{userId}
+     *
      * @param userId
      * @return
      */
@@ -358,6 +359,7 @@ public class BattleController {
     /**
      * 나의 진행 중인 대결 리스트 반환 (최신순)
      * [GET] /battles/list/{userId}
+     *
      * @return 진행 중인 대결 리스트
      */
     @ApiOperation("나의 진행 중인 대결 리스트 반환")
@@ -394,11 +396,12 @@ public class BattleController {
     /**
      * 나의 종료된 대결 리스트 반환 (최신순)
      * [GET] /battles/complete-list/{userId}
+     *
      * @return 종료된 대결 리스트
      */
     @ApiOperation("나의 종료된 대결 리스트 반환")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization",dataTypeClass=String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -416,14 +419,13 @@ public class BattleController {
 
             Long userIdByAuth = Long.parseLong(user);
 
-            if(!userId.equals(userIdByAuth)) {
+            if (!userId.equals(userIdByAuth)) {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
             List<GetMyCompleteBattles> battlesRes = battleProvider.getMyCompleteBattles(userId, page, limit);
             return new BaseResponse<>(battlesRes);
-        }
-        catch(BaseException e) {
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
@@ -471,7 +473,7 @@ public class BattleController {
      */
     @ApiOperation("대결 상대 리스트 반환 API")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass= String.class),
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
             @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1", dataTypeClass = Long.class)
     })
     @GetMapping("/{userId}/fighters")
@@ -498,11 +500,11 @@ public class BattleController {
      */
     @ApiOperation("대결 정보 반환 API (대기 중, 진행 중)")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization",dataTypeClass=String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
     })
     @ResponseBody
     @GetMapping("/run/{battleIdx}")
-    public BaseResponse<ReturnRunBattleRes> returnRunBattle(@PathVariable Long battleIdx) throws BaseException{
+    public BaseResponse<ReturnRunBattleRes> returnRunBattle(@PathVariable Long battleIdx) throws BaseException {
 
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
@@ -510,24 +512,20 @@ public class BattleController {
         long userId = Long.parseLong(UserId);
 
 
-        try{
+        try {
             // springsecurity 로 찾은 userId 랑 request 에서 찾은 userId 비교
-            if(userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
-                    userId != battleDao.findOne(battleIdx).getChallenger().getId()){
+            if (userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
+                    userId != battleDao.findOne(battleIdx).getChallenger().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else if(!"A".equals(battleDao.findOne(battleIdx).getChallenged().getStatus()) &&
-                    !"A".equals(battleDao.findOne(battleIdx).getChallenger().getStatus())) {
+            } else if (!"A".equals(userDao.findByUserId(userId).getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
-            }
-            else{
-                // user 의 grade 찾기
-                ReturnRunBattleRes returnRunBattleRes = battleService.returnRunBattle(battleIdx , userId);
+            } else {
+                // battle 값 return
+                ReturnRunBattleRes returnRunBattleRes = battleService.returnRunBattle(battleIdx, userId);
                 return new BaseResponse<>(returnRunBattleRes);
             }
         }catch (BaseException e){
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
+            return new BaseResponse<>(e.getStatus());
         }
 
     }
@@ -538,7 +536,7 @@ public class BattleController {
      */
     @ApiOperation("대결 정보 반환 API (종료)")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰")
+            @ApiImplicitParam(name = "Authorization",dataTypeClass=String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
     })
     @ResponseBody
     @GetMapping("/finish/{battleIdx}")
@@ -550,24 +548,20 @@ public class BattleController {
         long userId = Long.parseLong(UserId);
 
 
-        try{
+        try {
             // springsecurity 로 찾은 userId 랑 request 에서 찾은 userId 비교
-            if(userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
-                    userId != battleDao.findOne(battleIdx).getChallenger().getId()){
+            if (userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
+                    userId != battleDao.findOne(battleIdx).getChallenger().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            }
-            else if(!"A".equals(battleDao.findOne(battleIdx).getChallenged().getStatus()) &&
-                    !"A".equals(battleDao.findOne(battleIdx).getChallenger().getStatus())) {
+            } else if (!"A".equals(userDao.findByUserId(userId).getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
-            }
-            else{
-                // user 의 grade 찾기
-                ReturnFinishBattleRes returnFinishBattleRes = battleService.returnFinishBattle(battleIdx , userId);
+            } else {
+                // battle 값 return
+                ReturnFinishBattleRes returnFinishBattleRes = battleService.returnFinishBattle(battleIdx, userId);
                 return new BaseResponse<>(returnFinishBattleRes);
             }
         }catch (BaseException e){
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
+            return new BaseResponse<>(e.getStatus());
         }
 
     }
