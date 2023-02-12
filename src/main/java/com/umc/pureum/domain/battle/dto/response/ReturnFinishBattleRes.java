@@ -1,53 +1,36 @@
 package com.umc.pureum.domain.battle.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class ReturnFinishBattleRes {
 
     private Long battleId;
-    private Long userId;
-    private Long challengedId;
-    private String challengedNickname;
-    private String challengedImage;
-    private Long challengerId;
-    private String challengerNickname;
-    private String challengerImage;
+    private int situation;
+    private Long winnerUserId;
+    private Long winnerId;
+    private String winnerNickname;
+    private String winnerImage;
+    private Long loserId;
+    private String loserNickname;
+    private String loserImage;
+    private int duration;
 
-    private Long challengedSentenceId;
-    private String challengedSentence;
-    private Long challengerSentenceId;
-    private String challengerSentence;
+    private Long winnerSentenceId;
+    private String winnerSentence;
+    private Long loserSentenceId;
+    private String loserSentence;
 
-    private Long challengedLikeCnt;
-    private Long challengerLikeCnt;
+    private Long winnerLikeCnt;
+    private Long loserLikeCnt;
 
     private int userLike;
+    private int oppLike;
 
-    @Builder
-    public ReturnFinishBattleRes(Long battleId, Long userId,
-                                 Long challengedId, String challengedNickname, String challengedImage,
-                                 Long challengerId, String challengerNickname, String challengerImage,
-                                 Long challengedSentenceId, String challengedSentence,
-                                 Long challengerSentenceId, String challengerSentence,
-                                 Long challengedLikeCnt, Long challengerLikeCnt, int userLike) {
-        this.battleId = battleId;
-        this.userId = userId;
-        this.challengedId = challengedId;
-        this.challengedNickname = challengedNickname;
-        this.challengedImage = challengedImage;
-        this.challengerId = challengerId;
-        this.challengerNickname = challengerNickname;
-        this.challengerImage = challengerImage;
-        this.challengedSentenceId = challengedSentenceId;
-        this.challengedSentence = challengedSentence;
-        this.challengerSentenceId = challengerSentenceId;
-        this.challengerSentence = challengerSentence;
-        this.challengedLikeCnt = challengedLikeCnt;
-        this.challengerLikeCnt = challengerLikeCnt;
-        this.userLike = userLike;
-    }
+
 }
