@@ -154,19 +154,17 @@ public class MyPageController {
     })
     @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse<String>> EditProfile(@RequestParam(value = "image", required = false) MultipartFile image, PatchEditProfileReq patchEditProfileReq, @PathVariable long userId) throws BaseException, IOException {
-            if (!image.isEmpty()) {
-                if (!checkImage(image))
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
-                patchEditProfileReq.setImage(image);
-            } else patchEditProfileReq.setImage(null);
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            long id = Long.parseLong(principal.getUsername());
-            if (id != userId)
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
-
-            System.out.println(patchEditProfileReq);
-            myPageService.EditProfile(patchEditProfileReq, id);
-            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("정상적으로 수정되었습니다."));
-        }
+        if (image != null) {
+            if (!checkImage(image))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
+            patchEditProfileReq.setImage(image);
+        } else patchEditProfileReq.setImage(null);
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long id = Long.parseLong(principal.getUsername());
+        if (id != userId)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
+        myPageService.EditProfile(patchEditProfileReq, id);
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("정상적으로 수정되었습니다."));
+    }
 
 }
