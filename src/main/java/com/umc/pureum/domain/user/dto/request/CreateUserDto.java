@@ -15,5 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class CreateUserDto {
     String nickname;
     MultipartFile image;
-    int grade;
+    String grade;
+    String kakaoToken;
 }
