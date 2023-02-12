@@ -148,11 +148,29 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "order by b.created_at desc ", nativeQuery = true)
     List<GetMyCompleteBattles> findAllMyCompleteBattles(Long userId, PageRequest request);
 
-    @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, \n" +
-            "   b.challenger.id as challengerId, b.challenger.nickname as challengerNickname, b.challenger.image as challengerProfileImg, \n" +
-            "   b.challenged.id as challengedId, b.challenged.nickname as challengedNickname, b.challenged.image as challengedProfileImg, \n" +
+    @Query("select b.id as battleId, b.word.id as keywordId, b.word.word.word as keyword, b.updatedAt as updateAt, \n" +
+            "   b.challenged.id as challengedId, \n" +
+            "case when(b.challenged.status = 'A') then b.challenged.nickname \n" +
+            "     when(b.challenged.status = 'D') then '' \n" +
+            "     else '' \n" +
+            "     end as challengedNickname, \n" +
+            "case when(b.challenged.status = 'A') then b.challenged.image \n" +
+            "     when(b.challenged.status = 'D') then '' \n" +
+            "     else '' \n" +
+            "     end as challengedProfileImg, \n" +
+            "   b.challenger.id as challengerId, \n" +
+            "case when(b.challenger.status = 'A') then b.challenger.nickname \n" +
+            "     when(b.challenger.status = 'D') then '' \n" +
+            "     else '' \n" +
+            "     end as challengerNickname, \n" +
+            "case when(b.challenger.status = 'A') then b.challenger.image \n" +
+            "     when(b.challenger.status = 'D') then '' \n" +
+            "     else '' \n" +
+            "     end as challengerProfileImg, \n" +
             "   b.duration as duration, b.status as battleStatus \n" +
             "from Battle as b \n" +
             "where b.id = :battleId")
     List<GetBattleInfoRes> findInfoByBattleId(@Param("battleId") Long battleId);
+
+    List<Battle> findByChallengerIdOrChallengedId(long userId, long userId1);
 }
