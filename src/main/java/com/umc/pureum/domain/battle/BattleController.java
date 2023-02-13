@@ -455,7 +455,12 @@ public class BattleController {
 //            } else if (!"A".equals(battleSentenceDao.findOne(request.getSentenceId()).getUser().getStatus())) {
 //                return new BaseResponse<>(INVALID_USER);
 //            }
-            {
+            if (userId != request.getUserId()) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            } else if (!"A".equals(userDao.findByUserId(request.getUserId()).getStatus())) {
+                return new BaseResponse<>(INVALID_USER);
+            }
+            else {
                 // 문장 좋아요 저장
                 LikeBattleRes likeBattleRes = battleService.like(userId, request);
                 return new BaseResponse<>(likeBattleRes);
