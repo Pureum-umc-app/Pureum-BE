@@ -25,6 +25,7 @@ public class MyPageDao {
        return em.createQuery("select s from Sentence s " +
                        "join fetch s.user u " +
                        "join fetch s.keyword k " +
+                       "join fetch k.word w " +
                        "where u.id = :userId and s.status != 'D'", Sentence.class)
                 .setParameter("userId",userId)
                 .getResultList();
@@ -35,6 +36,7 @@ public class MyPageDao {
         return em.createQuery("select s from Sentence s " +
                         "join fetch s.user u " +
                         "join fetch s.keyword k " +
+                        "join fetch k.word w " +
                         "where s.user.id = :userId and s.status = 'O'", Sentence.class)
                 .setParameter("userId",userId)
                 .getResultList();
@@ -45,6 +47,8 @@ public class MyPageDao {
         return em.createQuery("select s from SentenceLike s " +
                         "join fetch s.user u " +
                         "join fetch s.sentence ss " +
+                        "join fetch ss.keyword k " +
+                        "join fetch k.word w " +
                         "where ss.id = :sentenceId and s.status != 'D'")
                 .setParameter("sentenceId", sentenceId)
                 .getResultList();
