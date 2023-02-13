@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -154,9 +155,14 @@ public class BattleService {
         return savedBattle.getId();
     }
 
-    public String BattleMyProfilePhoto ( long userId){
-        return userRepository.findByIdAndStatus(userId, "A").get().getImage();
-
+    public List<String> BattleMyProfilePhoto ( long userId){
+        UserAccount userAccount =  userRepository.findByIdAndStatus(userId, "A").get();
+        String img = userAccount.getImage();
+        String nickname = userAccount.getNickname();
+        List<String> list = new ArrayList<>();
+        list.add(img);
+        list.add(nickname);
+        return list;
     }
 
     // writeChallenged : challenged 의 문장 작성 DB 에 저장
