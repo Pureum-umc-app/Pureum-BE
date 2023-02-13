@@ -37,7 +37,6 @@ import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_E
 @Service
 public class SentenceService {
     private final SentenceLikeService sentenceLikeService;
-
     private final SentenceRepository sentenceRepository;
     private final SentenceDao sentenceDao;
     private final SentenceLikeDao sentenceLikeDao;
