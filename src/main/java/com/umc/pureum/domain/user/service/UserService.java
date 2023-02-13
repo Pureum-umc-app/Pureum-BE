@@ -2,7 +2,6 @@ package com.umc.pureum.domain.user.service;
 
 import com.umc.pureum.domain.attendance.AttendanceRepository;
 import com.umc.pureum.domain.attendance.entity.AttendanceCheck;
-import com.umc.pureum.domain.attendance.entity.AttendanceStatus;
 import com.umc.pureum.domain.badge.BadgeRepository;
 import com.umc.pureum.domain.badge.entity.Badge;
 import com.umc.pureum.domain.battle.entity.Battle;
@@ -20,12 +19,12 @@ import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.dto.request.KakaoAccessTokenInfoDto;
 import com.umc.pureum.domain.user.dto.request.CreateUserDto;
 import com.umc.pureum.domain.mypage.dto.response.GetProfileResponseDto;
-import com.umc.pureum.domain.user.dto.response.LogInResponseDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.entity.mapping.UserProfileMapping;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import com.umc.pureum.global.config.security.jwt.JwtTokenProvider;
+import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -118,7 +117,7 @@ public class UserService {
                 usePhone.setStatus(UseStatus.D);
             }
             for (AttendanceCheck attendanceCheck : attendanceChecks) {
-                attendanceCheck.setStatus(AttendanceStatus.D);
+                attendanceCheck.setStatus(Status.D);
             }
             for (Sentence sentence : sentences) {
                 sentence.setStatus("D");
