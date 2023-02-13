@@ -65,7 +65,9 @@ public enum BaseResponseStatus {
     GET_BATTLE_INVALID_STATUS(false, 2053,"대기 중 혹은 종료된 대결만 반환 가능합니다."),
     GET_BATTLE_FINISH_STATUS(false, 2054,"종료된 대결 입니다."),
     Get_BATTLE_RUN_STATUS(false, 2055,"종료된 대결 아닙니다."),
+    Get_BATTLE_NO_ACCEPT_STATUS(false, 2056,"수락되지 않은 대결입니다."),
     POST_BATTLE_ALREADY_EXIST_SENTENCE(false, 2056,"이미 대결에 사용한 문장입니다."),
+
 
 
     /**
