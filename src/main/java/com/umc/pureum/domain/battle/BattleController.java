@@ -592,7 +592,7 @@ public class BattleController {
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
             @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", example = "1", dataTypeClass = Long.class)
     })
-    @GetMapping("/{userId}/battleWords")
+    @GetMapping("/{userId}/battle-word")
     public BaseResponse<List<GetBattleWordRes>> getBattleWordThree(@PathVariable Long userId) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String springSecurityUserId = principal.getUsername();
