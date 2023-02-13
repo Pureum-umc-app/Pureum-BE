@@ -14,9 +14,11 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class SentenceLike extends BaseEntity {
-    @ManyToOne @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private UserAccount user;
-    @ManyToOne @JoinColumn(name = "sentence_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sentence_id")
     private Sentence sentence;
     private String status;
 

@@ -17,11 +17,13 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 
 public class Sentence extends BaseEntity {
-    @ManyToOne @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private UserAccount user;
     @NotNull
     private String sentence;
-    @ManyToOne @JoinColumn(name = "word_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "word_id")
     private Keyword keyword;
     @NotNull
     private String status;
@@ -30,6 +32,16 @@ public class Sentence extends BaseEntity {
         this.user = userAccount;
         this.sentence = sentence;
         this.keyword = keyword;
+        this.status = sentenceStatus;
+    }
+
+    // 문장 수정
+    public void EditSentence(String sentence){
+        this.sentence = sentence;
+    }
+
+    // 문장 삭제
+    public void DeleteSentence(String sentenceStatus){
         this.status = sentenceStatus;
     }
 }
