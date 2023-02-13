@@ -9,6 +9,6 @@ import lombok.*;
 @AllArgsConstructor
 @ToString
 public class LoginDto {
-    String fcmId;
+//    String fcmId;
     String kakaoToken;
 }
