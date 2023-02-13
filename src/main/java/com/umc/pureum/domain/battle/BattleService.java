@@ -175,7 +175,7 @@ public class BattleService {
 
         List<GetBattleSentenceInterface> infoByBattleWordIdAndUserId = battleSentenceRepository.findInfoByBattleWordIdAndUserId(battleWord.getId(), userId);
 
-        // 탈퇴한 회원 여부 확인
+        // 대결이 종료된 대결인지 여부 확인 && 탈퇴한 회원 여부 확인
         if(battleStatus == BattleStatus.C || battleStatus == BattleStatus.D || challengedStatus != Status.A || challengerStatus != Status.A){
             throw new BaseException(GET_BATTLE_FINISH_STATUS);
         }
