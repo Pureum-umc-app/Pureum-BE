@@ -450,11 +450,12 @@ public class BattleController {
 
         try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 sentence 에서 찾은 userId 비교
-            if (userId != battleSentenceDao.findOne(request.getSentenceId()).getUser().getId()) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            } else if (!"A".equals(battleSentenceDao.findOne(request.getSentenceId()).getUser().getStatus())) {
-                return new BaseResponse<>(INVALID_USER);
-            } else {
+//            if (userId != battleSentenceDao.findOne(request.getSentenceId()).getUser().getId()) {
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            } else if (!"A".equals(battleSentenceDao.findOne(request.getSentenceId()).getUser().getStatus())) {
+//                return new BaseResponse<>(INVALID_USER);
+//            }
+            {
                 // 문장 좋아요 저장
                 LikeBattleRes likeBattleRes = battleService.like(userId, request);
                 return new BaseResponse<>(likeBattleRes);
