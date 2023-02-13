@@ -206,6 +206,10 @@ public class BattleService {
 
         BattleSentence battleSentence = new BattleSentence(battle, userAccount, writingSentence, battleWord, Status.A);
         battleSentenceDao.save(battleSentence);
+
+        // battle status 바꾸기
+        battle.setStatus(BattleStatus.I);
+
         /*
         try {
             firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 수락했어요.","이겨보아요");
@@ -245,9 +249,9 @@ public class BattleService {
         UserAccount userAccount = userRepository.findById(userId).get();
 
         //request 로 받은 sentenceId 로 문장 좋아요 찾기
-        if(battleLikeDao.findBySentenceId(request.getSentenceId()).isPresent()){
+        if(battleLikeDao.findBySentenceId(request.getSentenceId() , userId).isPresent()){
 
-            BattleLike battleLike = battleLikeDao.findBySentenceId(request.getSentenceId()).get();
+            BattleLike battleLike = battleLikeDao.findBySentenceId(request.getSentenceId() , userId).get();
 
             // 존재하는 sentence 일 경우 sentence status 확인하고 status 바꾼다 .
             if(Status.A.equals(battleLike.getStatus())){
