@@ -1,5 +1,6 @@
 package com.umc.pureum.domain.battle.dao;
 
+import com.umc.pureum.domain.badge.entity.Badge;
 import com.umc.pureum.domain.battle.entity.BattleLike;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -25,9 +26,10 @@ public class BattleLikeDao {
     }
 
     // sentence_id 로 battleLike 찾기
-    public Optional<BattleLike> findBySentenceId(Long sentenceId){
-        List<BattleLike> battleLikeList = em.createQuery("select b from BattleLike b where b.sentence.id = :sentenceId", BattleLike.class)
+    public Optional<BattleLike> findBySentenceId(Long sentenceId , Long userId){
+        List<BattleLike> battleLikeList = em.createQuery("select b from BattleLike b where b.sentence.id = :sentenceId and b.user.id = :userId", BattleLike.class)
                 .setParameter("sentenceId", sentenceId)
+                .setParameter("userId", userId)
                 .getResultList();
         return battleLikeList.stream().findAny();
     }
