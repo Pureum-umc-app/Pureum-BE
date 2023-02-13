@@ -47,9 +47,6 @@ public class BadgeService {
         for( int i = 0 ; i < badgesByUserId.size() ; i++ ){
             GetBadgeInfoRes getBadgeInfoRes = badgesByUserId.get(i);
 
-            System.out.println(getBadgeInfoRes.getBadge());
-            System.out.println("@@@@@@@@@@@@@@@"+getBadgeInfoRes.getCreatedAt());
-
             if( i == 0 ){
                 timestamp = getBadgeInfoRes.getCreatedAt();
             }
