@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
@@ -19,7 +20,8 @@ import javax.persistence.OneToOne;
 @EqualsAndHashCode(callSuper = true)
 
 public class Keyword extends BaseEntity {
-    @OneToOne @JoinColumn(name = "word_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "word_id")
     private Word word;
     @NotNull
     private String status;
