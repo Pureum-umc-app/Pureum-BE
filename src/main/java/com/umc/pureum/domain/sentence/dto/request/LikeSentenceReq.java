@@ -9,6 +9,9 @@ import lombok.Data;
 public class LikeSentenceReq {
 
     @ApiModelProperty(example = "1")
+    private Long userId;
+
+    @ApiModelProperty(example = "1")
     private Long sentenceId;
 
     public LikeSentenceReq() {
