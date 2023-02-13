@@ -11,7 +11,6 @@ import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
 import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
 import com.umc.pureum.domain.user.UserDao;
-import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
@@ -205,7 +204,8 @@ public class BattleController {
             @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다."),
             @ApiResponse(code = 2050, message = "대결 문장을 입력해야 합니다."),
             @ApiResponse(code = 2051, message = "존재하지 않는 키워드입니다."),
-            @ApiResponse(code = 2052, message = "이미 대결에 사용한 키워드입니다.")
+            @ApiResponse(code = 2052, message = "이미 대결에 사용한 키워드입니다."),
+            @ApiResponse(code = 2056, message = "이미 대결에 사용한 문장입니다.")
     })
     @ResponseBody
     @PostMapping("")
@@ -412,7 +412,7 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/complete-list/{userId}")
-    public BaseResponse<List<GetCompleteBattles>> getMyCompleteBattles(@PathVariable Long userId, @RequestParam int page, @RequestParam int limit) {
+    public BaseResponse<List<GetMyCompleteBattles>> getMyCompleteBattles(@PathVariable Long userId, @RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
@@ -423,7 +423,7 @@ public class BattleController {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
-            List<GetCompleteBattles> battlesRes = battleProvider.getMyCompleteBattles(userId, page, limit);
+            List<GetMyCompleteBattles> battlesRes = battleProvider.getMyCompleteBattles(userId, page, limit);
             return new BaseResponse<>(battlesRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
