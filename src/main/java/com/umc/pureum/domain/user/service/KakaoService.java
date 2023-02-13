@@ -3,6 +3,8 @@ package com.umc.pureum.domain.user.service;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.umc.pureum.domain.user.dto.request.KakaoAccessTokenInfoDto;
+import com.umc.pureum.global.config.BaseException;
+import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -73,35 +75,39 @@ public class KakaoService {
      * @param token //access token
      * @return // 유저 정보 AccessTokenInfoDto 형태로 리턴
      */
-    public KakaoAccessTokenInfoDto getUserInfoByKakaoToken(String token) {
+    public KakaoAccessTokenInfoDto getUserInfoByKakaoToken(String token) throws BaseException, IOException {
 
         String reqURL = "https://kapi.kakao.com/v2/user/me";
 
         //access_token을 이용하여 사용자 정보 조회
         KakaoAccessTokenInfoDto kakaoAccessTokenInfoDto = null;
-        try {
-            URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Authorization", "Bearer " + token); //전송할 header 작성, access_token전송
+        URL url = new URL(reqURL);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-            //결과 코드가 200이라면 성공
-//            int responseCode = conn.getResponseCode();
+        conn.setRequestMethod("POST");
+        conn.setDoOutput(true);
+        conn.setRequestProperty("Authorization", "Bearer " + token); //전송할 header 작성, access_token전송
 
-            //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line;
-            StringBuilder result = new StringBuilder();
+        //결과 코드가 200이라면 성공
+        int responseCode = conn.getResponseCode();
+        if (responseCode == 401) {
+            throw new BaseException(BaseResponseStatus.INVALID_KAKAO_TOKEN);
+        }
+        //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
+        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        String line;
+        StringBuilder result = new StringBuilder();
 
-            while ((line = br.readLine()) != null) {
-                result.append(line);
-            }
+        while ((line = br.readLine()) != null) {
+            result.append(line);
+        }
 
-            //Gson 라이브러리로 JSON파싱
-            JsonElement element = JsonParser.parseString(result.toString());
-            //accesstoken 정보 Dto에 빌드
+        //Gson 라이브러리로 JSON파싱
+        JsonElement element = JsonParser.parseString(result.toString());
+        //accesstoken 정보 Dto에 빌드
+        log.info(element.toString());
+        if (!element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean()) {
             kakaoAccessTokenInfoDto = KakaoAccessTokenInfoDto.builder()
                     .id(element.getAsJsonObject().get("id").getAsLong())
                     .is_email_verified(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("is_email_verified").getAsBoolean())
@@ -110,11 +116,14 @@ public class KakaoService {
                     .is_email_valid(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("is_email_valid").getAsBoolean())
                     .email(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email").getAsString())
                     .build();
-            br.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            kakaoAccessTokenInfoDto = KakaoAccessTokenInfoDto.builder()
+                    .id(element.getAsJsonObject().get("id").getAsLong())
+                    .email_needs_agreement(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("email_needs_agreement").getAsBoolean())
+                    .has_email(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean())
+                    .build();
         }
+        br.close();
         //access token으로 받은 유저정보 return
         return kakaoAccessTokenInfoDto;
     }

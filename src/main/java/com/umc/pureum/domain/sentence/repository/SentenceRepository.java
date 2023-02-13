@@ -20,4 +20,6 @@ public interface SentenceRepository extends JpaRepository<Sentence, Long> {
     Optional<Sentence> findByKeywordId(Long id);
 
     List<Sentence> findByUserId(long userId);
+
+    List<Sentence> findByUserIdAndStatusNot(Long userId, String status);
 }
