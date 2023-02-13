@@ -237,7 +237,7 @@ public class SentenceController {
 
         try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 sentence 에서 찾은 userId 비교
-            if (userId != sentenceDao.findOne(request.getSentenceId()).getUser().getId()) {
+            if (userId != request.getUserId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
             } else {
                 // 문장 좋아요 저장
