@@ -28,9 +28,10 @@ public class SentenceLikeDao {
 
 
     // sentence_id 로 sentenceLike 찾기
-    public Optional<SentenceLike> findBySentenceId(Long sentenceId){
-        List<SentenceLike> sentenceLikeList = em.createQuery("select s from SentenceLike s where s.sentence.id= :sentenceId", SentenceLike.class)
+    public Optional<SentenceLike> findBySentenceId(Long sentenceId ,Long userId){
+        List<SentenceLike> sentenceLikeList = em.createQuery("select s from SentenceLike s where s.sentence.id= :sentenceId and s.user.id = :userId", SentenceLike.class)
                 .setParameter("sentenceId", sentenceId)
+                .setParameter("userId", userId)
                 .getResultList();
         return sentenceLikeList.stream().findAny();
     }
