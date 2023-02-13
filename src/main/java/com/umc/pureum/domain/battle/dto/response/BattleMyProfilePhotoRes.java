@@ -12,4 +12,5 @@ import lombok.Setter;
 public class BattleMyProfilePhotoRes {
     long userId;
     String image;
+    String nickname;
 }
