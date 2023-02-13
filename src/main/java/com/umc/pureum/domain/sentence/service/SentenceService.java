@@ -97,9 +97,9 @@ public class SentenceService {
         UserAccount userAccount = userRepository.findById(userId).get();
 
         //request 로 받은 sentenceId 로 문장 좋아요 찾기
-        if (sentenceLikeDao.findBySentenceId(request.getSentenceId()).isPresent()) {
+        if (sentenceLikeDao.findBySentenceId(request.getSentenceId() ,userId).isPresent()) {
 
-            SentenceLike sentenceLike = sentenceLikeDao.findBySentenceId(request.getSentenceId()).get();
+            SentenceLike sentenceLike = sentenceLikeDao.findBySentenceId(request.getSentenceId() , userId).get();
 
             // 존재하는 sentence 일 경우 sentence status 확인하고 status 바꾼다 .
             if ("A".equals(sentenceLike.getStatus())) {
@@ -108,7 +108,7 @@ public class SentenceService {
                 sentenceLike.setStatus("A");
             }
 
-            return new LikeSentenceRes(sentenceLike.getId());
+            return new LikeSentenceRes(sentenceLike.getId() , sentenceLike.getStatus());
 
         }
 
@@ -117,7 +117,7 @@ public class SentenceService {
             SentenceLike sentenceLike = new SentenceLike(userAccount, sentence, "A");
             sentenceLikeDao.save(sentenceLike);
 
-            return new LikeSentenceRes(sentenceLike.getId());
+            return new LikeSentenceRes(sentenceLike.getId() , sentenceLike.getStatus());
         }
 
     }
