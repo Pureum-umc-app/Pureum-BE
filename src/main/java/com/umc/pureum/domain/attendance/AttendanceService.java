@@ -3,9 +3,9 @@ package com.umc.pureum.domain.attendance;
 import com.umc.pureum.domain.attendance.dto.request.AttendanceCheckReq;
 import com.umc.pureum.domain.attendance.dto.response.AttendanceCheckRes;
 import com.umc.pureum.domain.attendance.entity.AttendanceCheck;
-import com.umc.pureum.domain.attendance.entity.AttendanceStatus;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
+import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +25,7 @@ public class AttendanceService {
         UserAccount userAccount = userRepository.findById(request.getUserId()).get();
 
         // attendanceCheck 생성
-        AttendanceCheck attendanceCheck = new AttendanceCheck(userAccount, AttendanceStatus.A);
+        AttendanceCheck attendanceCheck = new AttendanceCheck(userAccount, Status.A);
 
         // attendanceCheck DB 에 저장
         attendanceDao.save(attendanceCheck);
