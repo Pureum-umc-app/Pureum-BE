@@ -56,6 +56,7 @@ public enum BaseResponseStatus {
     POST_SENTENCE_NO_EXISTS_KEYWORD(false, 2041, "키워드가 포함되어있지 않습니다."),
     GET_SENTENCE_INVALID_SORT_METHOD(false, 2042, "정렬 방식이 잘못되었습니다."),
     POST_SENTENCE_EXISTS(false, 2043, "이미 존재하는 대결 문장입니다."),
+    GET_SENTENCE_EMPTY(false, 2044, "없는 문장입니다."),
 
     // battle
     POST_BATTLE_EMPTY_SENTENCE(false, 2050, "대결 문장을 입력해야 합니다."),
