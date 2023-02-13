@@ -1,8 +1,7 @@
 package com.umc.pureum.domain.attendance;
 
+import com.umc.pureum.domain.attendance.dto.response.GetStampInterface;
 import com.umc.pureum.domain.attendance.dto.response.GetStampRes;
-import com.umc.pureum.domain.attendance.entity.AttendanceCheck;
-import com.umc.pureum.domain.attendance.entity.AttendanceStatus;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
@@ -11,14 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AttendanceProvider {
-    private final AttendanceDao attendanceDao;
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
 
@@ -29,8 +26,8 @@ public class AttendanceProvider {
         if(user.isEmpty()) throw new BaseException(BaseResponseStatus.INVALID_USER);
 
         // 출석 개수를 받아옴
-        List<AttendanceCheck> attendanceChecks = attendanceRepository.findALLByUserIdAndStatus(userId, AttendanceStatus.A);
+        GetStampInterface stamp = attendanceRepository.findByUserIdAndStatus(userId);
 
-        return new GetStampRes(user.get().getId(), attendanceChecks.size(), attendanceChecks.size() % 30);
+        return new GetStampRes(userId, stamp.getAccumulatedCnt(), stamp.getCurrentCnt());
     }
 }

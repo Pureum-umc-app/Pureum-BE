@@ -19,6 +19,8 @@ public interface BattleSentenceRepository extends JpaRepository<BattleSentence, 
     /* 대결에 사용한 문장 받아오기 */
     Optional<BattleSentence> findByBattleIdAndUserIdAndStatus(Long battleId, Long userId, Status status);
 
+    /* 같은 문장이 있는지 검사 */
+    Optional<BattleSentence> findBySentenceAndUserIdAndWordIdAndStatus(String sentence, Long userId, Long wordId, Status status);
 
     @Query(nativeQuery = true,
             value = "select id " +
