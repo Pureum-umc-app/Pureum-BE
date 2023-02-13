@@ -240,7 +240,6 @@ public class BattleController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
             @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스", example = "1"),
-            @ApiImplicitParam(name = "nickname",dataTypeClass = String.class, paramType = "path", value = "닉네임")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = BattleMyProfilePhotoRes.class),
