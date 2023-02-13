@@ -180,7 +180,7 @@ public class BattleProvider {
     }
 
     /* 나의 종료된 대결 리스트 반환 */
-    public List<GetCompleteBattles> getMyCompleteBattles(Long userId, int page, int limit) throws BaseException {
+    public List<GetMyCompleteBattles> getMyCompleteBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
         if(myInfo.isEmpty()) {
