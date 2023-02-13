@@ -182,6 +182,10 @@ public class BattleService {
             throw new BaseException(GET_BATTLE_FINISH_STATUS);
         }
 
+        else if(battleStatus == BattleStatus.W){
+            throw new BaseException(Get_BATTLE_NO_ACCEPT_STATUS);
+        }
+
         // 작성한 문장 존재 여부 확인
         else if (writingSentence == "") {
             throw new BaseException(POST_SENTENCE_EMPTY);
