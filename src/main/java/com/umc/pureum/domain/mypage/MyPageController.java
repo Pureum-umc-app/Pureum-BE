@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
+
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
 import static com.umc.pureum.global.utils.FileCheck.*;
 
@@ -42,17 +44,13 @@ public class MyPageController {
     })
     @ResponseBody
     @GetMapping("/sentence")
-    public BaseResponse<GetMySentencesRes> getMySentences() throws BaseException {
-        try {
-            // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String springSecurityUserId = principal.getUsername();
-            Long userId = Long.parseLong(springSecurityUserId);
-            GetMySentencesRes mySentences = myPageProvider.findMySentences(userId);
-            return new BaseResponse<>(mySentences);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public BaseResponse<GetMySentencesRes> getMySentences() {
+        // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userId = Long.parseLong(springSecurityUserId);
+        GetMySentencesRes mySentences = myPageProvider.findMySentences(userId);
+        return new BaseResponse<>(mySentences);
     }
 
     /**
@@ -67,7 +65,7 @@ public class MyPageController {
     })
     @ResponseBody
     @PatchMapping("/sentence/{sentenceId}/edit")
-    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId, @RequestBody PostUpdateSentenceReq postUpdateSentenceReq) throws BaseException {
+    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId, @RequestBody PostUpdateSentenceReq postUpdateSentenceReq) {
         try {
             // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -85,8 +83,8 @@ public class MyPageController {
                     return new BaseResponse<>(SUCCESS);
                 }
             }
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
@@ -101,7 +99,7 @@ public class MyPageController {
     })
     @ResponseBody
     @PatchMapping("/sentence/{sentenceId}/delete")
-    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId) throws BaseException {
+    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId) {
         try {
             // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -113,8 +111,8 @@ public class MyPageController {
                 myPageService.deleteSentence(sentenceId);
                 return new BaseResponse<>(SUCCESS);
             }
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
@@ -128,19 +126,14 @@ public class MyPageController {
             @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다.")
     })
     @GetMapping(value = "/{userId}")
-    public ResponseEntity<BaseResponse<GetProfileResponseDto>> GetProfile(@PathVariable long userId) throws BaseException {
-        try {
-            System.out.println(userId);
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            long id = Long.parseLong(principal.getUsername());
-            System.out.println(id);
-            if (id != userId)
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
-            GetProfileResponseDto getProfileResponseDto = userService.GetProfile(id);
-            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(getProfileResponseDto));
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public ResponseEntity<BaseResponse<GetProfileResponseDto>> GetProfile(@PathVariable long userId) {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long id = Long.parseLong(principal.getUsername());
+        if (id != userId)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
+        GetProfileResponseDto getProfileResponseDto = userService.GetProfile(id);
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(getProfileResponseDto));
+
     }
 
     @ApiOperation("프로필 수정 API")
@@ -156,24 +149,18 @@ public class MyPageController {
             @ApiResponse(code = 2005, message = "이미지파일이 아닙니다")
     })
     @PatchMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<BaseResponse<String>> EditProfile(@RequestParam(value = "image", required = false) MultipartFile image, PatchEditProfileReq patchEditProfileReq, @PathVariable long userId) throws BaseException {
-        try {
-            if (!image.isEmpty()) {
-                if (!checkImage(image))
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
-                patchEditProfileReq.setImage(image);
-            } else patchEditProfileReq.setImage(null);
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            long id = Long.parseLong(principal.getUsername());
-            if (id != userId)
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
-
-            System.out.println(patchEditProfileReq);
-            myPageService.EditProfile(patchEditProfileReq, id);
-            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("정상적으로 수정되었습니다."));
-        } catch (Exception exception) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public ResponseEntity<BaseResponse<String>> EditProfile(@RequestParam(value = "image", required = false) MultipartFile image, PatchEditProfileReq patchEditProfileReq, @PathVariable long userId) throws BaseException, IOException {
+        if (image != null) {
+            if (!checkImage(image))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_IMAGE_FILE));
+            patchEditProfileReq.setImage(image);
+        } else patchEditProfileReq.setImage(null);
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long id = Long.parseLong(principal.getUsername());
+        if (id != userId)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
+        myPageService.EditProfile(patchEditProfileReq, id);
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("정상적으로 수정되었습니다."));
     }
 
 }

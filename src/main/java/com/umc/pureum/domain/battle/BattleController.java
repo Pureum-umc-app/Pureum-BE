@@ -10,6 +10,7 @@ import com.umc.pureum.domain.battle.dto.request.CreateChallengedSentenceReq;
 import com.umc.pureum.domain.battle.dto.request.LikeBattleReq;
 import com.umc.pureum.domain.battle.dto.request.PostBattleReq;
 import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
+import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponse;
 import io.swagger.annotations.*;
@@ -37,6 +38,7 @@ public class BattleController {
     private final BattleService battleService;
     private final BattleDao battleDao;
     private final BattleSentenceDao battleSentenceDao;
+    private final UserDao userDao;
     private final FirebaseCloudMessageService firebaseCloudMessageService;
 
     /**
@@ -181,10 +183,8 @@ public class BattleController {
                 return new BaseResponse<>(createChallengedSentenceRes);
             }
         } catch (BaseException e) {
-            e.printStackTrace();
             return new BaseResponse<>(e.getStatus());
         }
-
     }
 
     /**
@@ -204,7 +204,8 @@ public class BattleController {
             @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다."),
             @ApiResponse(code = 2050, message = "대결 문장을 입력해야 합니다."),
             @ApiResponse(code = 2051, message = "존재하지 않는 키워드입니다."),
-            @ApiResponse(code = 2052, message = "이미 대결에 사용한 키워드입니다.")
+            @ApiResponse(code = 2052, message = "이미 대결에 사용한 키워드입니다."),
+            @ApiResponse(code = 2056, message = "이미 대결에 사용한 문장입니다.")
     })
     @ResponseBody
     @PostMapping("")
@@ -411,7 +412,7 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/complete-list/{userId}")
-    public BaseResponse<List<GetCompleteBattles>> getMyCompleteBattles(@PathVariable Long userId, @RequestParam int page, @RequestParam int limit) {
+    public BaseResponse<List<GetMyCompleteBattles>> getMyCompleteBattles(@PathVariable Long userId, @RequestParam int page, @RequestParam int limit) {
         try {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             String user = principal.getUsername();
@@ -422,14 +423,14 @@ public class BattleController {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
-            List<GetCompleteBattles> battlesRes = battleProvider.getMyCompleteBattles(userId, page, limit);
+            List<GetMyCompleteBattles> battlesRes = battleProvider.getMyCompleteBattles(userId, page, limit);
             return new BaseResponse<>(battlesRes);
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
 
-    /*
+    /**
      * 대결 문장 좋아요 API
      * [POST] /battles/like
      */
@@ -449,11 +450,17 @@ public class BattleController {
 
         try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 sentence 에서 찾은 userId 비교
-            if (userId != battleSentenceDao.findOne(request.getSentenceId()).getUser().getId()) {
+//            if (userId != battleSentenceDao.findOne(request.getSentenceId()).getUser().getId()) {
+//                return new BaseResponse<>(INVALID_USER_JWT);
+//            } else if (!"A".equals(battleSentenceDao.findOne(request.getSentenceId()).getUser().getStatus())) {
+//                return new BaseResponse<>(INVALID_USER);
+//            }
+            if (userId != request.getUserId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            } else if (!"A".equals(battleSentenceDao.findOne(request.getSentenceId()).getUser().getStatus())) {
+            } else if (!"A".equals(userDao.findByUserId(request.getUserId()).getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
-            } else {
+            }
+            else {
                 // 문장 좋아요 저장
                 LikeBattleRes likeBattleRes = battleService.like(userId, request);
                 return new BaseResponse<>(likeBattleRes);
@@ -516,17 +523,15 @@ public class BattleController {
             if (userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
                     userId != battleDao.findOne(battleIdx).getChallenger().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            } else if (!"A".equals(battleDao.findOne(battleIdx).getChallenged().getStatus()) &&
-                    !"A".equals(battleDao.findOne(battleIdx).getChallenger().getStatus())) {
+            } else if (!"A".equals(userDao.findByUserId(userId).getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
             } else {
-                // user 의 grade 찾기
+                // battle 값 return
                 ReturnRunBattleRes returnRunBattleRes = battleService.returnRunBattle(battleIdx, userId);
                 return new BaseResponse<>(returnRunBattleRes);
             }
-        } catch (BaseException e) {
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
         }
 
     }
@@ -554,17 +559,15 @@ public class BattleController {
             if (userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
                     userId != battleDao.findOne(battleIdx).getChallenger().getId()) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            } else if (!"A".equals(battleDao.findOne(battleIdx).getChallenged().getStatus()) &&
-                    !"A".equals(battleDao.findOne(battleIdx).getChallenger().getStatus())) {
+            } else if (!"A".equals(userDao.findByUserId(userId).getStatus())) {
                 return new BaseResponse<>(INVALID_USER);
             } else {
-                // user 의 grade 찾기
+                // battle 값 return
                 ReturnFinishBattleRes returnFinishBattleRes = battleService.returnFinishBattle(battleIdx, userId);
                 return new BaseResponse<>(returnFinishBattleRes);
             }
-        } catch (BaseException e) {
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
         }
 
     }
