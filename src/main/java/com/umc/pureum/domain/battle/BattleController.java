@@ -225,6 +225,10 @@ public class BattleController {
                 return new BaseResponse<>(INVALID_JWT);
             }
 
+            if(postBattleReq.getDuration() < 3 || postBattleReq.getDuration() > 10) {
+                return new BaseResponse<>(POST_INVALID_DURATION);
+            }
+
             Long battleId = battleService.createBattle(postBattleReq);
             return new BaseResponse<>(battleId);
         } catch (BaseException e) {
