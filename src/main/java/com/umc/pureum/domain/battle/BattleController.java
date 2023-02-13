@@ -239,7 +239,8 @@ public class BattleController {
     @ApiOperation("대결 신청할때 내사진 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
-            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스", example = "1")
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 인덱스", example = "1"),
+            @ApiImplicitParam(name = "nickname",dataTypeClass = String.class, paramType = "path", value = "닉네임")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = BattleMyProfilePhotoRes.class),
@@ -252,7 +253,8 @@ public class BattleController {
         long id = Long.parseLong(principal.getUsername());
         if (id != userId)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
-        BattleMyProfilePhotoRes battleMyProfilePhotoRes = new BattleMyProfilePhotoRes(userId, battleService.BattleMyProfilePhoto(userId));
+        List<String> list = battleService.BattleMyProfilePhoto(userId);
+        BattleMyProfilePhotoRes battleMyProfilePhotoRes = new BattleMyProfilePhotoRes(userId, list.get(0),list.get(1));
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(battleMyProfilePhotoRes));
     }
 
