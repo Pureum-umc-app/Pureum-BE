@@ -1,4 +1,4 @@
-package com.umc.pureum.domain.badge.dto;
+package com.umc.pureum.domain.badge.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

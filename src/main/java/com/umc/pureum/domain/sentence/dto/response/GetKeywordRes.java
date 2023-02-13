@@ -14,7 +14,7 @@ public class GetKeywordRes {
     private Long userId;
     @ApiModelProperty(example = "2023-01-22")
     private String date;
-    @ApiModelProperty(example = "5")
+    @ApiModelProperty(example = "가게")
     private String keyword;
     @ApiModelProperty(example = "어느 한 곳에서 멀리 떨어져 있지 않다.")
     private String meaning;
