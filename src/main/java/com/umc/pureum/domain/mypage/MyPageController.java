@@ -42,17 +42,13 @@ public class MyPageController {
     })
     @ResponseBody
     @GetMapping("/sentence")
-    public BaseResponse<GetMySentencesRes> getMySentences() throws BaseException {
-        try {
-            // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String springSecurityUserId = principal.getUsername();
-            Long userId = Long.parseLong(springSecurityUserId);
-            GetMySentencesRes mySentences = myPageProvider.findMySentences(userId);
-            return new BaseResponse<>(mySentences);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public BaseResponse<GetMySentencesRes> getMySentences() {
+        // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userId = Long.parseLong(springSecurityUserId);
+        GetMySentencesRes mySentences = myPageProvider.findMySentences(userId);
+        return new BaseResponse<>(mySentences);
     }
 
     /**
@@ -67,7 +63,7 @@ public class MyPageController {
     })
     @ResponseBody
     @PatchMapping("/sentence/{sentenceId}/edit")
-    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId, @RequestBody PostUpdateSentenceReq postUpdateSentenceReq) throws BaseException {
+    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId, @RequestBody PostUpdateSentenceReq postUpdateSentenceReq) {
         try {
             // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -85,8 +81,8 @@ public class MyPageController {
                     return new BaseResponse<>(SUCCESS);
                 }
             }
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
@@ -101,7 +97,7 @@ public class MyPageController {
     })
     @ResponseBody
     @PatchMapping("/sentence/{sentenceId}/delete")
-    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId) throws BaseException {
+    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId) {
         try {
             // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -113,8 +109,8 @@ public class MyPageController {
                 myPageService.deleteSentence(sentenceId);
                 return new BaseResponse<>(SUCCESS);
             }
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
