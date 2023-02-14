@@ -20,7 +20,6 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 @Service
 @Transactional(readOnly = true)
 public class MyPageProvider {
-    private final MyPageDao myPageDao;
     private final SentenceRepository sentenceRepository;
     private final SentenceLikeRepository sentenceLikeRepository;
 

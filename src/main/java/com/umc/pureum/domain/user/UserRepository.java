@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 @Repository
 @EnableJpaRepositories
@@ -25,4 +26,10 @@ public interface UserRepository extends JpaRepository<UserAccount, Long> {
             @Param("status") String status);
 
     boolean existsByIdAndStatus(Long id, String status);
+
+
+    @Query(value = "select * from user_account " +
+            "where id <> :id and status = 'A' order by RAND() limit 20", nativeQuery = true)
+    List<UserAccount> findRandomUsersExcludeMe(@Param("id") Long id);
+
 }
