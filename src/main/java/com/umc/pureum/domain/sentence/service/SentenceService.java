@@ -1,11 +1,11 @@
 package com.umc.pureum.domain.sentence.service;
 
-import com.umc.pureum.domain.sentence.SentenceDao;
-import com.umc.pureum.domain.sentence.SentenceLikeDao;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceReq;
-import com.umc.pureum.domain.sentence.dto.CreateSentenceRes;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceReq;
-import com.umc.pureum.domain.sentence.dto.LikeSentenceRes;
+import com.umc.pureum.domain.sentence.dao.SentenceDao;
+import com.umc.pureum.domain.sentence.dao.SentenceLikeDao;
+import com.umc.pureum.domain.sentence.dto.request.CreateSentenceReq;
+import com.umc.pureum.domain.sentence.dto.response.CreateSentenceRes;
+import com.umc.pureum.domain.sentence.dto.request.LikeSentenceReq;
+import com.umc.pureum.domain.sentence.dto.response.LikeSentenceRes;
 import com.umc.pureum.domain.sentence.dto.response.SentenceListRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Sentence;
@@ -37,7 +37,6 @@ import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_E
 @Service
 public class SentenceService {
     private final SentenceLikeService sentenceLikeService;
-
     private final SentenceRepository sentenceRepository;
     private final SentenceDao sentenceDao;
     private final SentenceLikeDao sentenceLikeDao;
@@ -97,9 +96,9 @@ public class SentenceService {
         UserAccount userAccount = userRepository.findById(userId).get();
 
         //request 로 받은 sentenceId 로 문장 좋아요 찾기
-        if (sentenceLikeDao.findBySentenceId(request.getSentenceId()).isPresent()) {
+        if (sentenceLikeDao.findBySentenceId(request.getSentenceId() ,userId).isPresent()) {
 
-            SentenceLike sentenceLike = sentenceLikeDao.findBySentenceId(request.getSentenceId()).get();
+            SentenceLike sentenceLike = sentenceLikeDao.findBySentenceId(request.getSentenceId() , userId).get();
 
             // 존재하는 sentence 일 경우 sentence status 확인하고 status 바꾼다 .
             if ("A".equals(sentenceLike.getStatus())) {
@@ -108,7 +107,7 @@ public class SentenceService {
                 sentenceLike.setStatus("A");
             }
 
-            return new LikeSentenceRes(sentenceLike.getId());
+            return new LikeSentenceRes(sentenceLike.getId() , sentenceLike.getStatus());
 
         }
 
@@ -117,7 +116,7 @@ public class SentenceService {
             SentenceLike sentenceLike = new SentenceLike(userAccount, sentence, "A");
             sentenceLikeDao.save(sentenceLike);
 
-            return new LikeSentenceRes(sentenceLike.getId());
+            return new LikeSentenceRes(sentenceLike.getId() , sentenceLike.getStatus());
         }
 
     }
