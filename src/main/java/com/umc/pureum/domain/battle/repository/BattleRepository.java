@@ -73,7 +73,13 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
     List<GetCompleteBattles> findAllCompleteBattles(PageRequest request);
 
     /* 나의 대기 중인 대결 리스트 반환 */
-    @Query("select b.id as battleId, b.status as status, \n" +
+    @Query("select b.id as battleId, " +
+            "   case when(b.status = 'W' and b.challenger.id = :userId) then '대결 수락 대기 중' \n" +
+            "        when(b.status = 'W' and b.challenged.id = :userId) then '대결장이 도착했어요!' \n" +
+            "        when(b.status = 'A' and b.challenger.id = :userId) then '대결 문장 작성 대기 중' \n" +
+            "        when(b.status = 'A' and b.challenged.id = :userId) then '대결 문장을 작성해주세요!' \n" +
+            "        else '이거 받으면 뭔가 잘못된 거임' \n" +
+            "        end as status, \n" +
             "   case when(b.challenger.id = :userId) then b.challenged.id \n" +
             "        else b.challenger.id \n" +
             "        end as otherId, \n" +

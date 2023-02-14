@@ -71,7 +71,10 @@ public class UserService {
                 .build();
         userRepository.save(userAccount);
     }
-
+    public String getNickName(long id){
+        Optional<UserAccount> userAccount =  userRepository.findByIdAndStatus(id,"A");
+        return userAccount.get().getNickname();
+    }
     public boolean validationDuplicateUserNickname(String nickname) {
         return userRepository.existsByNicknameAndStatus(nickname, "A");
     }
