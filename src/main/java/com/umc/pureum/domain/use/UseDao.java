@@ -77,7 +77,9 @@ public class UseDao {
 
     // 날짜별 사용시간 적은 순 사용 랭킹(페이지 0 일 경우) 가져오기
     public List<UsePhone> findRankZeroInAllGrade(Timestamp updateAt){
-        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt order by u.useTime", UsePhone.class)
+        return em.createQuery("select u from UsePhone u " +
+                        "join fetch u.user m " +
+                        "where u.updatedAt = :updateAt order by u.useTime", UsePhone.class)
                 .setParameter("updateAt", updateAt)
                 .setFirstResult(0)
                 .setMaxResults(25)
@@ -86,7 +88,9 @@ public class UseDao {
 
     // 날짜별 사용시간 적은 순 사용 랭킹(페이지 0 초과) 가져오기
     public List<UsePhone> findRankOverZeroInAllGrade(Timestamp updateAt, int page){
-        return em.createQuery("select u from UsePhone u where u.updatedAt = :updateAt order by u.useTime", UsePhone.class)
+        return em.createQuery("select u from UsePhone u " +
+                        "join fetch u.user m " +
+                        "where u.updatedAt = :updateAt order by u.useTime", UsePhone.class)
                 .setParameter("updateAt", updateAt)
                 .setFirstResult((page-1)*25)
                 .setMaxResults(25)
