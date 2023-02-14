@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 public interface GetWaitBattlesRes {
     @ApiModelProperty(example = "5")
     Long getBattleId();
-    @ApiModelProperty(example = "수락 전 : W, 수락 후 : A, 진행 중 : I, 종료 : C, 취소 : D")
+    @ApiModelProperty(example = "대결 수락 대기 중")
     String getStatus();
     @ApiModelProperty(example = "26")
     Long getOtherId();
