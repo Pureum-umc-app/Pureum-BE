@@ -5,6 +5,7 @@ import com.umc.pureum.global.entity.BaseEntity;
 import com.umc.pureum.global.entity.Status;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +16,8 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(callSuper = true)
+
 public class BattleSentence extends BaseEntity {
     @OneToOne @JoinColumn(name = "battle_id")
     private Battle battle;
