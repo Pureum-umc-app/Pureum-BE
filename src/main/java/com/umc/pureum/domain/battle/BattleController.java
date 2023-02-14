@@ -592,4 +592,74 @@ public class BattleController {
 
     }
 
+    /**
+     * 대결 정보 반환 API (대기 중, 진행 중)
+     * [GET] /battles/run/my/{battleIdx}
+     */
+    @ApiOperation("대결 정보 반환 API (대기 중, 진행 중)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization",dataTypeClass=String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
+    @ResponseBody
+    @GetMapping("/run/my/{battleIdx}")
+    public BaseResponse<ReturnRunMyBattleRes> returnRunMyBattle(@PathVariable Long battleIdx) {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        long userId = Long.parseLong(UserId);
+
+        try {
+            // springsecurity 로 찾은 userId 랑 request 에서 찾은 userId 비교
+            if (userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
+                    userId != battleDao.findOne(battleIdx).getChallenger().getId()) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            } else if (!"A".equals(userDao.findByUserId(userId).getStatus())) {
+                return new BaseResponse<>(INVALID_USER);
+            } else {
+                // battle 값 return
+                ReturnRunMyBattleRes returnRunMyBattleRes = battleService.returnRunMyBattle(battleIdx, userId);
+                return new BaseResponse<>(returnRunMyBattleRes);
+            }
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
+    /**
+     * 대결 정보 반환 API (종료)
+     * [GET] /battles/finish/my/{battleIdx}
+     */
+    @ApiOperation("대결 정보 반환 API (종료)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization",dataTypeClass=String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
+    })
+    @ResponseBody
+    @GetMapping("/finish/my/{battleIdx}")
+    public BaseResponse<ReturnFinishBattleRes> returnFinishMyBattle(@PathVariable Long battleIdx) {
+
+        Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
+        String UserId = loggedInUser.getName();
+
+        long userId = Long.parseLong(UserId);
+
+
+        try {
+            if (userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
+                    userId != battleDao.findOne(battleIdx).getChallenger().getId()) {
+                return new BaseResponse<>(INVALID_USER_JWT);
+            } else if (!"A".equals(userDao.findByUserId(userId).getStatus())) {
+                return new BaseResponse<>(INVALID_USER);
+            } else {
+                // battle 값 return
+                ReturnFinishBattleRes returnFinishBattleRes = battleService.returnFinishMyBattle(battleIdx, userId);
+                return new BaseResponse<>(returnFinishBattleRes);
+            }
+        }catch (BaseException e){
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
 }
