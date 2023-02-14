@@ -515,26 +515,16 @@ public class BattleController {
     })
     @ResponseBody
     @GetMapping("/run/{battleIdx}")
-    public BaseResponse<ReturnRunBattleRes> returnRunBattle(@PathVariable Long battleIdx) throws BaseException {
+    public BaseResponse<ReturnRunBattleRes> returnRunBattle(@PathVariable Long battleIdx) {
 
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
 
         long userId = Long.parseLong(UserId);
 
-
         try {
-            // springsecurity 로 찾은 userId 랑 request 에서 찾은 userId 비교
-            if (userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
-                    userId != battleDao.findOne(battleIdx).getChallenger().getId()) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            } else if (!"A".equals(userDao.findByUserId(userId).getStatus())) {
-                return new BaseResponse<>(INVALID_USER);
-            } else {
-                // battle 값 return
-                ReturnRunBattleRes returnRunBattleRes = battleService.returnRunBattle(battleIdx, userId);
-                return new BaseResponse<>(returnRunBattleRes);
-            }
+            ReturnRunBattleRes returnRunBattleRes = battleService.returnRunBattle(battleIdx, userId);
+            return new BaseResponse<>(returnRunBattleRes);
         }catch (BaseException e){
             return new BaseResponse<>(e.getStatus());
         }
