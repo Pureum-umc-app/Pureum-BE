@@ -22,7 +22,9 @@ public class BadgeDao {
 
     // 배지 조회
     public Optional<Badge> findBadge(Long userId, int badge){
-        List<Badge> badges = em.createQuery("select b from Badge b where b.user.id = :userId and b.badge = :badge", Badge.class)
+        List<Badge> badges = em.createQuery("select b from Badge b " +
+                        "join fetch b.user u " +
+                        "where u.id = :userId and b.badge = :badge", Badge.class)
                 .setParameter("userId", userId)
                 .setParameter("badge", badge)
                 .getResultList();

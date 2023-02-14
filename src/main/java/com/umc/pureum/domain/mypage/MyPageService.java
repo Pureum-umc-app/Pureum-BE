@@ -34,8 +34,8 @@ public class MyPageService {
 
     // 키워드 단어 가져오기
     public String getKeyword(Long sentenceId){
-        Sentence sentence = myPageDao.find(sentenceId);
-        String word = sentence.getKeyword().getWord().getWord();
+        Optional<Sentence> sentence = sentenceRepository.findById(sentenceId);
+        String word = sentence.get().getKeyword().getWord().getWord();
         return word;
     }
 
