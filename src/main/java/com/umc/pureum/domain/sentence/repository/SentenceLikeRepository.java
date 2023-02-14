@@ -4,6 +4,7 @@ package com.umc.pureum.domain.sentence.repository;
 import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.mapping.SentenceLikeMapping;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -48,4 +49,7 @@ public interface SentenceLikeRepository extends JpaRepository<SentenceLike, Long
     List<SentenceLike> findBySentenceId(long sentenceId);
 
     List<SentenceLike> findByUserId(long userId);
+
+    @EntityGraph(attributePaths = {"user","sentence","sentence.keyword","sentence.keyword.word"})
+    List<SentenceLike> findBySentenceIdAndStatusNot(Long sentenceId, String status);
 }

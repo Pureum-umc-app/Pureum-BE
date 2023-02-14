@@ -104,11 +104,11 @@ public class UseProvider {
     // 홈 화면 리스트 반환
     public List<GetHomeListRes> getHomeListRes(Long userId){
         List<UsePhone> useAll = useDao.findAll(userId);
-        return useAll.stream().map(u -> GetHomeListRes.builder()
-                        .date(stringToIntForDate(getYesterday(u.getUpdatedAt())))
-                        .useTime(stringToIntForTime(preventNullError(u.getUseTime())))
-                        .purposeTime(stringToIntForTime(preventNullError(u.getPurposeTime())))
-                        .rank(getRankerInformation(u.getUpdatedAt(), u.getUser().getGrade())).build())
+        return useAll.stream().map(u -> new GetHomeListRes(stringToIntForDate(getYesterday(u.getUpdatedAt())),
+                        stringToIntForTime(preventNullError(u.getUseTime())),
+                        stringToIntForTime(preventNullError(u.getPurposeTime())),
+                        u.getCount(),
+                        getRankerInformation(u.getUpdatedAt(), u.getUser().getGrade())))
                 .collect(Collectors.toList());
     }
 
@@ -120,7 +120,6 @@ public class UseProvider {
 
     // 날짜 별 랭킹 전체 조회(같은 카테고리(학년) 내)
     public List<RankerInformationDto> getRankerInformationByDateInSameGrade(Long userId, String date, int page){
-        AtomicInteger num = new AtomicInteger(1);
         Timestamp getDate = getTimeStampFromString(date);
         int grade = userDao.find(userId).getGrade();
         if (page == 0){

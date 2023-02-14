@@ -3,6 +3,7 @@ package com.umc.pureum.domain.mypage;
 import com.umc.pureum.domain.mypage.dto.response.GetMySentencesRes;
 import com.umc.pureum.domain.mypage.dto.response.MySentenceDto;
 import com.umc.pureum.domain.sentence.entity.Sentence;
+import com.umc.pureum.domain.sentence.repository.SentenceLikeRepository;
 import com.umc.pureum.domain.sentence.repository.SentenceRepository;
 import com.umc.pureum.global.config.BaseException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import static com.umc.pureum.global.config.BaseResponseStatus.*;
 public class MyPageProvider {
     private final MyPageDao myPageDao;
     private final SentenceRepository sentenceRepository;
+    private final SentenceLikeRepository sentenceLikeRepository;
 
     // 문장 조회
     public Sentence findSentence(Long sentenceId) throws BaseException {
@@ -34,13 +36,13 @@ public class MyPageProvider {
 
     // 나의 문장 리스트 조회
     public GetMySentencesRes findMySentences(Long userId) {
-        List<Sentence> mySentences = myPageDao.findByFk(userId);
-        List<Sentence> myOpenSentences = myPageDao.findByFkOnlyOpen(userId);
+        List<Sentence> mySentences = sentenceRepository.findByUserIdAndStatusNot(userId,"D");
+        List<Sentence> myOpenSentences = sentenceRepository.findByUserIdAndStatus(userId,"O");
         List<MySentenceDto> collect = mySentences.stream().map(s -> MySentenceDto.builder()
                         .sentenceId(s.getId())
                         .word(s.getKeyword().getWord().getWord())
                         .sentence(s.getSentence())
-                        .countLike(myPageDao.findSentenceLike(s.getId()).size())
+                        .countLike(sentenceLikeRepository.findBySentenceIdAndStatusNot(s.getId(),"D").size())
                         .status(s.getStatus()).build())
                 .collect(Collectors.toList());
         return new GetMySentencesRes(mySentences.size(), myOpenSentences.size(), collect);
