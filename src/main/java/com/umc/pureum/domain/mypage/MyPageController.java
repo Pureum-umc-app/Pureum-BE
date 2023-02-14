@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
 import static com.umc.pureum.global.utils.FileCheck.*;
@@ -44,17 +45,13 @@ public class MyPageController {
     })
     @ResponseBody
     @GetMapping("/sentence")
-    public BaseResponse<GetMySentencesRes> getMySentences() throws BaseException {
-        try {
-            // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String springSecurityUserId = principal.getUsername();
-            Long userId = Long.parseLong(springSecurityUserId);
-            GetMySentencesRes mySentences = myPageProvider.findMySentences(userId);
-            return new BaseResponse<>(mySentences);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public BaseResponse<GetMySentencesRes> getMySentences() {
+        // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String springSecurityUserId = principal.getUsername();
+        Long userId = Long.parseLong(springSecurityUserId);
+        GetMySentencesRes mySentences = myPageProvider.findMySentences(userId);
+        return new BaseResponse<>(mySentences);
     }
 
     /**
@@ -69,7 +66,7 @@ public class MyPageController {
     })
     @ResponseBody
     @PatchMapping("/sentence/{sentenceId}/edit")
-    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId, @RequestBody PostUpdateSentenceReq postUpdateSentenceReq) throws BaseException {
+    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId, @RequestBody PostUpdateSentenceReq postUpdateSentenceReq) {
         try {
             // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -87,8 +84,8 @@ public class MyPageController {
                     return new BaseResponse<>(SUCCESS);
                 }
             }
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
@@ -103,7 +100,7 @@ public class MyPageController {
     })
     @ResponseBody
     @PatchMapping("/sentence/{sentenceId}/delete")
-    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId) throws BaseException {
+    public BaseResponse<String> UpdateSentence(@PathVariable Long sentenceId) {
         try {
             // springSecurity 에서 userId 받아와서 Long 형으로 바꿈
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -115,8 +112,8 @@ public class MyPageController {
                 myPageService.deleteSentence(sentenceId);
                 return new BaseResponse<>(SUCCESS);
             }
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
         }
     }
 
@@ -163,6 +160,9 @@ public class MyPageController {
         long id = Long.parseLong(principal.getUsername());
         if (id != userId)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
+        if (userService.validationDuplicateUserNickname(patchEditProfileReq.getNickname()) && !Objects.equals(patchEditProfileReq.getNickname(), userService.getNickName(id))) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
+        }
         myPageService.EditProfile(patchEditProfileReq, id);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("정상적으로 수정되었습니다."));
     }

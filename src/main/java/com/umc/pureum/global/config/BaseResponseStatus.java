@@ -1,7 +1,6 @@
 package com.umc.pureum.global.config;
 
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 /* 에러 코드 관리 */
 @Getter
@@ -56,6 +55,7 @@ public enum BaseResponseStatus {
     POST_SENTENCE_NO_EXISTS_KEYWORD(false, 2041, "키워드가 포함되어있지 않습니다."),
     GET_SENTENCE_INVALID_SORT_METHOD(false, 2042, "정렬 방식이 잘못되었습니다."),
     POST_SENTENCE_EXISTS(false, 2043, "이미 존재하는 대결 문장입니다."),
+    GET_SENTENCE_EMPTY(false, 2044, "없는 문장입니다."),
 
     // battle
     POST_BATTLE_EMPTY_SENTENCE(false, 2050, "대결 문장을 입력해야 합니다."),
@@ -65,8 +65,8 @@ public enum BaseResponseStatus {
     GET_BATTLE_FINISH_STATUS(false, 2054,"종료된 대결 입니다."),
     Get_BATTLE_RUN_STATUS(false, 2055,"종료된 대결 아닙니다."),
     Get_BATTLE_NO_ACCEPT_STATUS(false, 2056,"수락되지 않은 대결입니다."),
-    POST_BATTLE_ALREADY_EXIST_SENTENCE(false, 2056,"이미 대결에 사용한 문장입니다."),
-
+    POST_BATTLE_ALREADY_EXIST_SENTENCE(false, 2057,"이미 대결에 사용한 문장입니다."),
+    POST_INVALID_DURATION(false, 2058, "유효하지 않은 기간입니다."),
 
 
     /**
