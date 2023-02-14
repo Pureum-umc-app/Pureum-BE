@@ -5,17 +5,13 @@ import com.umc.pureum.domain.badge.entity.Badge;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class BadgeProvider {
-
-    private final BadgeDao badgeDao;
 
     private final BadgeRepository badgeRepository;
 
@@ -24,7 +20,6 @@ public class BadgeProvider {
     public Boolean inquireBadge(Long userId, int badge) {
         Optional<Badge> badgeOne = badgeRepository.findByUserIdAndBadge(userId, badge)
                 .stream().findAny();
-//        Optional<Badge> badgeOne = badgeDao.findBadge(userId, badge);
         return badgeOne.isEmpty();
     }
 }

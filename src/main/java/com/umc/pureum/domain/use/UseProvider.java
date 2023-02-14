@@ -6,12 +6,13 @@ import com.umc.pureum.domain.use.dto.response.GetHomeListRes;
 import com.umc.pureum.domain.use.dto.response.GoalResult;
 import com.umc.pureum.domain.use.dto.response.RankerInformationDto;
 import com.umc.pureum.domain.use.entity.UsePhone;
-import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
 import com.umc.pureum.global.config.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -31,10 +32,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UseProvider {
-    private final UseDao useDao;
+
     private final UseRepository useRepository;
     private final UserRepository userRepository;
-    private final UserDao userDao;
 
     /** API **/
 
@@ -103,7 +103,7 @@ public class UseProvider {
 
     // 홈 화면 리스트 반환
     public List<GetHomeListRes> getHomeListRes(Long userId){
-        List<UsePhone> useAll = useDao.findAll(userId);
+        List<UsePhone> useAll = useRepository.findByUserId(userId);
         return useAll.stream().map(u -> new GetHomeListRes(stringToIntForDate(getYesterday(u.getUpdatedAt())),
                         stringToIntForTime(preventNullError(u.getUseTime())),
                         stringToIntForTime(preventNullError(u.getPurposeTime())),
@@ -113,34 +113,24 @@ public class UseProvider {
     }
 
     // 랭킹 Top 10 사용자 정보 조회(같은 카테고리(학년) 내)
-    public List<RankerInformationDto> getRankerInformation(Timestamp updateAt, int grade){
-        List<UsePhone> rankTopTen = useDao.findRankTopTen(updateAt, grade);
+    public List<RankerInformationDto> getRankerInformation(Timestamp updatedAt, int grade){
+        List<UsePhone> rankTopTen = useRepository.findTop10ByUpdatedAtAndUser_GradeOrderByUseTime(updatedAt, grade);
         return moveUsePhoneToRankerInfo(rankTopTen);
     }
 
     // 날짜 별 랭킹 전체 조회(같은 카테고리(학년) 내)
     public List<RankerInformationDto> getRankerInformationByDateInSameGrade(Long userId, String date, int page){
         Timestamp getDate = getTimeStampFromString(date);
-        int grade = userDao.find(userId).getGrade();
-        if (page == 0){
-            List<UsePhone> rankZero = useDao.findRankZeroInSameGrade(getDate,grade);
-            return moveUsePhoneToRankerInfo(rankZero);
-        } else {
-            List<UsePhone> rankOverZero = useDao.findRankOverZeroInSameGrade(getDate,grade,page);
-            return moveUsePhoneToRankerInfo(rankOverZero);
-        }
+        int grade = userRepository.findById(userId).get().getGrade();
+        Slice<UsePhone> rankInSameGrade = useRepository.findByUpdatedAtAndUser_GradeOrderByUseTime(getDate, grade, PageRequest.of(page * 25, 25));
+        return moveUsePhoneToRankerInfo(rankInSameGrade.getContent());
     }
 
     // 날짜 별 랭킹 전체 조회
     public List<RankerInformationDto> getRankerInformationByDateInAllGrade(String date, int page){
         Timestamp getDate = getTimeStampFromString(date);
-        if (page == 0){
-            List<UsePhone> rankZero = useDao.findRankZeroInAllGrade(getDate);
-            return moveUsePhoneToRankerInfo(rankZero);
-        } else {
-            List<UsePhone> rankOverZero = useDao.findRankOverZeroInAllGrade(getDate,page);
-            return moveUsePhoneToRankerInfo(rankOverZero);
-        }
+        Slice<UsePhone> rankInAllGrade = useRepository.findByUpdatedAtOrderByUseTime(getDate, PageRequest.of(page * 25, 25));
+        return moveUsePhoneToRankerInfo(rankInAllGrade.getContent());
     }
 
     // String -> Date(여기서 날짜 1일 더하기) -> timeStamp 로 변환
