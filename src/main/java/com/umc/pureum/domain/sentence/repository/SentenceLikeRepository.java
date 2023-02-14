@@ -44,4 +44,8 @@ public interface SentenceLikeRepository extends JpaRepository<SentenceLike, Long
             @Param("userId") long userId,
             @Param("sentenceId") long sentenceId
     );
+
+    List<SentenceLike> findBySentenceId(long sentenceId);
+
+    List<SentenceLike> findByUserId(long userId);
 }
