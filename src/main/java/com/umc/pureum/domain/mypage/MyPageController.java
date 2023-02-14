@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
 import static com.umc.pureum.global.utils.FileCheck.*;
@@ -159,6 +160,9 @@ public class MyPageController {
         long id = Long.parseLong(principal.getUsername());
         if (id != userId)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
+        if (userService.validationDuplicateUserNickname(patchEditProfileReq.getNickname()) && !Objects.equals(patchEditProfileReq.getNickname(), userService.getNickName(id))) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(POST_USERS_EXISTS_NICKNAME));
+        }
         myPageService.EditProfile(patchEditProfileReq, id);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("정상적으로 수정되었습니다."));
     }
