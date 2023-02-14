@@ -55,7 +55,9 @@ public class BattleDao {
 
     // BattleWord 에서 최근 생성된 3개 추출
     public List<BattleWord> getBattleWordThreeRecently(){
-        return em.createQuery("select b from BattleWord b order by b.createdAt desc", BattleWord.class)
+        return em.createQuery("select b from BattleWord b " +
+                        "join fetch b.word w " +
+                        "order by b.createdAt desc", BattleWord.class)
                 .setMaxResults(3)
                 .getResultList();
     }

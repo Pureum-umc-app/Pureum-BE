@@ -70,7 +70,7 @@ public class UseDao {
                         "and m.grade = :grade order by u.useTime", UsePhone.class)
                 .setParameter("updateAt", updateAt)
                 .setParameter("grade", grade)
-                .setFirstResult((page-1)*25)
+                .setFirstResult(page*25)
                 .setMaxResults(25)
                 .getResultList();
     }
@@ -92,7 +92,7 @@ public class UseDao {
                         "join fetch u.user m " +
                         "where u.updatedAt = :updateAt order by u.useTime", UsePhone.class)
                 .setParameter("updateAt", updateAt)
-                .setFirstResult((page-1)*25)
+                .setFirstResult(page*25)
                 .setMaxResults(25)
                 .getResultList();
     }
