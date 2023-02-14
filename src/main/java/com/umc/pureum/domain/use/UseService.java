@@ -6,54 +6,63 @@ import com.umc.pureum.domain.use.dto.response.PostUseTimeAndCountRes;
 import com.umc.pureum.domain.use.dto.request.ReturnGradeRes;
 import com.umc.pureum.domain.use.dto.request.SetUsageTimeReq;
 import com.umc.pureum.domain.use.entity.UsePhone;
-import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UseService {
-    private final UseDao useDao;
     private final UserRepository userRepository;
     private final UseRepository useRepository;
-    private final UserDao userDao;
 
     // 일일 사용시간 & 화면 킨 횟수 등록
     @Transactional
     public PostUseTimeAndCountRes saveTimeAndCount(Long userId, PostUseTimeAndCountReq postUseTimeAndCountReq) {
         try {
-            UsePhone use = useDao.findOneByFk(userId); // 최근에 생성된 use 테이블 가져오기
+            UsePhone use = useRepository.findTop1ByUserIdOrderByCreatedAtDesc(userId); // 최근에 생성된 use 테이블 가져오기
             // 입력받은 시간(String -> Time) 변환
-            Time useTime = Time.valueOf(postUseTimeAndCountReq.getHour() + ":" + postUseTimeAndCountReq.getMinute() + ":0");
+            Time useTime = getUseTime(postUseTimeAndCountReq);
             if (getDate(use.getCreatedAt()).equals(getDate(new Timestamp(new Date().getTime())))) {
                 use.updateUsePhone(useTime, postUseTimeAndCountReq.getCount());
                 return new PostUseTimeAndCountRes(use.getId());
             } else { // 최근에 생성된 테이블이 없다면...(목표 설정을 하지 않았다면...)
-                UsePhone newUse = new UsePhone(use.getUser(), useTime, postUseTimeAndCountReq.getCount());
-                useDao.save(newUse);
+                UsePhone newUse = getUsePhone(new UsePhone(use.getUser(), useTime, postUseTimeAndCountReq.getCount()));
                 return new PostUseTimeAndCountRes(newUse.getId());
             }
         } catch (EmptyResultDataAccessException e){  // 처음 앱을 깔고 목표 설정도 안했다면...
-            Time useTime = Time.valueOf(postUseTimeAndCountReq.getHour() + ":" + postUseTimeAndCountReq.getMinute() + ":0");
-            UserAccount user = userDao.findByUserId(userId);
-            UsePhone usePhone = new UsePhone(user, useTime, postUseTimeAndCountReq.getCount());
-            useDao.save(usePhone);
+            Time useTime = getUseTime(postUseTimeAndCountReq);
+            Optional<UserAccount> user = userRepository.findById(userId);
+            UsePhone usePhone = getUsePhone(new UsePhone(user.get(), useTime, postUseTimeAndCountReq.getCount()));
             return new PostUseTimeAndCountRes(usePhone.getId());
         }
+    }
+
+    @NotNull
+    private UsePhone getUsePhone(UsePhone user) {
+        UsePhone usePhone = user;
+        useRepository.save(usePhone);
+        return usePhone;
+    }
+
+    @NotNull
+    private static Time getUseTime(PostUseTimeAndCountReq postUseTimeAndCountReq) {
+        Time useTime = Time.valueOf(postUseTimeAndCountReq.getHour() + ":" + postUseTimeAndCountReq.getMinute() + ":0");
+        return useTime;
     }
 
     /* 날짜 계산 */
@@ -74,12 +83,11 @@ public class UseService {
         Time useTime = Time.valueOf("0:0:0");
         Time purposeTime = Time.valueOf(setUsageTimeDto.getHour() + ":" + setUsageTimeDto.getMinute() + ":0");
         UserAccount userAccount = userRepository.findByIdAndStatus(userId, "A").orElseThrow();
-        UsePhone usePhone = UsePhone.builder()
+        getUsePhone(UsePhone.builder()
                 .useTime(useTime)
                 .user(userAccount)
                 .purposeTime(purposeTime)
-                .build();
-        useRepository.save(usePhone);
+                .build());
     }
 
     public boolean existUsageTime(Long userId) {
