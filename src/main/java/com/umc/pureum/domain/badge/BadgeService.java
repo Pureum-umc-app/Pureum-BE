@@ -5,6 +5,7 @@ import com.umc.pureum.domain.badge.dto.response.GetBadgeInfoRes;
 import com.umc.pureum.domain.badge.dto.response.ReturnBadgesRes;
 import com.umc.pureum.domain.badge.entity.Badge;
 import com.umc.pureum.domain.user.UserDao;
+import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,14 +25,15 @@ public class BadgeService {
 
     private final BadgeDao badgeDao;
     private final UserDao userDao;
+    private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
 
     // 배지 저장
     @Transactional
     public void saveBadge(Long userId, int badge){
-        UserAccount userAccount = userDao.find(userId);
-        Badge badgeOne = new Badge(userAccount, badge);
-        badgeDao.save(badgeOne);
+        Optional<UserAccount> userAccount = userRepository.findById(userId);
+        Badge badgeOne = new Badge(userAccount.get(), badge);
+        badgeRepository.save(badgeOne);
     }
 
     // getBadges : 배지 값 return
