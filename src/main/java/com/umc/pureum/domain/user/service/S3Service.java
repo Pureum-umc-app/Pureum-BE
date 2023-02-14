@@ -3,7 +3,9 @@ package com.umc.pureum.domain.user.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +38,9 @@ public class S3Service {
         switch (ext) {
             case "jpeg":
                 contentType = "image/jpeg";
+                break;
+            case "jpg":
+                contentType = "image/jpg";
                 break;
             case "png":
                 contentType = "image/png";
