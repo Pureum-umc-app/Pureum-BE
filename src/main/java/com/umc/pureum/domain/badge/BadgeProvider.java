@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,10 +17,14 @@ public class BadgeProvider {
 
     private final BadgeDao badgeDao;
 
+    private final BadgeRepository badgeRepository;
+
 
     // 배지 있는 지 조회
     public Boolean inquireBadge(Long userId, int badge) {
-        Optional<Badge> badgeOne = badgeDao.findBadge(userId, badge);
-        return ObjectUtils.isEmpty(badgeOne);
+        Optional<Badge> badgeOne = badgeRepository.findByUserIdAndBadge(userId, badge)
+                .stream().findAny();
+//        Optional<Badge> badgeOne = badgeDao.findBadge(userId, badge);
+        return badgeOne.isEmpty();
     }
 }
