@@ -1,6 +1,5 @@
 package com.umc.pureum.domain.battle;
 
-import com.umc.pureum.domain.battle.dao.BattleDao;
 import com.umc.pureum.domain.battle.dto.response.BattleFighterRes;
 import com.umc.pureum.domain.battle.dto.response.GetBattleWordRes;
 import com.umc.pureum.domain.battle.dto.response.*;
@@ -10,7 +9,7 @@ import com.umc.pureum.domain.battle.entity.BattleWord;
 import com.umc.pureum.domain.battle.repository.BattleLikeRepository;
 import com.umc.pureum.domain.battle.repository.BattleRepository;
 import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
-import com.umc.pureum.domain.user.UserDao;
+import com.umc.pureum.domain.battle.repository.BattleWordRepository;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.BaseException;
@@ -29,12 +28,11 @@ import static com.umc.pureum.global.entity.Status.A;
 @RequiredArgsConstructor
 @Service
 public class BattleProvider {
-    private final BattleDao battleDao;
     private final BattleRepository battleRepository;
+    private final BattleWordRepository battleWordRepository;
     private final BattleSentenceRepository sentenceRepository;
     private final BattleLikeRepository likeRepository;
     private final UserRepository userRepository;
-    private final UserDao userDao;
 
     /* 진행 중인 대결 리스트 반환 API */
     public List<GetBattlesRes> getBattles(Long userId, int page, int limit) throws BaseException {
@@ -193,7 +191,7 @@ public class BattleProvider {
 
     /* 대결 상대 리스트 반환 API */
     public List<BattleFighterRes> getBattleFighters(Long userId) {
-        List<UserAccount> allExcludeMe = userDao.findAllExcludeMe(userId);
+        List<UserAccount> allExcludeMe = userRepository.findRandomUsersExcludeMe(userId);
         return allExcludeMe.stream().map(u -> BattleFighterRes.builder()
                 .userId(u.getId())
                 .nickname(u.getNickname())
@@ -203,7 +201,7 @@ public class BattleProvider {
 
     /* 대결 키워드 3개 반환 API */
     public List<GetBattleWordRes> getBattleWordThree(){
-        List<BattleWord> battleWordThreeRecently = battleDao.getBattleWordThreeRecently();
+        List<BattleWord> battleWordThreeRecently = battleWordRepository.findTop3ByOrderByCreatedAtDesc();
         return battleWordThreeRecently.stream().map(b -> GetBattleWordRes.builder()
                 .wordId(b.getId())
                 .word(b.getWord().getWord())
