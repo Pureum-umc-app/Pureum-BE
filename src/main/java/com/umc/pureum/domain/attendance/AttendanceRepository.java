@@ -17,7 +17,8 @@ public interface AttendanceRepository extends JpaRepository<AttendanceCheck, Lon
     @Query("select count(a.id) as accumulatedCnt, mod(count(a.id), 30) as currentCnt \n" +
             "from AttendanceCheck as a \n" +
             "where a.user.id = :id and a.user.status = 'A' \n" +
-            "   and a.status = 'A'")
+            "   and a.status = 'A' \n " +
+            "   and a.createdAt > a.user.createdAt")
     GetStampInterface findByUserIdAndStatus(@Param("id") Long id);
 
     List<AttendanceCheck> findByUserId(long userId);
