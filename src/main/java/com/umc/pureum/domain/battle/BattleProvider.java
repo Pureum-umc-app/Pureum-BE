@@ -205,7 +205,7 @@ public class BattleProvider {
     public List<GetBattleWordRes> getBattleWordThree(){
         List<BattleWord> battleWordThreeRecently = battleDao.getBattleWordThreeRecently();
         return battleWordThreeRecently.stream().map(b -> GetBattleWordRes.builder()
-                .wordId(b.getWord().getId())
+                .wordId(b.getId())
                 .word(b.getWord().getWord())
                 .meaning(b.getWord().getMeaning()).build())
                 .collect(Collectors.toList());
