@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GetHomeListRes {
+public class GetHomeListRes<T> {
 
     @ApiModelProperty(example = "2023-01-19")
     private TimeInfo date;
@@ -28,6 +28,6 @@ public class GetHomeListRes {
 
     @ApiModelProperty(example = "1")
     private int count;
-    @Builder.Default
-    private final List<RankerInformationDto> rank = new ArrayList<>();
+
+    private T rank;
 }

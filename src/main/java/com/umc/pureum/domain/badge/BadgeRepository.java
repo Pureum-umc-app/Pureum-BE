@@ -2,6 +2,7 @@ package com.umc.pureum.domain.badge;
 
 import com.umc.pureum.domain.badge.dto.response.GetBadgeInfoRes;
 import com.umc.pureum.domain.badge.entity.Badge;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -9,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -21,4 +23,7 @@ public interface BadgeRepository extends JpaRepository<Badge, Long> {
             "from Badge as b \n" +
             "where b.user.id = :userId")
     List<GetBadgeInfoRes> findBadgesByUserId(@Param("userId") Long userId);
+
+    @EntityGraph(attributePaths = {"user"})
+    List<Badge> findByUserIdAndBadge(Long userId, int badge);
 }
