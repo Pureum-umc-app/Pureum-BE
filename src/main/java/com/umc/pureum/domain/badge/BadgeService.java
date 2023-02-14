@@ -4,7 +4,6 @@ package com.umc.pureum.domain.badge;
 import com.umc.pureum.domain.badge.dto.response.GetBadgeInfoRes;
 import com.umc.pureum.domain.badge.dto.response.ReturnBadgesRes;
 import com.umc.pureum.domain.badge.entity.Badge;
-import com.umc.pureum.domain.user.UserDao;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +21,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class BadgeService {
 
-    private final BadgeDao badgeDao;
-    private final UserDao userDao;
     private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
 
