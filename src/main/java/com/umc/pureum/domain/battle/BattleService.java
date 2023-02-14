@@ -289,7 +289,7 @@ public class BattleService {
         GetBattleInfoRes battleInfo = battleRepository.findInfoByBattleId(battleIdx).stream().findAny().get();
 
         // 대결 상태 확인
-        if(battleInfo.getBattleStatus().equals(BattleStatus.W) || battleInfo.getBattleStatus().equals(BattleStatus.I)){
+        if(battleInfo.getBattleStatus().equals(BattleStatus.W) || battleInfo.getBattleStatus().equals(BattleStatus.A)){
 
             Timestamp updateAt = battleInfo.getUpdateAt();
             LocalDateTime currentLocalDateTime = LocalDateTime.now();
@@ -326,7 +326,7 @@ public class BattleService {
             );
 
         }
-        else if (battleInfo.getBattleStatus().equals(BattleStatus.A)) {
+        else if (battleInfo.getBattleStatus().equals(BattleStatus.I)) {
 
             Timestamp updateAt = battleInfo.getUpdateAt();
             LocalDateTime currentLocalDateTime = LocalDateTime.now();
