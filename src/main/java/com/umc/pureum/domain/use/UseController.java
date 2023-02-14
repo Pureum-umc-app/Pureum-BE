@@ -149,7 +149,6 @@ public class UseController {
                 return new BaseResponse<>(homeListRes);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             return new BaseResponse<>(DATABASE_ERROR);
         }
 
