@@ -2,7 +2,6 @@ package com.umc.pureum.domain.battle.dto.response;
 
 import com.umc.pureum.domain.battle.entity.BattleStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -32,7 +31,7 @@ public class ReturnRunBattleRes {
     private Long challengedLikeCnt;
     private Long challengerLikeCnt;
 
-    private int selfLike;
-    private int oppLike;
+    private int challengedLike;
+    private int challengerLike;
 
 }
