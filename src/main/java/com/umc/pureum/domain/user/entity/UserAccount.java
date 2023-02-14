@@ -22,6 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 @SuperBuilder
 @NoArgsConstructor(access = PROTECTED)
 @ToString
+
 public class UserAccount extends BaseEntity {
     private String name;
     private String nickname;
@@ -31,4 +32,5 @@ public class UserAccount extends BaseEntity {
     private String image; // 프로필 사진
     private String status; // A:active D:delete
     private Long kakaoId;
+    private String fcmId;
 }
