@@ -14,6 +14,6 @@ import java.util.List;
 @Builder
 public class RankInformationDto {
 
-    RankerInformationDto myRank;
-    List<RankerInformationDto> allRank;
+    private RankerInformationDto myRank;
+    private List<RankerInformationDto> allRank;
 }
