@@ -16,13 +16,16 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
+
 
 import static com.umc.pureum.global.config.BaseResponseStatus.*;
 
@@ -34,6 +37,7 @@ public class UseController {
     private final UseProvider useProvider;
     private final UseService useService;
     private final UserDao userDao;
+    private final UseRepository useRepository;
 
     /**
      * 일일 사용 시간, 휴대폰 켠 횟수 저장 API
@@ -224,7 +228,7 @@ public class UseController {
     /**
      * 날짜 별 랭킹(전체) 조회 API
      * 그 랭킹에서 자신의 랭킹 정보 또한 조회
-     * [GET] /uses/rank-all-grade
+     * [GET] c
      * 페이징 처리함!(25개 씩)
      * 파라미터 인자로 날짜( ex)"2023-01-31" ), 페이지를 받음.
      */
