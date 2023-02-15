@@ -114,7 +114,7 @@ public class UseProvider {
 
     // 랭킹 Top 10 사용자 정보 조회(같은 카테고리(학년) 내)
     public List<RankerInformationDto> getRankerInformation(Timestamp updatedAt, int grade){
-        List<UsePhone> rankTopTen = useRepository.findTop10ByUpdatedAtAndUser_GradeOrderByUseTime(updatedAt, grade);
+        List<UsePhone> rankTopTen = useRepository.findRankTenInSameGrade(updatedAt, grade);
         return moveUsePhoneToRankerInfo(rankTopTen);
     }
 
