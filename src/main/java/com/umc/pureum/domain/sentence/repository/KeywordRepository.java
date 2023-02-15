@@ -32,6 +32,7 @@ public interface KeywordRepository extends JpaRepository<Keyword, Long> {
             "   left join Sentence as s on s.keyword.id = k.id and s.user.id= :userId \n" +
             "where function('DATEDIFF', date(k.createdAt), date(current_timestamp)) = 0 \n" +
             "   and k.status = 'A' \n" +
-            "   and s.status = 'O' or s.status = 'P'")
+            "   and (s.status = 'O' or s.status = 'P') \n" +
+            "order by k.createdAt")
     List<Keyword> findCompleteKeyword(@Param("userId") Long userId);
 }

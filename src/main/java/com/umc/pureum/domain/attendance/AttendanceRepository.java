@@ -22,4 +22,5 @@ public interface AttendanceRepository extends JpaRepository<AttendanceCheck, Lon
     GetStampInterface findByUserIdAndStatus(@Param("id") Long id);
 
     List<AttendanceCheck> findByUserId(long userId);
+
 }
