@@ -36,8 +36,13 @@ public interface UseRepository extends JpaRepository<UsePhone, Long> {
     @EntityGraph(attributePaths = {"user"})
     UsePhone findTop1ByUserIdOrderByCreatedAtDesc(Long id);
 
-    @EntityGraph(attributePaths = {"user"})
-    List<UsePhone> findTop10ByUpdatedAtAndUser_GradeOrderByUseTime(Timestamp updatedAt, int grade);
+    @Query(value = "select * from use_phone u " +
+            "left outer join user_account m " +
+            "on u.user_id = m.id " +
+            "where u.updated_at = :updated_at " +
+            "and m.grade = :grade " +
+            "order by (u.use_time/u.purpose_time) limit 10", nativeQuery = true)
+    List<UsePhone> findRankTenInSameGrade(@Param("updated_at") Timestamp updatedAt, @Param("grade") int grade);
 
     @Query(value = "select * from use_phone u " +
             "left outer join user_account m " +
