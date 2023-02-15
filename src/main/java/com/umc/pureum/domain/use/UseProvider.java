@@ -122,14 +122,14 @@ public class UseProvider {
     public List<RankerInformationDto> getRankerInformationByDateInSameGrade(Long userId, String date, int page){
         Timestamp getDate = getTimeStampFromString(date);
         int grade = userRepository.findById(userId).get().getGrade();
-        Slice<UsePhone> rankInSameGrade = useRepository.findByUpdatedAtAndUser_GradeOrderByUseTime(getDate, grade, PageRequest.of(page * 25, 25));
+        Slice<UsePhone> rankInSameGrade = useRepository.findRankInSameGrade(getDate, grade, PageRequest.of(page * 25, 25));
         return moveUsePhoneToRankerInfo(rankInSameGrade.getContent());
     }
 
     // 날짜 별 랭킹 전체 조회
     public List<RankerInformationDto> getRankerInformationByDateInAllGrade(String date, int page){
         Timestamp getDate = getTimeStampFromString(date);
-        Slice<UsePhone> rankInAllGrade = useRepository.findByUpdatedAtOrderByUseTime(getDate, PageRequest.of(page * 25, 25));
+        Slice<UsePhone> rankInAllGrade = useRepository.findRankInAllGrade(getDate, PageRequest.of(page * 25, 25));
         return moveUsePhoneToRankerInfo(rankInAllGrade.getContent());
     }
 

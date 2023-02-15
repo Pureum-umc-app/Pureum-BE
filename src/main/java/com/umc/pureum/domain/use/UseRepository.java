@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @EnableJpaRepositories
@@ -38,10 +39,19 @@ public interface UseRepository extends JpaRepository<UsePhone, Long> {
     @EntityGraph(attributePaths = {"user"})
     List<UsePhone> findTop10ByUpdatedAtAndUser_GradeOrderByUseTime(Timestamp updatedAt, int grade);
 
-    @EntityGraph(attributePaths = {"user"})
-    Slice<UsePhone> findByUpdatedAtAndUser_GradeOrderByUseTime(Timestamp updatedAt, int grade, Pageable pageable);
+    @Query(value = "select * from use_phone u " +
+            "left outer join user_account m " +
+            "on u.user_id = m.id " +
+            "where u.updated_at = :updated_at " +
+            "and m.grade = :grade " +
+            "order by (u.use_time/u.purpose_time)", nativeQuery = true)
+    Slice<UsePhone> findRankInSameGrade(@Param("updated_at") Timestamp updatedAt, @Param("grade") int grade, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"user"})
-    Slice<UsePhone> findByUpdatedAtOrderByUseTime(Timestamp updatedAt, Pageable pageable);
+    @Query(value = "select * from use_phone u " +
+            "left outer join user_account m " +
+            "on u.user_id = m.id " +
+            "where u.updated_at = :updated_at " +
+            "order by (u.use_time/u.purpose_time)", nativeQuery = true)
+    Slice<UsePhone> findRankInAllGrade(@Param("updated_at") Timestamp updatedAt, Pageable pageable);
 
 }
