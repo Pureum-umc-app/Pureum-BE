@@ -1,4 +1,4 @@
-package com.umc.pureum.global.config;
+package com.umc.pureum.global.config.Response;
 
 import lombok.Getter;
 

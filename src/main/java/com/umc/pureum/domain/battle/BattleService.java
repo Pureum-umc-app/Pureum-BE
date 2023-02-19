@@ -14,8 +14,8 @@ import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Word;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
-import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.global.config.BaseResponseStatus;
+import com.umc.pureum.global.config.Response.BaseException;
+import com.umc.pureum.global.config.Response.BaseResponseStatus;
 import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,7 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 import static com.umc.pureum.global.entity.Status.A;
 
 @RequiredArgsConstructor

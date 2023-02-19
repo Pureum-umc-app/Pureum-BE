@@ -1,4 +1,4 @@
-package com.umc.pureum.global.config;
+package com.umc.pureum.global.config.Response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.SUCCESS;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.SUCCESS;
 
 @Getter
 @AllArgsConstructor
