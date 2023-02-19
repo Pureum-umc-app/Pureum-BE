@@ -5,7 +5,7 @@ on:
     branches: [ develop ]
 
 env:
-  DOCKER_IMAGE: ghcr.io/Pureum-umc-app/label-go
+  DOCKER_IMAGE: ghcr.io/pureum-umc-app/label-go
   VERSION: ${{ github.sha }}
   NAME: label-go
 
