@@ -4,6 +4,7 @@ import com.umc.pureum.global.config.BaseResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,7 +51,6 @@ public class TestController {
         String UserId = principal.getUsername();
 
 //        System.out.println(sentenceLikeRepository.findByStatus( "A", PageRequest.of(0,1,Sort.by(Sort.Order.desc("id")))).getContent());
-
 //        sentenceLikeMappings.forEach(System.out::println);
         LocalDateTime now = LocalDateTime.now();
         return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(UserId+" \n"+now));
