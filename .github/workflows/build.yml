@@ -68,4 +68,5 @@ jobs:
       - name: Docker run
         run: |
           docker stop ${{ env.NAME }} && docker rm ${{ env.NAME }} && docker rmi ${{ env.DOCKER_IMAGE }}
-          docker run -d -p 9000:9000 -e JAVA_OPTS=-Djasypt.encryptor.password=${{ secrets.JASYPT_KEY }} --name label-go --restart always ${{ env.DOCKER_IMAGE }}:latest
+          docker run --name label-go -d --rm -p 9000:9000 -e JAVA_OPTS=-Djasypt.encryptor.password=${{ secrets.JASYPT_KEY }} ${{ env.DOCKER_IMAGE  }}:latest
+          docker image prune -f
