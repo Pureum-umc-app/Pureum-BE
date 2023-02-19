@@ -16,8 +16,8 @@ import com.umc.pureum.domain.sentence.openapi.GetMeansReq;
 import com.umc.pureum.domain.sentence.openapi.GetMeansRes;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
 import com.umc.pureum.domain.sentence.service.SentenceService;
-import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.global.config.BaseResponse;
+import com.umc.pureum.global.config.Response.BaseException;
+import com.umc.pureum.global.config.Response.BaseResponse;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 
 
 @RestController

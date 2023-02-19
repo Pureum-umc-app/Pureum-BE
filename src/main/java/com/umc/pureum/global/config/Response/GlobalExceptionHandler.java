@@ -1,6 +1,9 @@
-package com.umc.pureum.global.config;
+package com.umc.pureum.global.config.Response;
 
 
+import com.umc.pureum.global.config.Response.BaseException;
+import com.umc.pureum.global.config.Response.BaseResponse;
+import com.umc.pureum.global.config.Response.BaseResponseStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
