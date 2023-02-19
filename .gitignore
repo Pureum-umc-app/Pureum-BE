@@ -8,6 +8,7 @@ build/
 application.yml
 firebase_service_key.json
 KakaoService.java
+JwtTokenProvider.java
 
 ### STS ###
 .apt_generated
