@@ -5,8 +5,8 @@ import com.umc.pureum.domain.mypage.dto.request.PostUpdateSentenceReq;
 import com.umc.pureum.domain.mypage.dto.response.GetProfileResponseDto;
 import com.umc.pureum.domain.mypage.dto.request.PatchEditProfileReq;
 import com.umc.pureum.domain.user.service.UserService;
-import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.global.config.BaseResponse;
+import com.umc.pureum.global.config.Response.BaseException;
+import com.umc.pureum.global.config.Response.BaseResponse;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Objects;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 import static com.umc.pureum.global.utils.FileCheck.*;
 
 @Slf4j

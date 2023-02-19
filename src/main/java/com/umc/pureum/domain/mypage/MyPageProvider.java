@@ -5,7 +5,7 @@ import com.umc.pureum.domain.mypage.dto.response.MySentenceDto;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.repository.SentenceLikeRepository;
 import com.umc.pureum.domain.sentence.repository.SentenceRepository;
-import com.umc.pureum.global.config.BaseException;
+import com.umc.pureum.global.config.Response.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 
 @RequiredArgsConstructor
 @Service

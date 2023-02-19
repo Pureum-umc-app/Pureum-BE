@@ -10,24 +10,22 @@ import com.umc.pureum.domain.use.dto.response.RankerInformationDto;
 import com.umc.pureum.domain.use.dto.request.ReturnGradeRes;
 import com.umc.pureum.domain.use.dto.request.SetUsageTimeReq;
 import com.umc.pureum.domain.user.UserDao;
-import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.global.config.BaseResponse;
+import com.umc.pureum.global.config.Response.BaseException;
+import com.umc.pureum.global.config.Response.BaseResponse;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
 
-import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 
 @RestController
 @RequiredArgsConstructor

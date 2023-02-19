@@ -4,8 +4,8 @@ package com.umc.pureum.domain.badge;
 import com.umc.pureum.domain.badge.dto.request.SaveBadgeReq;
 import com.umc.pureum.domain.badge.dto.response.ReturnBadgesRes;
 import com.umc.pureum.domain.user.UserDao;
-import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.global.config.BaseResponse;
+import com.umc.pureum.global.config.Response.BaseException;
+import com.umc.pureum.global.config.Response.BaseResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 
 @Api(tags = "배지")
 @RequiredArgsConstructor

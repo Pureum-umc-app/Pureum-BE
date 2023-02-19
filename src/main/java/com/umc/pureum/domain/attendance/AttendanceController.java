@@ -3,8 +3,8 @@ package com.umc.pureum.domain.attendance;
 import com.umc.pureum.domain.attendance.dto.request.AttendanceCheckReq;
 import com.umc.pureum.domain.attendance.dto.response.AttendanceCheckRes;
 import com.umc.pureum.domain.attendance.dto.response.GetStampRes;
-import com.umc.pureum.global.config.BaseException;
-import com.umc.pureum.global.config.BaseResponse;
+import com.umc.pureum.global.config.Response.BaseException;
+import com.umc.pureum.global.config.Response.BaseResponse;
 import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.*;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 
 @RestController
 @RequiredArgsConstructor

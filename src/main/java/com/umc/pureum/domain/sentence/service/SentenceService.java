@@ -18,7 +18,7 @@ import com.umc.pureum.domain.sentence.repository.SentenceRepository;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
-import com.umc.pureum.global.config.BaseException;
+import com.umc.pureum.global.config.Response.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_EMPTY;
-import static com.umc.pureum.global.config.BaseResponseStatus.POST_SENTENCE_NO_EXISTS_KEYWORD;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.POST_SENTENCE_EMPTY;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.POST_SENTENCE_NO_EXISTS_KEYWORD;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
