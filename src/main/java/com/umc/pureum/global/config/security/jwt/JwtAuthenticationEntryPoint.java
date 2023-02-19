@@ -1,7 +1,7 @@
 package com.umc.pureum.global.config.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.umc.pureum.global.config.BaseResponse;
+import com.umc.pureum.global.config.Response.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import static com.umc.pureum.global.config.BaseResponseStatus.INVALID_JWT;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.INVALID_JWT;
 
 /*
 인증이 실패했을 때 사용

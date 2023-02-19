@@ -70,6 +70,9 @@ dependencies {
     implementation group: 'com.google.firebase', name: 'firebase-admin', version: '6.8.1'
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
 
+    // https://mvnrepository.com/artifact/com.github.ulisesbocchio/jasypt-spring-boot-starter
+    // yml 암호화
+    implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.4'
 }
 
 tasks.named('test') {

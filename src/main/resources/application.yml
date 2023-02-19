@@ -1,0 +1,48 @@
+server:
+  port: 9000
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Seoul
+    open-in-view: false
+  application:
+    name: demo
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  datasource:
+    url: ENC(vorvyxOdwI7lPQ8Hn/Yoc/s7J/LAxWvbip7KUkhuCGadFZ5H6VzU/eu+qoNislFPVMjfdTPeufOa8KGOJKJJ/yRjJixkjSldJtMYxRs9d6YkqSV+bWkKcUC83EtaFwDU9RDD62/NiN6q+s0n15vk25bi25hyeKMZOsueKLti6kCfL+drSN5N4lnXp8XIo4lP)
+    username: ENC(POs/DuMhYbbuaReKCN6RuQ==)
+    password: ENC(pjF6aVRNlFuv/EJV01lGhU44GGyrfy7/)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      platform: mysql
+  security:
+    key: ENC(MnEv7SkU4+kHZdniC686ybK1r5s6/dARhkqp1lYMl6YUZ5II9GtsL4dNeyoAw5srkituTT1FVfI=)
+    period: ENC(ik8pGEw/BjF/0E96fWJ8Hw==)
+
+cloud:
+  aws:
+    credentials:
+      access-key: ENC(v6iQWdWdkkVUeRVd0TW1Hrb+IQ6ePTetGlHtQTweQTI=)
+      secret-key: ENC(fShIyJbo7A4PRUDX5Wcmrk7BV042b+yXCRsS3J8g7Xmo79r03wqdzxVH2oktVwyWCjIzJa9g6MY=)
+    s3: #버킷이름
+      bucket: pureum
+    region: #S3 지역
+      static: ap-northeast-2
+    stack:
+      auto: false
+kakao:
+  client_id: ENC(PjiPRn+FMbG5MB6Oydll2k93zMU1Qfb5urPPvA45m/IspbeeumRcFDBgTELnmHyr)
+  redirect_uri: ENC(RNTIQG3/NGquwYKjYdTD24uzCZWp3CSXPjW399y6KDqmOkkTrrZQaTXMxPITu1j3)
+fcm:
+  url: ENC(rx0aNu2nz70ksEN3EkTx231yqn0LTaAT9/dNuPgQHxHKzWBzxfkkMtIhdtpH1wM0P7CApTtEIztijra7+0jS0xUPQlFrVpVeM/CsPUGyp0M=)
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
