@@ -112,8 +112,7 @@ public class KakaoService {
         //Gson 라이브러리로 JSON파싱
         JsonElement element = JsonParser.parseString(result.toString());
         //accesstoken 정보 Dto에 빌드
-        log.info(element.toString());
-        if (!element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean()) {
+        if (element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("has_email").getAsBoolean()) {
             kakaoAccessTokenInfoDto = KakaoAccessTokenInfoDto.builder()
                     .id(element.getAsJsonObject().get("id").getAsLong())
                     .is_email_verified(element.getAsJsonObject().get("kakao_account").getAsJsonObject().get("is_email_verified").getAsBoolean())
