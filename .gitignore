@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 
 firebase_service_key.json
+SentenceController.java
 ### STS ###
 .apt_generated
 .classpath
