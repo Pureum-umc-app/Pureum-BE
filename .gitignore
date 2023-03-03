@@ -5,6 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+firebase_service_key.json
 ### STS ###
 .apt_generated
 .classpath

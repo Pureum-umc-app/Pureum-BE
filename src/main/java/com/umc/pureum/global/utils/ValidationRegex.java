@@ -11,6 +11,6 @@ public class ValidationRegex {
         Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(target);
         return matcher.find();
+
     }
 }
-
