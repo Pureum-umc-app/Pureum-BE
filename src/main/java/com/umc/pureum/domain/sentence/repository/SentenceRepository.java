@@ -27,4 +27,5 @@ public interface SentenceRepository extends JpaRepository<Sentence, Long> {
 
     @EntityGraph(attributePaths = {"user","keyword","keyword.word"})
     List<Sentence> findByUserIdAndStatus(Long userId, String status);
+
 }

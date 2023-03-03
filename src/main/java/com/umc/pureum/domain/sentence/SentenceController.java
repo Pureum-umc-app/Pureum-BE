@@ -22,6 +22,7 @@ import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.json.XML;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -52,6 +53,8 @@ public class SentenceController {
     private final SentenceService sentenceService;
     private final WordRepository wordRepository;
     private final SentenceDao sentenceDao;
+    @Value("${korean-basic-dictionary.key}")
+    String key;
 
     /**
      * 한국어 기초 사전 API 연동
@@ -63,9 +66,6 @@ public class SentenceController {
     @GetMapping("/means")
     public BaseResponse<String> getMeans() {
         String baseUrl = "https://krdict.korean.go.kr/api/search";
-
-        String key = "AF01E186D8067C9F49C4AB17E41B2B39";
-
         try {
             List<Word> words = wordRepository.findAll();
 

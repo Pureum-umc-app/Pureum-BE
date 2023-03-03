@@ -43,6 +43,8 @@ kakao:
   redirect_uri: ENC(RNTIQG3/NGquwYKjYdTD24uzCZWp3CSXPjW399y6KDqmOkkTrrZQaTXMxPITu1j3)
 fcm:
   url: ENC(rx0aNu2nz70ksEN3EkTx231yqn0LTaAT9/dNuPgQHxHKzWBzxfkkMtIhdtpH1wM0P7CApTtEIztijra7+0jS0xUPQlFrVpVeM/CsPUGyp0M=)
+korean-basic-dictionary:
+  key: ENC(+BrdM4uCvDU0d2jgDsa2Zbjp6WCoY1lGhWkMOxewImFUs1Pf8DWl9FadozGnRJq6)
 jasypt:
   encryptor:
     bean: jasyptStringEncryptor
