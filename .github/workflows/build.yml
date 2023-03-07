@@ -17,13 +17,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-<<<<<<< HEAD
-=======
       - run: mkdir ./src/main/resources/firebase
       - run: touch ./src/main/resources/firebase/firebase_service_key.json
       - run: echo "${{ secrets.firebase_service_key }}" > ./src/main/resources/firebase/firebase_service_key.json
 
->>>>>>> 0326704317696c3db270915d4544b2c7ebbdb6a2
       - name: Setup docker buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
@@ -59,7 +56,6 @@ jobs:
         run: |
           docker build -t ${{ env.DOCKER_IMAGE }} .
           docker push ${{ env.DOCKER_IMAGE }}
-
   deploy:
     needs: build
     name: Deploy
