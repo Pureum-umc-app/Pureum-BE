@@ -1,11 +1,13 @@
 package com.umc.pureum.domain.mypage;
 
+import com.umc.pureum.domain.mypage.dto.response.GetMySentenceWordInfo;
 import com.umc.pureum.domain.mypage.dto.response.GetMySentencesRes;
 import com.umc.pureum.domain.mypage.dto.response.MySentenceDto;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.repository.SentenceLikeRepository;
 import com.umc.pureum.domain.sentence.repository.SentenceRepository;
 import com.umc.pureum.global.config.Response.BaseException;
+import com.umc.pureum.global.config.Response.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,5 +48,17 @@ public class MyPageProvider {
                 .collect(Collectors.toList());
         return new GetMySentencesRes(mySentences.size(), myOpenSentences.size(), collect);
     }
+
+    // 나의 문장 단어 정보 조회
+    public GetMySentenceWordInfo findMySentencesWordInfo(Long sentenceId) throws BaseException{
+        Sentence mySentence = sentenceRepository.findById(sentenceId).orElseThrow(() -> new BaseException(GET_SENTENCE_EMPTY));
+        String word = mySentence.getKeyword().getWord().getWord();
+        String meaning = mySentence.getKeyword().getWord().getMeaning();
+        return GetMySentenceWordInfo.builder()
+                .word(word)
+                .meaning(meaning)
+                .build();
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.umc.pureum.domain.mypage;
 
+import com.umc.pureum.domain.mypage.dto.response.GetMySentenceWordInfo;
 import com.umc.pureum.domain.mypage.dto.response.GetMySentencesRes;
 import com.umc.pureum.domain.mypage.dto.request.PostUpdateSentenceReq;
 import com.umc.pureum.domain.mypage.dto.response.GetProfileResponseDto;
@@ -165,6 +166,22 @@ public class MyPageController {
         }
         myPageService.EditProfile(patchEditProfileReq, id);
         return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("정상적으로 수정되었습니다."));
+    }
+
+    /**
+     * 나의 문장 단어 정보 반환 API
+     * [GET] /mypages/sentence/{sentenceId}/word
+     */
+    @ApiOperation("나의 문장 단어 정보 반환 ")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "sentenceId", paramType = "path", value = "문장 인덱스", example = "1", dataTypeClass = Long.class)
+    })
+    @ResponseBody
+    @GetMapping("/sentence/{sentenceId}/word")
+    public BaseResponse<GetMySentenceWordInfo> getMySentenceWordInfo(@PathVariable Long sentenceId) throws BaseException{
+        GetMySentenceWordInfo mySentencesWordInfo = myPageProvider.findMySentencesWordInfo(sentenceId);
+        return new BaseResponse<>(mySentencesWordInfo);
     }
 
 }
