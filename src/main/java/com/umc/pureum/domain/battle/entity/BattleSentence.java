@@ -1,16 +1,16 @@
 package com.umc.pureum.domain.battle.entity;
 
+import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
 import com.umc.pureum.global.entity.Status;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @SuperBuilder
@@ -27,6 +27,11 @@ public class BattleSentence extends BaseEntity {
     private String sentence;
     @ManyToOne @JoinColumn(name = "battle_word_id")
     private BattleWord word;
+
+    @OneToMany(mappedBy = "sentence")
+    @Builder.Default
+    @ToString.Exclude
+    private List<BattleLike> battleLikes = new ArrayList<>();
     @Enumerated(EnumType.STRING)
     private Status status;
 

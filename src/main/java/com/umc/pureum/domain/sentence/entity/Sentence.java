@@ -8,6 +8,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Data
@@ -25,6 +27,11 @@ public class Sentence extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "word_id")
     private Keyword keyword;
+
+    @OneToMany(mappedBy = "sentence")
+    @Builder.Default
+    @ToString.Exclude
+    private List<SentenceLike> sentenceLikes = new ArrayList<>();
     @NotNull
     private String status;
 
