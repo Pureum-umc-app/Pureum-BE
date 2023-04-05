@@ -41,8 +41,6 @@ public class BadgeService {
 
         List<GetBadgeInfoRes> badgesByUserId = badgeRepository.findBadgesByUserId(userId);
 
-        System.out.println(badgesByUserId.get(0).getBadge());
-
         for( int i = 0 ; i < badgesByUserId.size() ; i++ ){
             GetBadgeInfoRes getBadgeInfoRes = badgesByUserId.get(i);
 
