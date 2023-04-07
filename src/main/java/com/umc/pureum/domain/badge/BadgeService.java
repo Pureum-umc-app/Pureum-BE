@@ -46,6 +46,7 @@ public class BadgeService {
 
             if( i == 0 ){
                 timestamp = getBadgeInfoRes.getCreatedAt();
+                badges[0] = getBadgeInfoRes.getBadge();
             }
 
             if( (getBadgeInfoRes.getCreatedAt().getTime() - timestamp.getTime()) > 0){
