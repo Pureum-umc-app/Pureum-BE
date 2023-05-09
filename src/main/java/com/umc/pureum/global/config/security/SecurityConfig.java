@@ -35,7 +35,8 @@ public class SecurityConfig {
             "/v2/api-docs/**",  //swagger
             "/swagger-ui/**", //swagger
             "/swagger-resources/**", //swagger
-            "/users/nickname/{nickname}/validation"
+            "/users/nickname/{nickname}/validation",
+            "/test/log"
     };
 
     @Bean

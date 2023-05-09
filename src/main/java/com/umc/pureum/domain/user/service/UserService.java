@@ -138,23 +138,23 @@ public class UserService {
             for (Badge badge : badges) {
                 badge.setStatus("D");
             }
-            for (Battle battle : battles) {
-                if (battle.getChallenger().getId() == userId && (battle.getStatus() == BattleStatus.A || battle.getStatus() == BattleStatus.I)) {
-                    battle.setStatus(BattleStatus.D);
-                    try {
-                        firebaseCloudMessageService.sendMessageTo(battle.getChallenged().getId(), "상대가 대결을 취소했어요.", "취소했어요");
-                    } catch (IOException e) {
-                        throw new BaseException(BaseResponseStatus.FCM_ERROR);
-                    }
-                } else if (battle.getChallenged().getId() == userId && (battle.getStatus() == BattleStatus.A || battle.getStatus() == BattleStatus.I)) {
-                    battle.setStatus(BattleStatus.D);
-                    try {
-                        firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(), "상대가 대결을 취소했어요.", "취소했어요");
-                    } catch (IOException e) {
-                        throw new BaseException(BaseResponseStatus.FCM_ERROR);
-                    }
-                }
-            }
+//            for (Battle battle : battles) {
+//                if (battle.getChallenger().getId() == userId && (battle.getStatus() == BattleStatus.A || battle.getStatus() == BattleStatus.I)) {
+//                    battle.setStatus(BattleStatus.D);
+//                    try {
+//                        firebaseCloudMessageService.sendMessageTo(battle.getChallenged().getId(), "상대가 대결을 취소했어요.", "취소했어요");
+//                    } catch (IOException e) {
+//                        throw new BaseException(BaseResponseStatus.FCM_ERROR);
+//                    }
+//                } else if (battle.getChallenged().getId() == userId && (battle.getStatus() == BattleStatus.A || battle.getStatus() == BattleStatus.I)) {
+//                    battle.setStatus(BattleStatus.D);
+//                    try {
+//                        firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(), "상대가 대결을 취소했어요.", "취소했어요");
+//                    } catch (IOException e) {
+//                        throw new BaseException(BaseResponseStatus.FCM_ERROR);
+//                    }
+//                }
+//            }
         } else
             throw new BaseException(POST_USERS_NO_EXISTS_USER);
     }
