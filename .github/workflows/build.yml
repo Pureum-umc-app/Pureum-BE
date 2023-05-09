@@ -71,4 +71,4 @@ jobs:
       - name: Docker run
         run: |
           docker stop ${{ env.NAME }} && docker rm ${{ env.NAME }} && docker rmi ${{ env.DOCKER_IMAGE }}
-          docker run -d -p 9000:9000 -e JAVA_OPTS=-Djasypt.encryptor.password=${{ secrets.JASYPT_KEY }} --name label-go --restart always ${{ env.DOCKER_IMAGE }}:latest
+          docker run -d -p 9000:9000 -e JAVA_OPTS1=-Djasypt.encryptor.password=${{ secrets.JASYPT_KEY }} -e JAVA_OPTS2=-Dlogging.slack.webhook-uri=${{ secrets.WEBHOOK_URI }} --name label-go --restart always ${{ env.DOCKER_IMAGE }}:latest
