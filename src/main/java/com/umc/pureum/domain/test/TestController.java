@@ -16,7 +16,6 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.time.LocalDateTime;
 
-@ApiIgnore
 @RestController
 @RequestMapping("/test")
 public class TestController {
@@ -46,12 +45,10 @@ public class TestController {
 //        error 레벨은 Console 로깅 O, 파일 로깅 O (app.log 뿐만 아니라 error.log 에도 로깅 됨)
 //        app.log 와 error.log 는 날짜가 바뀌면 자동으로 *.gz 으로 압축 백업됨
         logger.error("ERROR Level 테스트");
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String UserId = principal.getUsername();
 
 //        System.out.println(sentenceLikeRepository.findByStatus( "A", PageRequest.of(0,1,Sort.by(Sort.Order.desc("id")))).getContent());
 //        sentenceLikeMappings.forEach(System.out::println);
         LocalDateTime now = LocalDateTime.now();
-        return ResponseEntity.status(HttpStatus.CREATED).body(new BaseResponse(UserId+" \n"+now));
+        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>(now.toString()));
     }
 }

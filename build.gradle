@@ -73,6 +73,9 @@ dependencies {
     // https://mvnrepository.com/artifact/com.github.ulisesbocchio/jasypt-spring-boot-starter
     // yml 암호화
     implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.4'
+
+    implementation 'com.github.maricn:logback-slack-appender:1.6.1'
+
 }
 
 tasks.named('test') {
