@@ -6,6 +6,8 @@ import com.umc.pureum.domain.battle.entity.Battle;
 import com.umc.pureum.domain.battle.entity.BattleLike;
 import com.umc.pureum.domain.battle.entity.BattleResult;
 import com.umc.pureum.domain.battle.entity.BattleSentence;
+import com.umc.pureum.domain.blame.entity.BattleSentenceBlame;
+import com.umc.pureum.domain.blame.entity.SentenceBlame;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.use.entity.UsePhone;
@@ -92,4 +94,12 @@ public class UserAccount extends BaseEntity {
     @Builder.Default
     @ToString.Exclude
     private List<AttendanceCheck> attendanceChecks = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    @Builder.Default
+    @ToString.Exclude
+    private List<BattleSentenceBlame> battleSentenceBlameList = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    @Builder.Default
+    @ToString.Exclude
+    private List<SentenceBlame> sentenceBlameList = new ArrayList<>();
 }
