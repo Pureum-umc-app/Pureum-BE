@@ -25,8 +25,22 @@ public class BattleSentenceBlame extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     UserAccount user;
-    State state;
-    public enum State {
+    @Enumerated(EnumType.STRING)
+    Status status;
+
+    public void updateState(Status state) {
+        this.status = state;
+    }
+
+    public void setUser(UserAccount userAccount) {
+        this.user = userAccount;
+    }
+
+    public void setBattleSentence(BattleSentence battleSentence) {
+        this.battleSentence = battleSentence;
+    }
+
+    public enum Status {
         A,D
     }
 }

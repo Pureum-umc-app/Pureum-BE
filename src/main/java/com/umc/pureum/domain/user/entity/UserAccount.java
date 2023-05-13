@@ -102,4 +102,9 @@ public class UserAccount extends BaseEntity {
     @Builder.Default
     @ToString.Exclude
     private List<SentenceBlame> sentenceBlameList = new ArrayList<>();
+
+    public void addBattleSentenceBlame(BattleSentenceBlame battleSentenceBlame) {
+        this.battleSentenceBlameList.add(battleSentenceBlame);
+        battleSentenceBlame.setUser(this);
+    }
 }

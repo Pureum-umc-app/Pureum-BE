@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 
 import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 import static com.umc.pureum.global.entity.Status.A;
+import static com.umc.pureum.global.entity.Status.D;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -727,4 +728,7 @@ public class BattleService {
         else return 1;
     }
 
+    public BattleSentence getBattleSentence(long battleSentenceId) throws BaseException {
+        return battleSentenceRepository.findByIdAndStatus(battleSentenceId,A).orElseThrow(() -> new BaseException(NOT_FOUND_BATTLE_SENTENCE));
+    }
 }

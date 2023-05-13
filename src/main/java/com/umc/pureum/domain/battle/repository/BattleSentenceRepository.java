@@ -51,4 +51,6 @@ public interface BattleSentenceRepository extends JpaRepository<BattleSentence, 
     List<GetBattleSentenceInterface> findInfoByBattleWordIdAndUserId(@Param("battleWordId") Long battleWordId , @Param("userId") Long userId);
 
     List<BattleSentence> findByUserId(long userId);
+
+    Optional<BattleSentence> findByIdAndStatus(Long id, Status status);
 }

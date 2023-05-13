@@ -1,12 +1,8 @@
 package com.umc.pureum.domain.blame;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.umc.pureum.global.config.Response.BaseException;
+import org.springframework.security.core.Authentication;
 
-@Transactional
-@RequiredArgsConstructor
-@Service
-public class BlameService {
-
+public interface BlameService {
+    void battleSentenceBlame(long userId, long battleSentenceId) throws BaseException;
 }
