@@ -34,8 +34,12 @@ public class BlameController {
         try {
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         long userId = Long.parseLong(loggedInUser.getName());
-        blameService.battleSentenceBlame(userId,battleSentenceId);
-        return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("신고 되었습니다."));
+        if(blameService.battleSentenceBlame(userId,battleSentenceId)) {
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("신고 되었습니다."));
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("신고 취소 되었습니다."));
+        }
         } catch (BaseException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse<>(e.getStatus()));
         }
