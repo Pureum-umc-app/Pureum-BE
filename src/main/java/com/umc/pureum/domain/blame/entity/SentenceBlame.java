@@ -1,6 +1,5 @@
 package com.umc.pureum.domain.blame.entity;
 
-import com.umc.pureum.domain.battle.entity.BattleSentence;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
@@ -26,8 +25,22 @@ public class SentenceBlame extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     UserAccount user;
-    State state;
-    public enum State {
+    @Enumerated(EnumType.STRING)
+    Status status;
+
+    public void updateState(Status status) {
+        this.status = status;
+    }
+
+    public void setUser(UserAccount userAccount) {
+        this.user = userAccount;
+    }
+
+    public void setSentence(Sentence sentence) {
+        this.sentence = sentence;
+    }
+
+    public enum Status {
         A,D
     }
 }

@@ -107,4 +107,9 @@ public class UserAccount extends BaseEntity {
         this.battleSentenceBlameList.add(battleSentenceBlame);
         battleSentenceBlame.setUser(this);
     }
+
+    public void addSentenceBlame(SentenceBlame sentenceBlame) {
+        this.sentenceBlameList.add(sentenceBlame);
+        sentenceBlame.setUser(this);
+    }
 }

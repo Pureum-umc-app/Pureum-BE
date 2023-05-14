@@ -1,6 +1,7 @@
 package com.umc.pureum.domain.sentence.entity;
 
 import com.sun.istack.NotNull;
+import com.umc.pureum.domain.blame.entity.SentenceBlame;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
 
@@ -34,7 +35,10 @@ public class Sentence extends BaseEntity {
     private List<SentenceLike> sentenceLikes = new ArrayList<>();
     @NotNull
     private String status;
-
+    @OneToMany(mappedBy = "sentence")
+    @Builder.Default
+    @ToString.Exclude
+    private List<SentenceBlame> sentenceBlameList = new ArrayList<>();
     public Sentence(UserAccount userAccount, String sentence, Keyword keyword, String sentenceStatus) {
         this.user = userAccount;
         this.sentence = sentence;
@@ -50,5 +54,14 @@ public class Sentence extends BaseEntity {
     // 문장 삭제
     public void DeleteSentence(String sentenceStatus){
         this.status = sentenceStatus;
+    }
+
+    public void addSentenceBlame(SentenceBlame sentenceBlame) {
+        sentenceBlameList.add(sentenceBlame);
+        sentenceBlame.setSentence(this);
+    }
+
+    public void updateStatus(String status) {
+        this.status = status;
     }
 }

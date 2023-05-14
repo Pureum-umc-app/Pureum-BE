@@ -29,8 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import static com.umc.pureum.global.config.Response.BaseResponseStatus.POST_SENTENCE_EMPTY;
-import static com.umc.pureum.global.config.Response.BaseResponseStatus.POST_SENTENCE_NO_EXISTS_KEYWORD;
+import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -176,6 +175,10 @@ public class SentenceService {
             sentenceListResList.add(sentenceListRes);
         }
         return sentenceListResList;
+    }
+
+    public Sentence getSentence(long sentenceId) throws BaseException {
+        return sentenceRepository.findByIdAndStatus(sentenceId,"A").orElseThrow(() -> new BaseException(NOT_FOUND_SENTENCE));
     }
 }
 
