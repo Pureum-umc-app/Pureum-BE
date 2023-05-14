@@ -158,4 +158,8 @@ public class UserService {
         } else
             throw new BaseException(POST_USERS_NO_EXISTS_USER);
     }
+
+    public UserAccount getUser(long userId) throws BaseException {
+        return userRepository.findByIdAndStatus(userId, "A").orElseThrow(() -> new BaseException(POST_USERS_NO_EXISTS_USER));
+    }
 }

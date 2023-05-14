@@ -1,5 +1,6 @@
 package com.umc.pureum.domain.battle.entity;
 
+import com.umc.pureum.domain.blame.entity.BattleSentenceBlame;
 import com.umc.pureum.domain.use.entity.UsePhone;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
@@ -34,13 +35,26 @@ public class BattleSentence extends BaseEntity {
     private List<BattleLike> battleLikes = new ArrayList<>();
     @Enumerated(EnumType.STRING)
     private Status status;
-
+    @OneToMany(mappedBy = "battleSentence")
+    @Builder.Default
+    @ToString.Exclude
+    private List<BattleSentenceBlame> battleSentenceBlameList = new ArrayList<>();
     @Builder
     public BattleSentence(Battle battle, UserAccount user, @NotNull String sentence, BattleWord word, Status status) {
         this.battle = battle;
         this.user = user;
         this.sentence = sentence;
         this.word = word;
+        this.status = status;
+    }
+
+
+    public void addBattleSentenceBlame(BattleSentenceBlame battleSentenceBlame) {
+        battleSentenceBlameList.add(battleSentenceBlame);
+        battleSentenceBlame.setBattleSentence(this);
+    }
+
+    public void updateStatus(Status status) {
         this.status = status;
     }
 }
