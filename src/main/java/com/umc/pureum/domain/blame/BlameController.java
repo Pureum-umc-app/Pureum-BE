@@ -26,7 +26,7 @@ public class BlameController {
             @ApiImplicitParam(name = "battleSentenceId", dataTypeClass = Long.class, paramType = "path", value = "battleSentenceId"),
     })
     @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
+            @ApiResponse(code = 1000, message = "신고 되었습니다. or 신고 취소 되었습니다.", response = String.class),
             @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다."),
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다.")
     })
@@ -51,7 +51,7 @@ public class BlameController {
             @ApiImplicitParam(name = "sentenceId", dataTypeClass = Long.class, paramType = "path", value = "sentenceId"),
     })
     @ApiResponses({
-            @ApiResponse(code = 1000, message = "요청에 성공하였습니다.", response = String.class),
+            @ApiResponse(code = 1000, message = "신고 되었습니다. or 신고 취소 되었습니다.", response = String.class),
             @ApiResponse(code = 2022, message = "유효하지 않은 JWT입니다."),
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다.")
     })
