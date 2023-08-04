@@ -7,6 +7,7 @@ import com.umc.pureum.global.entity.BaseEntity;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ public class Sentence extends BaseEntity {
     @Builder.Default
     @ToString.Exclude
     private List<SentenceBlame> sentenceBlameList = new ArrayList<>();
+    @Formula("(select count(*) from sentence_like where sentence_like.sentence_id=id and sentence_like.status='A')")
+    private int likeCount;
     public Sentence(UserAccount userAccount, String sentence, Keyword keyword, String sentenceStatus) {
         this.user = userAccount;
         this.sentence = sentence;

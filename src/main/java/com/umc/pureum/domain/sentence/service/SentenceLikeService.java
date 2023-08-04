@@ -27,16 +27,6 @@ import java.util.List;
 @Service
 public class SentenceLikeService {
     private final SentenceLikeRepository sentenceLikeRepository;
-    public List<SentenceLikeMapping> getSentenceLikeOrderByDate(long word_id, int page, int limit, String sort){
-        List<SentenceLikeMapping> sentenceListRes = new ArrayList<>();
-        if(sort.equals("date")) {
-            sentenceListRes = sentenceLikeRepository.findSentenceLikePageOrderByDate(word_id, PageRequest.of(page, limit, Sort.Direction.DESC, "sentence_id"));
-        }
-        else if(sort.equals("like")){
-            sentenceListRes = sentenceLikeRepository.findSentenceLikePageOrderByDate(word_id, PageRequest.of(page, limit, Sort.Direction.DESC, "likeNum"));
-        }
-        return sentenceListRes;
-    }
 
     public boolean getSentenceSelfLike(long userId, long sentenceId){
         byte level = sentenceLikeRepository.ExistsByUserIdAndSentenceId(userId, sentenceId);

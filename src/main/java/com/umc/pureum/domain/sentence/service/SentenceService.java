@@ -1,5 +1,8 @@
 package com.umc.pureum.domain.sentence.service;
 
+import com.umc.pureum.domain.blame.BlameService;
+import com.umc.pureum.domain.blame.entity.SentenceBlame;
+import com.umc.pureum.domain.blame.repository.SentenceBlameRepository;
 import com.umc.pureum.domain.sentence.dao.SentenceDao;
 import com.umc.pureum.domain.sentence.dao.SentenceLikeDao;
 import com.umc.pureum.domain.sentence.dto.request.CreateSentenceReq;
@@ -20,6 +23,9 @@ import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.Response.BaseException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +48,7 @@ public class SentenceService {
     private final WordRepository wordRepository;
     private final KeywordRepository keywordRepository;
     private final UserRepository userRepository;
+    private final SentenceBlameRepository sentenceBlameRepository;
 
     // write : 작성한 문장 DB 에 저장
     @Transactional
@@ -153,23 +160,31 @@ public class SentenceService {
     }
 
     public List<SentenceListRes> getSentenceList(long userId, long word_id, int page, int limit, String sort) {
-        List<SentenceLikeMapping> sentenceLikeMappings = sentenceLikeService.getSentenceLikeOrderByDate(word_id, page, limit, sort);
+        List<Sentence> sentences = new ArrayList<>();
+        if(sort.equals("like")) {
+            sentences = sentenceRepository.findByKeywordIdAndStatusNot(word_id, "D", PageRequest.of(page, limit, Sort.Direction.DESC, "likeCount"));
+        }
+        else if(sort.equals("date")){
+            sentences = sentenceRepository.findByKeywordIdAndStatusNot(word_id, "D", PageRequest.of(page, limit, Sort.Direction.DESC, "id"));
+        }
         List<SentenceListRes> sentenceListResList = new ArrayList<>();
         TimeGeneralization timeGeneralization = new TimeGeneralization();
         String time;
         SentenceListRes sentenceListRes;
-        for (SentenceLikeMapping sentenceLikeMapping : sentenceLikeMappings) {
-            time = timeGeneralization.genericTime(sentenceLikeMapping.getTime());
+
+        for (Sentence sentence : sentences) {
+            time = timeGeneralization.genericTime(sentence.getUpdatedAt());
             sentenceListRes = SentenceListRes.builder()
-                    .likeNum(sentenceLikeMapping.getLikeNum())
-                    .sentenceId(sentenceLikeMapping.getSentence_id())
-                    .sentence(sentenceLikeMapping.getSentence())
-                    .keywordId(sentenceLikeMapping.getKeywordId())
-                    .image(sentenceLikeMapping.getImage())
-                    .keyword(sentenceLikeMapping.getKeyword())
-                    .nickname(sentenceLikeMapping.getNickname())
-                    .userId(sentenceLikeMapping.getUserId())
-                    .selfLike(sentenceLikeService.getSentenceSelfLike(userId, sentenceLikeMapping.getSentence_id()))
+                    .likeNum(sentence.getLikeCount())
+                    .sentenceId(sentence.getId())
+                    .sentence(sentence.getSentence())
+                    .keywordId(sentence.getKeyword().getId())
+                    .image(sentence.getUser().getImage())
+                    .keyword(sentence.getKeyword().getWord().getWord())
+                    .nickname(sentence.getUser().getNickname())
+                    .userId(sentence.getUser().getId())
+                    .isBlamed(sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentence.getId(),userId, SentenceBlame.Status.A).isPresent())
+                    .selfLike(sentenceLikeService.getSentenceSelfLike(userId, sentence.getId()))
                     .time(time)
                     .build();
             sentenceListResList.add(sentenceListRes);

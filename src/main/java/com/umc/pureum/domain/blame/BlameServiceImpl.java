@@ -94,4 +94,9 @@ public class BlameServiceImpl implements BlameService {
             sentence.updateStatus("D");
         return flag;
     }
+
+    @Override
+    public boolean getSentenceSelfBlame(long userId, Long id) {
+        return sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(id,userId,SentenceBlame.Status.A).isPresent();
+    }
 }

@@ -14,4 +14,5 @@ public interface SentenceLikeMapping {
     String getKeyword();
     Timestamp getTime();
     String getNickname();
+    int getBlameNum();
 }
