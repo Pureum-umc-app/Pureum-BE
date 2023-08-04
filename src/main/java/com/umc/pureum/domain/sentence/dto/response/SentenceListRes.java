@@ -21,6 +21,6 @@ public class SentenceListRes {
     private String time;
     private int likeNum;
     private boolean selfLike;
-
+    private boolean isBlamed;
 
 }

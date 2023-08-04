@@ -6,4 +6,6 @@ public interface BlameService {
     boolean battleSentenceBlame(long userId, long battleSentenceId) throws BaseException;
 
     boolean sentenceBlame(long userId, long sentenceId) throws BaseException;
+
+    boolean getSentenceSelfBlame(long userId, Long id);
 }

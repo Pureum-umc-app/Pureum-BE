@@ -3,6 +3,7 @@ package com.umc.pureum.domain.sentence.repository;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.mapping.SentenceLikeMapping;
 import com.umc.pureum.domain.sentence.entity.mapping.SentenceMapping;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,4 +30,12 @@ public interface SentenceRepository extends JpaRepository<Sentence, Long> {
     List<Sentence> findByUserIdAndStatus(Long userId, String status);
 
     Optional<Sentence> findByIdAndStatus(long sentenceId, String a);
+
+    List<Sentence> findByUserIdAndStatusOrderByIdDesc(long userId, String a, PageRequest pageRequest);
+
+    List<Sentence> findByKeywordIdAndStatusOrderByIdDesc(long wordId, String a, PageRequest of);
+
+    List<Sentence> findByKeywordIdAndStatus(long wordId, String a, PageRequest likeCount);
+
+    List<Sentence> findByKeywordIdAndStatusNot(long wordId, String d, PageRequest likeCount);
 }

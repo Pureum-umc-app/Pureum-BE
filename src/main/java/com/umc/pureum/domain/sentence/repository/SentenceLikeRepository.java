@@ -21,21 +21,22 @@ public interface SentenceLikeRepository extends JpaRepository<SentenceLike, Long
      *
      */
     @Query(value =
-            "select s.sentence.id                                             as sentence_id,\n" +
-            "       s.sentence.sentence                                                as sentence,\n" +
-            "       s.sentence.keyword.id as keywordId, "+
-                    "s.sentence.user.id as userId,\n"+
-                    "s.sentence.user.image as image,\n"+
-                    "s.sentence.keyword.word.word as keyword,\n"+
-                    "s.sentence.updatedAt as time,\n"+
-                    "s.sentence.user.nickname as nickname,\n"+
-            "       count(s.sentence.id)                                         as likeNum "+
-            "from SentenceLike as s "+
-            "where s.sentence.user.status = 'A'and s.sentence.keyword.id = :keywordId and s.user.status='A' " +
-            "group by sentence_id")
+            "select s.sentence.id  as sentence_id,\n " +
+                    "s.sentence.sentence as sentence,\n " +
+                    "s.sentence.keyword.id as keywordId, " +
+                    "s.sentence.user.id as userId,\n" +
+                    "s.sentence.user.image as image,\n" +
+                    "s.sentence.keyword.word.word as keyword,\n" +
+                    "s.sentence.updatedAt as time,\n" +
+                    "s.sentence.user.nickname as nickname,\n" +
+                    "count(s.sentence.id) as likeNum," +
+                    "count(s.sentence.sentenceBlameList.size) as blameNum " +
+                    "from SentenceLike as s " +
+                    "where s.sentence.user.status = 'A'and s.sentence.keyword.id = :keywordId and s.user.status='A' " +
+                    "group by sentence_id")
     List<SentenceLikeMapping> findSentenceLikePageOrderByDate(@Param("keywordId") long word_id, Pageable pageable);
 
-    @Query(nativeQuery = true,value =
+    @Query(nativeQuery = true, value =
             "select exists(\n" +
                     "    select 1\n" +
                     "    from sentence_like\n" +
@@ -50,6 +51,6 @@ public interface SentenceLikeRepository extends JpaRepository<SentenceLike, Long
 
     List<SentenceLike> findByUserId(long userId);
 
-    @EntityGraph(attributePaths = {"user","sentence","sentence.keyword","sentence.keyword.word"})
+    @EntityGraph(attributePaths = {"user", "sentence", "sentence.keyword", "sentence.keyword.word"})
     List<SentenceLike> findBySentenceIdAndStatusNot(Long sentenceId, String status);
 }

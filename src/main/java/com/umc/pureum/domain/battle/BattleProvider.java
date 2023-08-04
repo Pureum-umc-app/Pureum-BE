@@ -10,6 +10,9 @@ import com.umc.pureum.domain.battle.repository.BattleLikeRepository;
 import com.umc.pureum.domain.battle.repository.BattleRepository;
 import com.umc.pureum.domain.battle.repository.BattleSentenceRepository;
 import com.umc.pureum.domain.battle.repository.BattleWordRepository;
+import com.umc.pureum.domain.blame.BlameService;
+import com.umc.pureum.domain.blame.entity.BattleSentenceBlame;
+import com.umc.pureum.domain.blame.repository.BattleSentenceBlameRepository;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.Response.BaseException;
@@ -20,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,12 +37,12 @@ public class BattleProvider {
     private final BattleSentenceRepository sentenceRepository;
     private final BattleLikeRepository likeRepository;
     private final UserRepository userRepository;
-
+    private final BattleSentenceBlameRepository battleSentenceBlameRepository;
     /* 진행 중인 대결 리스트 반환 API */
     public List<GetBattlesRes> getBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> user = userRepository.findByIdAndStatus(userId, "A");
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
@@ -47,7 +51,7 @@ public class BattleProvider {
         List<GetBattlesInterface> battles = battleRepository.findAllBattles(BattleStatus.I, request);
 
         // 좋아요 정보를 추가해서 배열을 만들어줌
-        if(!battles.isEmpty()) {
+        if (!battles.isEmpty()) {
             List<GetBattlesRes> getBattlesRes = new ArrayList<>();
 
             for (GetBattlesInterface battle : battles) {
@@ -71,19 +75,18 @@ public class BattleProvider {
 
                 Optional<GetBattleLikeInterface> edl = likeRepository.findByUserId(userId, edsId);
 
-                if(erl.isEmpty() || edl.isEmpty()) throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+                if (erl.isEmpty() || edl.isEmpty()) throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
 
                 String duration = "";
-                if(battle.getDuration() > 0) duration = "D-" + battle.getDuration();
-                else if(battle.getDuration() == 0) duration = "D-DAY";
+                if (battle.getDuration() > 0) duration = "D-" + battle.getDuration();
+                else if (battle.getDuration() == 0) duration = "D-DAY";
                 else duration = "D+" + -battle.getDuration();
-
                 // 배열에 값 넣기
                 getBattlesRes.add(new GetBattlesRes(battle.getBattleId(), battle.getKeywordId(), battle.getKeyword(),
                         battle.getChallengerId(), battle.getChallengerNickname(), battle.getChallengerProfileImg(),
                         erl.get().getIsLike(), erl.get().getLikeCnt(),
                         battle.getChallengedId(), battle.getChallengedNickname(), battle.getChallengedProfileImg(),
-                        edl.get().getIsLike(), edl.get().getLikeCnt(), duration));
+                        edl.get().getIsLike(), edl.get().getLikeCnt(), duration,false));
 
             }
 
@@ -98,7 +101,7 @@ public class BattleProvider {
     public List<GetCompleteBattles> getCompleteBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
-        if(myInfo.isEmpty()) {
+        if (myInfo.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
@@ -110,7 +113,7 @@ public class BattleProvider {
     public List<GetWaitBattlesRes> getWaitBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
-        if(myInfo.isEmpty()) {
+        if (myInfo.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
@@ -122,7 +125,7 @@ public class BattleProvider {
     public List<GetBattlesRes> getMyBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> user = userRepository.findByIdAndStatus(userId, "A");
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
@@ -131,7 +134,7 @@ public class BattleProvider {
         List<GetBattlesInterface> battles = battleRepository.findAllMyBattles(userId, request);
 
         // 좋아요 정보를 추가해서 배열을 만들어줌
-        if(!battles.isEmpty()) {
+        if (!battles.isEmpty()) {
             List<GetBattlesRes> getBattlesRes = new ArrayList<>();
 
             for (GetBattlesInterface battle : battles) {
@@ -154,19 +157,28 @@ public class BattleProvider {
 
                 Optional<GetBattleLikeInterface> edl = likeRepository.findByUserId(userId, edsId);
 
-                if(erl.isEmpty() || edl.isEmpty()) throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+                if (erl.isEmpty() || edl.isEmpty()) throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
 
                 String duration = "";
-                if(battle.getDuration() > 0) duration = "D-" + battle.getDuration();
-                else if(battle.getDuration() == 0) duration = "D-DAY";
+                if (battle.getDuration() > 0) duration = "D-" + battle.getDuration();
+                else if (battle.getDuration() == 0) duration = "D-DAY";
                 else duration = "D+" + -battle.getDuration();
+                Boolean blamed;
+                if(Objects.equals(ers.get().getUser().getId(), userId)){
+                    blamed = battleSentenceBlameRepository.findByBattleSentenceIdAndUserIdAndStatus(ers.get().getId(),userId, BattleSentenceBlame.Status.A).isPresent();
 
+                } else if (Objects.equals(eds.get().getUser().getId(), userId)) {
+                    blamed = battleSentenceBlameRepository.findByBattleSentenceIdAndUserIdAndStatus(eds.get().getId(),userId, BattleSentenceBlame.Status.A).isPresent();
+                }
+                else {
+                    throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+                }
                 // 배열에 값 넣기
                 getBattlesRes.add(new GetBattlesRes(battle.getBattleId(), battle.getKeywordId(), battle.getKeyword(),
                         battle.getChallengerId(), battle.getChallengerNickname(), battle.getChallengerProfileImg(),
                         erl.get().getIsLike(), erl.get().getLikeCnt(),
                         battle.getChallengedId(), battle.getChallengedNickname(), battle.getChallengedProfileImg(),
-                        edl.get().getIsLike(), edl.get().getLikeCnt(), duration));
+                        edl.get().getIsLike(), edl.get().getLikeCnt(), duration,blamed));
 
             }
 
@@ -181,7 +193,7 @@ public class BattleProvider {
     public List<GetMyCompleteBattles> getMyCompleteBattles(Long userId, int page, int limit) throws BaseException {
         // 유저 예외 처리
         Optional<UserAccount> myInfo = userRepository.findByIdAndStatus(userId, "A");
-        if(myInfo.isEmpty()) {
+        if (myInfo.isEmpty()) {
             throw new BaseException(BaseResponseStatus.INVALID_USER);
         }
 
@@ -193,19 +205,19 @@ public class BattleProvider {
     public List<BattleFighterRes> getBattleFighters(Long userId) {
         List<UserAccount> allExcludeMe = userRepository.findRandomUsersExcludeMe(userId);
         return allExcludeMe.stream().map(u -> BattleFighterRes.builder()
-                .userId(u.getId())
-                .nickname(u.getNickname())
-                .image(u.getImage()).build())
+                        .userId(u.getId())
+                        .nickname(u.getNickname())
+                        .image(u.getImage()).build())
                 .collect(Collectors.toList());
     }
 
     /* 대결 키워드 3개 반환 API */
-    public List<GetBattleWordRes> getBattleWordThree(){
+    public List<GetBattleWordRes> getBattleWordThree() {
         List<BattleWord> battleWordThreeRecently = battleWordRepository.findTop3ByOrderByCreatedAtDesc();
         return battleWordThreeRecently.stream().map(b -> GetBattleWordRes.builder()
-                .wordId(b.getId())
-                .word(b.getWord().getWord())
-                .meaning(b.getWord().getMeaning()).build())
+                        .wordId(b.getId())
+                        .word(b.getWord().getWord())
+                        .meaning(b.getWord().getMeaning()).build())
                 .collect(Collectors.toList());
     }
 }
