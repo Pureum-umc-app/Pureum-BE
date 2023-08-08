@@ -299,7 +299,7 @@ public class SentenceController {
             @ApiResponse(code = 2042, message = "정렬 방식이 잘못되었습니다.")
     })
     @GetMapping("/{userId}")
-    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@PathVariable long userId, @RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort) {
+    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort,@PathVariable long userId) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = Long.parseLong(principal.getUsername());
         try {
