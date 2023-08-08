@@ -287,11 +287,11 @@ public class SentenceController {
     @ApiOperation("단어별 문장 리스트 반환 API")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
+            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 id", example = "1"),
             @ApiImplicitParam(name = "word_id", dataTypeClass = Long.class, paramType = "query", value = "단어 id",example = "1"),
             @ApiImplicitParam(name = "page", dataTypeClass = Integer.class, paramType = "query", value = "페이지",example = "1"),
             @ApiImplicitParam(name = "limit", dataTypeClass = Integer.class, paramType = "query", value = "페이지 별  객체 수",example = "20"),
-            @ApiImplicitParam(name = "sort", dataTypeClass = String.class, paramType = "query", value = "정렬 조건(like, date"),
-            @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 id", example = "1")
+            @ApiImplicitParam(name = "sort", dataTypeClass = String.class, paramType = "query", value = "정렬 조건(like, date")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -299,7 +299,7 @@ public class SentenceController {
             @ApiResponse(code = 2042, message = "정렬 방식이 잘못되었습니다.")
     })
     @GetMapping("/{userId}")
-    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort,@PathVariable long userId) {
+    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@PathVariable long userId, @RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long id = Long.parseLong(principal.getUsername());
         try {
