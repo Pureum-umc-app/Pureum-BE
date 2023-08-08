@@ -86,7 +86,7 @@ public class BattleProvider {
                         battle.getChallengerId(), battle.getChallengerNickname(), battle.getChallengerProfileImg(),
                         erl.get().getIsLike(), erl.get().getLikeCnt(),
                         battle.getChallengedId(), battle.getChallengedNickname(), battle.getChallengedProfileImg(),
-                        edl.get().getIsLike(), edl.get().getLikeCnt(), duration,false));
+                        edl.get().getIsLike(), edl.get().getLikeCnt(), duration,null));
 
             }
 

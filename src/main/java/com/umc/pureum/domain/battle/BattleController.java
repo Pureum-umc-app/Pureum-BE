@@ -644,7 +644,6 @@ public class BattleController {
 
         long userId = Long.parseLong(UserId);
 
-
         try {
             if (userId != battleDao.findOne(battleIdx).getChallenged().getId() &&
                     userId != battleDao.findOne(battleIdx).getChallenger().getId()) {

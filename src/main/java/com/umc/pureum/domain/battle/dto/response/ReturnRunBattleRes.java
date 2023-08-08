@@ -34,4 +34,5 @@ public class ReturnRunBattleRes {
     private int challengedLike;
     private int challengerLike;
 
+    private Boolean blamed;
 }

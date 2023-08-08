@@ -33,5 +33,5 @@ public class ReturnRunMyBattleRes {
 
     private int myLike;
     private int oppLike;
-
+    private Boolean blamed;
 }
