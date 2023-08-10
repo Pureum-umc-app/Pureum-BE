@@ -15,7 +15,7 @@ import static com.umc.pureum.global.config.Response.BaseResponseStatus.SUCCESS;
 
 @RestController
 @RequiredArgsConstructor
-@Api("앱 서비스 정보")
+@Api(tags = "문의하기")
 @RequestMapping("/contact")
 public class InquiryController {
 
