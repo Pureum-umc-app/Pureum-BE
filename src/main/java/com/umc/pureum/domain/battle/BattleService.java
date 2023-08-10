@@ -29,10 +29,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 import static com.umc.pureum.global.entity.Status.A;
-import static com.umc.pureum.global.entity.Status.D;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -71,7 +73,7 @@ public class BattleService {
         // request 로 받은 battleId 로 battle 찾기
         Battle battle = battleDao.findOne(request.getBattleId());
 
-        // battle 상태를 수락 완료로 바꾸기
+        // battle 상태를 거절로 바꾸기
         battle.setStatus(BattleStatus.D);
         /*
         try {
@@ -191,17 +193,17 @@ public class BattleService {
         }
 
         // 작성한 문장 존재 여부 확인
-        else if (writingSentence == "") {
+        if (Objects.equals(writingSentence, "")) {
             throw new BaseException(POST_SENTENCE_EMPTY);
         }
 
         // 작성할 문장에 단어 포함 여부 확인
-        else if (!isKeywordExist(writingSentence, writingWord)) {
+        if (!isKeywordExist(writingSentence, writingWord)) {
             throw new BaseException(POST_SENTENCE_NO_EXISTS_KEYWORD);
         }
 
         // 작성한 문장이 동일한 문장인지 여부 확인
-        else if (isSentenceExist(writingSentence, infoByBattleWordIdAndUserId)) {
+        if (isSentenceExist(writingSentence, infoByBattleWordIdAndUserId)) {
             throw new BaseException(POST_SENTENCE_EXISTS);
         }
 
@@ -220,8 +222,12 @@ public class BattleService {
         } catch (IOException e) {
             throw new BaseException(BaseResponseStatus.FCM_ERROR);
         }
-
          */
+
+        // schedule(Runnable command, long delay, TimeUnit unit) 사용하여 일정 시간 이후에 대결을 종료
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.schedule(() -> battle.setStatus(BattleStatus.C), battle.getDuration(), TimeUnit.DAYS);
+
         return new CreateChallengedSentenceRes(battleSentence.getId(), battle.getId(), battle.getStatus());
     }
 
