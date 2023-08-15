@@ -176,7 +176,7 @@ public class SentenceService {
                     sentence.getKeyword().getId(), sentence.getKeyword().getWord().getWord(),
                     sentence.getUser().getId(), sentence.getUser().getNickname(), sentence.getUser().getImage(),
                     format.format(sentence.getUpdatedAt()), sentence.getLikeCount(), sentenceLikeService.getSentenceSelfLike(userId, sentence.getId()),
-                    sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentence.getId(),userId, SentenceBlame.Status.A).isPresent());
+                    sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentence.getId(), userId, Status.A).isPresent());
 //            sentenceListRes = SentenceListRes.builder()
 //                    .sentenceId(sentence.getId())
 //                    .sentence(sentence.getSentence())
