@@ -5,7 +5,6 @@ import com.umc.pureum.domain.attendance.entity.AttendanceCheck;
 import com.umc.pureum.domain.badge.BadgeRepository;
 import com.umc.pureum.domain.badge.entity.Badge;
 import com.umc.pureum.domain.battle.entity.Battle;
-import com.umc.pureum.domain.battle.entity.BattleStatus;
 import com.umc.pureum.domain.battle.repository.BattleRepository;
 import com.umc.pureum.domain.notification.FirebaseCloudMessageService;
 import com.umc.pureum.domain.sentence.entity.Sentence;
@@ -22,7 +21,6 @@ import com.umc.pureum.domain.mypage.dto.response.GetProfileResponseDto;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.domain.user.entity.mapping.UserProfileMapping;
 import com.umc.pureum.global.config.Response.BaseException;
-import com.umc.pureum.global.config.Response.BaseResponseStatus;
 import com.umc.pureum.global.config.security.jwt.JwtTokenProvider;
 import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
@@ -126,17 +124,17 @@ public class UserService {
                 sentence.setStatus("D");
                 List<SentenceLike> sentenceLikes1 = sentenceLikeRepository.findBySentenceId(sentence.getId());
                 for (SentenceLike sentenceLike : sentenceLikes1) {
-                    sentenceLike.setStatus("D");
+                    sentenceLike.setStatus(Status.D);
                 }
             }
             for (SentenceLike sentenceLike : sentenceLikes) {
-                sentenceLike.setStatus("D");
+                sentenceLike.setStatus(Status.D);
             }
             for (SentenceLike sentenceLike : sentenceLikes) {
-                sentenceLike.setStatus("D");
+                sentenceLike.setStatus(Status.D);
             }
             for (Badge badge : badges) {
-                badge.setStatus("D");
+                badge.setStatus(Status.D);
             }
 //            for (Battle battle : battles) {
 //                if (battle.getChallenger().getId() == userId && (battle.getStatus() == BattleStatus.A || battle.getStatus() == BattleStatus.I)) {

@@ -1,21 +1,17 @@
 package com.umc.pureum.domain.sentence.service;
 
-import com.umc.pureum.domain.blame.BlameService;
-import com.umc.pureum.domain.blame.entity.SentenceBlame;
 import com.umc.pureum.domain.blame.repository.SentenceBlameRepository;
 import com.umc.pureum.domain.sentence.dao.SentenceDao;
 import com.umc.pureum.domain.sentence.dao.SentenceLikeDao;
 import com.umc.pureum.domain.sentence.dto.request.CreateSentenceReq;
-import com.umc.pureum.domain.sentence.dto.response.CreateSentenceRes;
 import com.umc.pureum.domain.sentence.dto.request.LikeSentenceReq;
+import com.umc.pureum.domain.sentence.dto.response.CreateSentenceRes;
 import com.umc.pureum.domain.sentence.dto.response.LikeSentenceRes;
 import com.umc.pureum.domain.sentence.dto.response.SentenceListRes;
 import com.umc.pureum.domain.sentence.entity.Keyword;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.entity.SentenceLike;
 import com.umc.pureum.domain.sentence.entity.Word;
-import com.umc.pureum.domain.sentence.entity.mapping.SentenceLikeMapping;
-import com.umc.pureum.domain.sentence.function.TimeGeneralization;
 import com.umc.pureum.domain.sentence.repository.KeywordRepository;
 import com.umc.pureum.domain.sentence.repository.SentenceRepository;
 import com.umc.pureum.domain.sentence.repository.WordRepository;
@@ -24,18 +20,12 @@ import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.Response.BaseException;
 import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 
@@ -43,7 +33,6 @@ import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 @Transactional(readOnly = true)
 @Service
 public class SentenceService {
-    private final SentenceLikeService sentenceLikeService;
     private final SentenceRepository sentenceRepository;
     private final SentenceDao sentenceDao;
     private final SentenceLikeDao sentenceLikeDao;
@@ -55,10 +44,9 @@ public class SentenceService {
     // write : 작성한 문장 DB 에 저장
     @Transactional
     public CreateSentenceRes write(Long userId , CreateSentenceReq request) throws BaseException{
-
         String writingSentence = request.getSentence();
         Long keywordId = request.getKeywordId();
-        String sentenceStatus = request.getStatus();
+        String status = request.getStatus();
 
         // request 로 받은 keywordId 로 단어 찾기
         Keyword keyword = sentenceDao.findByKeywordId(keywordId);
@@ -66,7 +54,7 @@ public class SentenceService {
         String writingWord = word.getWord();
 
         // 작성한 문장 존재 여부 확인
-        if(writingSentence == ""){
+        if(Objects.equals(writingSentence, "")){
             throw new BaseException(POST_SENTENCE_EMPTY);
         }
 
@@ -75,12 +63,10 @@ public class SentenceService {
             throw new BaseException(POST_SENTENCE_NO_EXISTS_KEYWORD);
         }
 
-
-
         // request 로 받은 userId 로 userAccount 찾기
         UserAccount userAccount = userRepository.findById(userId).get();
 
-        Sentence sentence = new Sentence(userAccount, request.getSentence(), keyword , sentenceStatus);
+        Sentence sentence = new Sentence(userAccount, request.getSentence(), keyword , status);
         sentenceDao.save(sentence);
 
         return new CreateSentenceRes(sentence.getId());
@@ -96,7 +82,6 @@ public class SentenceService {
     // like : 문장 좋아요 DB 에 저장
     @Transactional
     public LikeSentenceRes like(long userId, LikeSentenceReq request) {
-
         // request 로 받은 sentenceId 로 문장 찾기
         Sentence sentence = sentenceDao.findOne(request.getSentenceId());
 
@@ -109,10 +94,10 @@ public class SentenceService {
             SentenceLike sentenceLike = sentenceLikeDao.findBySentenceId(request.getSentenceId() , userId).get();
 
             // 존재하는 sentence 일 경우 sentence status 확인하고 status 바꾼다 .
-            if ("A".equals(sentenceLike.getStatus())) {
-                sentenceLike.setStatus("D");
-            } else if ("D".equals(sentenceLike.getStatus())) {
-                sentenceLike.setStatus("A");
+            if (sentenceLike.getStatus() == Status.A) {
+                sentenceLike.setStatus(Status.D);
+            } else if (sentenceLike.getStatus() == Status.D) {
+                sentenceLike.setStatus(Status.A);
             }
 
             return new LikeSentenceRes(sentenceLike.getId() , sentenceLike.getStatus());
@@ -121,7 +106,7 @@ public class SentenceService {
 
         // 존재하지 않는 sentence 일 경우 sentenceLike 생성해서 저장
         else {
-            SentenceLike sentenceLike = new SentenceLike(userAccount, sentence, "A");
+            SentenceLike sentenceLike = new SentenceLike(userAccount, sentence, Status.A);
             sentenceLikeDao.save(sentenceLike);
 
             return new LikeSentenceRes(sentenceLike.getId() , sentenceLike.getStatus());
@@ -162,37 +147,27 @@ public class SentenceService {
     }
 
     public List<SentenceListRes> getSentenceList(Long userId, Long wordId, int page, int limit, String sort) {
-        List<Sentence> sentences = new ArrayList<>();
-        if(sort.equals("like")) {
-            sentences = sentenceRepository.findByKeywordIdAndStatus(wordId, "O", PageRequest.of(page, limit, Sort.Direction.DESC, "likeCount"));
-        } else if(sort.equals("date")){
-            sentences = sentenceRepository.findByKeywordIdAndStatus(wordId, "O", PageRequest.of(page, limit, Sort.Direction.DESC, "id"));
-        }
-        List<SentenceListRes> sentenceListResList = new ArrayList<>();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        List<SentenceListRes> sentenceListRes = new ArrayList<>();
+        if(sort.equals("likeCnt")) {
+            sentenceListRes = sentenceRepository.findByWordId(wordId, userId, PageRequest.of(page, limit));
+            Collections.sort(sentenceListRes, new Comparator<SentenceListRes>() {
+                @Override
+                public int compare(SentenceListRes o1, SentenceListRes o2) {
+                    int fCnt = o1.getLikeCnt();
+                    int sCnt = o2.getLikeCnt();
 
-        for (Sentence sentence : sentences) {
-            SentenceListRes sentenceListRes = new SentenceListRes(sentence.getId(), sentence.getSentence(),
-                    sentence.getKeyword().getId(), sentence.getKeyword().getWord().getWord(),
-                    sentence.getUser().getId(), sentence.getUser().getNickname(), sentence.getUser().getImage(),
-                    format.format(sentence.getUpdatedAt()), sentence.getLikeCount(), sentenceLikeService.getSentenceSelfLike(userId, sentence.getId()),
-                    sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentence.getId(), userId, Status.A).isPresent());
-//            sentenceListRes = SentenceListRes.builder()
-//                    .sentenceId(sentence.getId())
-//                    .sentence(sentence.getSentence())
-//                    .keywordId(sentence.getKeyword().getId())
-//                    .keyword(sentence.getKeyword().getWord().getWord())
-//                    .userId(sentence.getUser().getId())
-//                    .nickname(sentence.getUser().getNickname())
-//                    .image(sentence.getUser().getImage())
-//                    .date(format.format(sentence.getUpdatedAt()))
-//                    .likeNum(sentence.getLikeCount())
-//                    .selfLike(sentenceLikeService.getSentenceSelfLike(userId, sentence.getId()))
-//                    .isBlamed(sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentence.getId(),userId, SentenceBlame.Status.A).isPresent())
-//                    .build();
-            sentenceListResList.add(sentenceListRes);
+                    if(fCnt < sCnt) return 1;
+                    else return -1;
+                }
+            });
+
+            return sentenceListRes;
+        } else if(sort.equals("date")){
+            sentenceListRes = sentenceRepository.findByWordId(wordId, userId, PageRequest.of(page, limit));
+            return sentenceListRes;
         }
-        return sentenceListResList;
+
+        return sentenceListRes;
     }
 
     public Sentence getSentence(Long sentenceId) throws BaseException {

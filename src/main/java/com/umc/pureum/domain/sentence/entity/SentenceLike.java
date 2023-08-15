@@ -2,6 +2,7 @@ package com.umc.pureum.domain.sentence.entity;
 
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
+import com.umc.pureum.global.entity.Status;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -20,10 +21,11 @@ public class SentenceLike extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sentence_id")
     private Sentence sentence;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Builder
-    public SentenceLike(UserAccount user, Sentence sentence, String status) {
+    public SentenceLike(UserAccount user, Sentence sentence, Status status) {
         this.user = user;
         this.sentence = sentence;
         this.status = status;

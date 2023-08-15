@@ -108,7 +108,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
     @Query(nativeQuery = true,
             value = "SELECT * " +
                     "FROM battle " +
-                    "WHERE DATE_FORMAT(updated_at,'%Y-%m-%d')= (DATE_FORMAT(CURDATE(),'%Y-%m-%d')-INTERVAL duration DAY) and status = 'I'")
+                    "WHERE DATE_FORMAT(updated_at,'%Y-%m-%d') = (DATE_FORMAT(CURDATE(),'%Y-%m-%d')-INTERVAL duration DAY) and status = 'I'")
     List<Battle> findByEndBattle();
 
     /* 나의 종료된 대결 리스트 반환 */
