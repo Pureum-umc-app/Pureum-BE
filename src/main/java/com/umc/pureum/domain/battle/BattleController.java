@@ -570,7 +570,7 @@ public class BattleController {
         battleService.saveBattleWordRandomThree();
     }
 
-    /**
+    /**료
      * 대결 키워드 3개 반환 API
      * [GET] battles/{userId}/battleWords
      */

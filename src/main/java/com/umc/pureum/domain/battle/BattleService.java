@@ -224,10 +224,6 @@ public class BattleService {
         }
          */
 
-        // schedule(Runnable command, long delay, TimeUnit unit) 사용하여 일정 시간 이후에 대결을 종료
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.schedule(() -> battle.setStatus(BattleStatus.C), battle.getDuration(), TimeUnit.DAYS);
-
         return new CreateChallengedSentenceRes(battleSentence.getId(), battle.getId(), battle.getStatus());
     }
 
@@ -503,18 +499,20 @@ public class BattleService {
 
     @Transactional
     @Scheduled(cron = "0 0 1 * * *")
-    public void setResult() throws BaseException {
+    public void setResult() {
         List<Battle> battleIdList = battleRepository.findByEndBattle();
-        long challengedBattleSentenceId;
-        long challengerBattleSentenceId;
-        int challengerLikeNum;
-        int challengedLikeNum;
         BattleResult battleResult;
+
         for (Battle battle : battleIdList) {
-            challengedBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenged().getId());
-            challengerBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenger().getId());
-            challengedLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengedBattleSentenceId);
-            challengerLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengerBattleSentenceId);
+            battle.setStatus(BattleStatus.C);
+            battleRepository.save(battle);
+
+            Long challengedBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenged().getId());
+            int challengedLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengedBattleSentenceId);
+
+            Long challengerBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenger().getId());
+            int challengerLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengerBattleSentenceId);
+
             if (challengedLikeNum > challengerLikeNum) {
                 battleResult = BattleResult.builder()
                         .battle(battle)
@@ -536,6 +534,7 @@ public class BattleService {
                         .build();
                 battleResultRepository.save(battleResult);
             }
+
             /*
             try {
                 firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"대결이 종료되었어요.","결과를 확인해 보아요");
@@ -543,7 +542,6 @@ public class BattleService {
             } catch (IOException e) {
                 throw new BaseException(BaseResponseStatus.FCM_ERROR);
             }
-
              */
         }
     }
