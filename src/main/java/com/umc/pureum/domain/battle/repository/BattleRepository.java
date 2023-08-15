@@ -176,7 +176,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "   b.duration as duration, b.status as battleStatus \n" +
             "from Battle as b \n" +
             "where b.id = :battleId")
-    List<GetBattleInfoRes> findInfoByBattleId(@Param("battleId") Long battleId);
+    Optional<GetBattleInfoRes> findInfoByBattleId(@Param("battleId") Long battleId);
 
     List<Battle> findByChallengerIdOrChallengedId(long userId, long userId1);
 }
