@@ -52,61 +52,6 @@ public class BattleService {
     private final BattleLikeRepository battleLikeRepository;
     private final BattleSentenceBlameRepository battleSentenceBlameRepository;
 
-    // accept : 대결 수락
-    @Transactional
-    public BattleStatusRes accept(BattleStatusReq request) {
-
-        // request 로 받은 battleId 로 battle 찾기
-        Battle battle = battleDao.findOne(request.getBattleId());
-
-        // battle 상태를 수락 완료로 바꾸기
-        battle.setStatus(BattleStatus.A);
-
-        // battle ID , Status 값
-        return new BattleStatusRes(battle.getId(), battle.getStatus());
-    }
-
-    // reject : 대결 거절
-    @Transactional
-    public BattleStatusRes reject(BattleStatusReq request) throws BaseException {
-
-        // request 로 받은 battleId 로 battle 찾기
-        Battle battle = battleDao.findOne(request.getBattleId());
-
-        // battle 상태를 거절로 바꾸기
-        battle.setStatus(BattleStatus.D);
-        /*
-        try {
-            firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 거절했어요.","거절했어요");
-        } catch (IOException e) {
-            throw new BaseException(BaseResponseStatus.FCM_ERROR);
-        }
-         */
-        // battle ID , Status 값
-        return new BattleStatusRes(battle.getId(), battle.getStatus());
-    }
-
-    // cancel : 대결 취소
-    @Transactional
-    public BattleStatusRes cancel(BattleStatusReq request) throws BaseException {
-
-        // request 로 받은 battleId 로 battle 찾기
-        Battle battle = battleDao.findOne(request.getBattleId());
-
-        // battle 상태를 수락 완료로 바꾸기
-        battle.setStatus(BattleStatus.D);
-        /*
-        try {
-            firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 취소했어요.","취소했어요");
-        } catch (IOException e) {
-            throw new BaseException(BaseResponseStatus.FCM_ERROR);
-        }
-
-         */
-        // battle ID , Status 값
-        return new BattleStatusRes(battle.getId(), battle.getStatus());
-    }
-
     /* 대결 신청 API */
     @Transactional
     public Long createBattle(PostBattleReq postBattleReq) throws BaseException {
@@ -157,6 +102,62 @@ public class BattleService {
         return savedBattle.getId();
     }
 
+    /* accept : 대결 수락 API */
+    @Transactional
+    public BattleStatusRes accept(BattleStatusReq request) {
+
+        // request 로 받은 battleId 로 battle 찾기
+        Battle battle = battleDao.findOne(request.getBattleId());
+
+        // battle 상태를 수락 완료로 바꾸기
+        battle.setStatus(BattleStatus.A);
+
+        // battle ID , Status 값
+        return new BattleStatusRes(battle.getId(), battle.getStatus());
+    }
+
+    /* reject : 대결 거절 API */
+    @Transactional
+    public BattleStatusRes reject(BattleStatusReq request) throws BaseException {
+
+        // request 로 받은 battleId 로 battle 찾기
+        Battle battle = battleDao.findOne(request.getBattleId());
+
+        // battle 상태를 거절로 바꾸기
+        battle.setStatus(BattleStatus.D);
+        /*
+        try {
+            firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 거절했어요.","거절했어요");
+        } catch (IOException e) {
+            throw new BaseException(BaseResponseStatus.FCM_ERROR);
+        }
+         */
+        // battle ID , Status 값
+        return new BattleStatusRes(battle.getId(), battle.getStatus());
+    }
+
+    /* cancel : 대결 취소 API */
+    @Transactional
+    public BattleStatusRes cancel(BattleStatusReq request) throws BaseException {
+
+        // request 로 받은 battleId 로 battle 찾기
+        Battle battle = battleDao.findOne(request.getBattleId());
+
+        // battle 상태를 수락 완료로 바꾸기
+        battle.setStatus(BattleStatus.D);
+        /*
+        try {
+            firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"상대가 대결을 취소했어요.","취소했어요");
+        } catch (IOException e) {
+            throw new BaseException(BaseResponseStatus.FCM_ERROR);
+        }
+
+         */
+        // battle ID , Status 값
+        return new BattleStatusRes(battle.getId(), battle.getStatus());
+    }
+
+
     public List<String> BattleMyProfilePhoto(long userId) {
         UserAccount userAccount = userRepository.findByIdAndStatus(userId, "A").get();
         String img = userAccount.getImage();
@@ -167,7 +168,7 @@ public class BattleService {
         return list;
     }
 
-    // writeChallenged : challenged 의 문장 작성 DB 에 저장
+    /* 대결 받은 사람 대결 문장 작성 API */
     @Transactional
     public CreateChallengedSentenceRes writeChallenged(Long userId, CreateChallengedSentenceReq request) throws BaseException {
 
@@ -244,7 +245,7 @@ public class BattleService {
         return false;
     }
 
-    // like : 대결 좋아요 DB 에 저장
+    /* 대결 문장 좋아요, 좋아요 취소 API */
     @Transactional
     public LikeBattleRes like(long userId, LikeBattleReq request) {
 
@@ -280,8 +281,7 @@ public class BattleService {
 
     }
 
-
-    //returnRunBattle : 대결 정보 return
+    /* 대결 정보 반환 API (대기 중, 진행 중) */
     @Transactional
     public ReturnRunBattleRes returnRunBattle(long battleIdx, Long userId) throws BaseException {
         if (userRepository.findByIdAndStatus(userId, "A").isEmpty()) {
@@ -375,7 +375,7 @@ public class BattleService {
         }
     }
 
-    //returnFinishBattle : 대결 정보 return
+    /* 종료된 대결 정보 반환 API */
     @Transactional
     public ReturnFinishBattleRes returnFinishBattle(long battleIdx, Long userId) throws BaseException {
         if (userRepository.findByIdAndStatus(userId, "A").isEmpty()) {
@@ -467,86 +467,7 @@ public class BattleService {
         return null;
     }
 
-    @Transactional
-    // battleWord 에 단어 3개 넣기
-    public void saveBattleWordRandomThree() {
-        // 중복 검사
-        // keyword, battleWord 테이블에서 wordId 만 뽑아서 Long 배열 만들기
-        List<Keyword> keywordTable = battleDao.getKeywordTable();
-        Long[] keywordWordId = keywordTable.stream().mapToLong(k -> k.getWord().getId()).boxed().toArray(Long[]::new);
-
-        List<BattleWord> battleWordTable = battleDao.getBattleWordTable();
-        Long[] battleWordWordId = battleWordTable.stream().mapToLong(b -> b.getWord().getId()).boxed().toArray(Long[]::new);
-
-        // 각각 만든 Long 배열 합치기
-        Long[] wordId = Stream.of(keywordWordId, battleWordWordId).flatMap(Stream::of).toArray(Long[]::new);
-
-        // 배열 -> List
-        List<Long> wordIdLongToList = Arrays.asList(wordId);
-
-        List<Word> randomThreeBattleWord = battleDao.getRandomThreeBattleWord(wordIdLongToList);
-
-        List<BattleWord> battleWords = randomThreeBattleWord.stream().map(r -> BattleWord.builder()
-                        .word(r)
-                        .status(A).build())
-                .collect(Collectors.toList());
-
-        for (BattleWord battleWord : battleWords) {
-            battleDao.saveBattleWord(battleWord);
-        }
-
-    }
-
-    @Transactional
-    @Scheduled(cron = "0 0 1 * * *")
-    public void setResult() {
-        List<Battle> battleIdList = battleRepository.findByEndBattle();
-        BattleResult battleResult;
-
-        for (Battle battle : battleIdList) {
-            battle.setStatus(BattleStatus.C);
-            battleRepository.save(battle);
-
-            Long challengedBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenged().getId());
-            int challengedLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengedBattleSentenceId);
-
-            Long challengerBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenger().getId());
-            int challengerLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengerBattleSentenceId);
-
-            if (challengedLikeNum > challengerLikeNum) {
-                battleResult = BattleResult.builder()
-                        .battle(battle)
-                        .user(battle.getChallenged())
-                        .status(Status.A)
-                        .build();
-                battleResultRepository.save(battleResult);
-            } else if (challengedLikeNum < challengerLikeNum) {
-                battleResult = BattleResult.builder()
-                        .battle(battle)
-                        .user(battle.getChallenger())
-                        .status(Status.A)
-                        .build();
-                battleResultRepository.save(battleResult);
-            } else {
-                battleResult = BattleResult.builder()
-                        .battle(battle)
-                        .status(Status.A)
-                        .build();
-                battleResultRepository.save(battleResult);
-            }
-
-            /*
-            try {
-                firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"대결이 종료되었어요.","결과를 확인해 보아요");
-                firebaseCloudMessageService.sendMessageTo(battle.getChallenged().getId(),"대결이 종료되었어요.","결과를 확인해 보아요");
-            } catch (IOException e) {
-                throw new BaseException(BaseResponseStatus.FCM_ERROR);
-            }
-             */
-        }
-    }
-
-    //returnRunMyBattle : 대결 정보 return
+    /* 내 대결 정보 반환 API (대기 중, 진행 중) */
     @Transactional
     public ReturnRunMyBattleRes returnRunMyBattle(long battleIdx, Long userId) throws BaseException {
 
@@ -629,7 +550,7 @@ public class BattleService {
         return null;
     }
 
-    //returnFinishMyBattle : 대결 정보 return
+    /* 내 종료된 대결 정보 반환 API */
     @Transactional
     public ReturnFinishBattleRes returnFinishMyBattle(long battleIdx, Long userId) throws BaseException {
         GetBattleInfoRes battleInfo = battleRepository.findInfoByBattleId(battleIdx).stream().findAny().get();
@@ -734,6 +655,86 @@ public class BattleService {
             throw new BaseException(Get_BATTLE_RUN_STATUS);
         }
         return null;
+    }
+
+    @Transactional
+    // battleWord 에 단어 3개 넣기
+    public void saveBattleWordRandomThree() {
+        // 중복 검사
+        // keyword, battleWord 테이블에서 wordId 만 뽑아서 Long 배열 만들기
+        List<Keyword> keywordTable = battleDao.getKeywordTable();
+        Long[] keywordWordId = keywordTable.stream().mapToLong(k -> k.getWord().getId()).boxed().toArray(Long[]::new);
+
+        List<BattleWord> battleWordTable = battleDao.getBattleWordTable();
+        Long[] battleWordWordId = battleWordTable.stream().mapToLong(b -> b.getWord().getId()).boxed().toArray(Long[]::new);
+
+        // 각각 만든 Long 배열 합치기
+        Long[] wordId = Stream.of(keywordWordId, battleWordWordId).flatMap(Stream::of).toArray(Long[]::new);
+
+        // 배열 -> List
+        List<Long> wordIdLongToList = Arrays.asList(wordId);
+
+        List<Word> randomThreeBattleWord = battleDao.getRandomThreeBattleWord(wordIdLongToList);
+
+        List<BattleWord> battleWords = randomThreeBattleWord.stream().map(r -> BattleWord.builder()
+                        .word(r)
+                        .status(A).build())
+                .collect(Collectors.toList());
+
+        for (BattleWord battleWord : battleWords) {
+            battleDao.saveBattleWord(battleWord);
+        }
+
+    }
+
+    /* 대결 종료 */
+    @Transactional
+    @Scheduled(cron = "0 0 1 * * *")
+    public void setResult() {
+        List<Battle> battleIdList = battleRepository.findByEndBattle();
+        BattleResult battleResult;
+
+        for (Battle battle : battleIdList) {
+            battle.setStatus(BattleStatus.C);
+            battleRepository.save(battle);
+
+            Long challengedBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenged().getId());
+            int challengedLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengedBattleSentenceId);
+
+            Long challengerBattleSentenceId = battleSentenceRepository.findIdByBattleIdAndUserIdAndStatus(battle.getId(), battle.getChallenger().getId());
+            int challengerLikeNum = battleLikeRepository.CountLikeNumBySentenceId(challengerBattleSentenceId);
+
+            if (challengedLikeNum > challengerLikeNum) {
+                battleResult = BattleResult.builder()
+                        .battle(battle)
+                        .user(battle.getChallenged())
+                        .status(Status.A)
+                        .build();
+                battleResultRepository.save(battleResult);
+            } else if (challengedLikeNum < challengerLikeNum) {
+                battleResult = BattleResult.builder()
+                        .battle(battle)
+                        .user(battle.getChallenger())
+                        .status(Status.A)
+                        .build();
+                battleResultRepository.save(battleResult);
+            } else {
+                battleResult = BattleResult.builder()
+                        .battle(battle)
+                        .status(Status.A)
+                        .build();
+                battleResultRepository.save(battleResult);
+            }
+
+            /*
+            try {
+                firebaseCloudMessageService.sendMessageTo(battle.getChallenger().getId(),"대결이 종료되었어요.","결과를 확인해 보아요");
+                firebaseCloudMessageService.sendMessageTo(battle.getChallenged().getId(),"대결이 종료되었어요.","결과를 확인해 보아요");
+            } catch (IOException e) {
+                throw new BaseException(BaseResponseStatus.FCM_ERROR);
+            }
+             */
+        }
     }
 
     public int situation(Long winnerUserId, Long userId) {
