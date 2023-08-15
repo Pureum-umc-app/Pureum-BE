@@ -22,6 +22,7 @@ import com.umc.pureum.domain.sentence.repository.WordRepository;
 import com.umc.pureum.domain.user.UserRepository;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.config.Response.BaseException;
+import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -159,40 +161,41 @@ public class SentenceService {
         }
     }
 
-    public List<SentenceListRes> getSentenceList(long userId, long word_id, int page, int limit, String sort) {
+    public List<SentenceListRes> getSentenceList(Long userId, Long wordId, int page, int limit, String sort) {
         List<Sentence> sentences = new ArrayList<>();
         if(sort.equals("like")) {
-            sentences = sentenceRepository.findByKeywordIdAndStatusNot(word_id, "D", PageRequest.of(page, limit, Sort.Direction.DESC, "likeCount"));
-        }
-        else if(sort.equals("date")){
-            sentences = sentenceRepository.findByKeywordIdAndStatusNot(word_id, "D", PageRequest.of(page, limit, Sort.Direction.DESC, "id"));
+            sentences = sentenceRepository.findByKeywordIdAndStatus(wordId, "O", PageRequest.of(page, limit, Sort.Direction.DESC, "likeCount"));
+        } else if(sort.equals("date")){
+            sentences = sentenceRepository.findByKeywordIdAndStatus(wordId, "O", PageRequest.of(page, limit, Sort.Direction.DESC, "id"));
         }
         List<SentenceListRes> sentenceListResList = new ArrayList<>();
-        TimeGeneralization timeGeneralization = new TimeGeneralization();
-        String time;
-        SentenceListRes sentenceListRes;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
         for (Sentence sentence : sentences) {
-            time = timeGeneralization.genericTime(sentence.getUpdatedAt());
-            sentenceListRes = SentenceListRes.builder()
-                    .likeNum(sentence.getLikeCount())
-                    .sentenceId(sentence.getId())
-                    .sentence(sentence.getSentence())
-                    .keywordId(sentence.getKeyword().getId())
-                    .image(sentence.getUser().getImage())
-                    .keyword(sentence.getKeyword().getWord().getWord())
-                    .nickname(sentence.getUser().getNickname())
-                    .userId(sentence.getUser().getId())
-                    .isBlamed(sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentence.getId(),userId, SentenceBlame.Status.A).isPresent())
-                    .selfLike(sentenceLikeService.getSentenceSelfLike(userId, sentence.getId()))
-                    .time(time)
-                    .build();
+            SentenceListRes sentenceListRes = new SentenceListRes(sentence.getId(), sentence.getSentence(),
+                    sentence.getKeyword().getId(), sentence.getKeyword().getWord().getWord(),
+                    sentence.getUser().getId(), sentence.getUser().getNickname(), sentence.getUser().getImage(),
+                    format.format(sentence.getUpdatedAt()), sentence.getLikeCount(), sentenceLikeService.getSentenceSelfLike(userId, sentence.getId()),
+                    sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentence.getId(),userId, SentenceBlame.Status.A).isPresent());
+//            sentenceListRes = SentenceListRes.builder()
+//                    .sentenceId(sentence.getId())
+//                    .sentence(sentence.getSentence())
+//                    .keywordId(sentence.getKeyword().getId())
+//                    .keyword(sentence.getKeyword().getWord().getWord())
+//                    .userId(sentence.getUser().getId())
+//                    .nickname(sentence.getUser().getNickname())
+//                    .image(sentence.getUser().getImage())
+//                    .date(format.format(sentence.getUpdatedAt()))
+//                    .likeNum(sentence.getLikeCount())
+//                    .selfLike(sentenceLikeService.getSentenceSelfLike(userId, sentence.getId()))
+//                    .isBlamed(sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentence.getId(),userId, SentenceBlame.Status.A).isPresent())
+//                    .build();
             sentenceListResList.add(sentenceListRes);
         }
         return sentenceListResList;
     }
 
-    public Sentence getSentence(long sentenceId) throws BaseException {
+    public Sentence getSentence(Long sentenceId) throws BaseException {
         return sentenceRepository.findByIdAndStatus(sentenceId,"A").orElseThrow(() -> new BaseException(NOT_FOUND_SENTENCE));
     }
 }

@@ -18,7 +18,7 @@ public class SentenceListRes {
     private long userId;
     private String nickname;
     private String image;
-    private String time;
+    private String date;
     private int likeNum;
     private boolean selfLike;
     private boolean isBlamed;

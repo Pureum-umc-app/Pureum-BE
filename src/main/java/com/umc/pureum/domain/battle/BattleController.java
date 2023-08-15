@@ -330,7 +330,7 @@ public class BattleController {
      * @param userId
      * @return
      */
-    @ApiOperation("대기 중인 대결 리스트 반환")
+    @ApiOperation("나의 대기 중인 대결 리스트 반환")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
             @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", dataTypeClass = Long.class)

@@ -288,10 +288,10 @@ public class SentenceController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", dataTypeClass = String.class, paramType = "header", value = "서비스 자체 jwt 토큰"),
             @ApiImplicitParam(name = "userId", dataTypeClass = Long.class, paramType = "path", value = "유저 id", example = "1"),
-            @ApiImplicitParam(name = "word_id", dataTypeClass = Long.class, paramType = "query", value = "단어 id",example = "1"),
+            @ApiImplicitParam(name = "wordId", dataTypeClass = Long.class, paramType = "query", value = "단어 id",example = "1"),
             @ApiImplicitParam(name = "page", dataTypeClass = Integer.class, paramType = "query", value = "페이지",example = "1"),
             @ApiImplicitParam(name = "limit", dataTypeClass = Integer.class, paramType = "query", value = "페이지 별  객체 수",example = "20"),
-            @ApiImplicitParam(name = "sort", dataTypeClass = String.class, paramType = "query", value = "정렬 조건(like, date")
+            @ApiImplicitParam(name = "sort", dataTypeClass = String.class, paramType = "query", value = "정렬 조건(like, date)")
     })
     @ApiResponses({
             @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
@@ -299,15 +299,17 @@ public class SentenceController {
             @ApiResponse(code = 2042, message = "정렬 방식이 잘못되었습니다.")
     })
     @GetMapping("/{userId}")
-    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@PathVariable long userId, @RequestParam long word_id, @RequestParam int page, @RequestParam int limit, @RequestParam String sort) {
+    public ResponseEntity<BaseResponse<List<SentenceListRes>>> getSentenceList(@PathVariable Long userId, @RequestParam Long wordId, @RequestParam int page, @RequestParam int limit, @RequestParam String sort) {
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long id = Long.parseLong(principal.getUsername());
+        Long id = Long.parseLong(principal.getUsername());
         try {
-            if (id != userId)
+            if (!id.equals(userId)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse<>(INVALID_JWT));
-            if (!(sort.equals("date") || sort.equals("like")))
+            }
+            if (!(sort.equals("date") || sort.equals("like"))) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse<>(GET_SENTENCE_INVALID_SORT_METHOD));
-            List<SentenceListRes> sentenceListRes = sentenceService.getSentenceList(userId, word_id, page, limit, sort);
+            }
+            List<SentenceListRes> sentenceListRes = sentenceService.getSentenceList(userId, wordId, page, limit, sort);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse<>(sentenceListRes));
         } catch (Exception e) {
             e.printStackTrace();

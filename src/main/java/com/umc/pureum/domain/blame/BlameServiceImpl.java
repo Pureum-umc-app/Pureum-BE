@@ -30,7 +30,7 @@ public class BlameServiceImpl implements BlameService {
     private final BattleSentenceBlameRepository battleSentenceBlameRepository;
     private final SentenceBlameRepository sentenceBlameRepository;
     @Override
-    public boolean battleSentenceBlame(long userId, long battleSentenceId) throws BaseException {
+    public boolean battleSentenceBlame(Long userId, Long battleSentenceId) throws BaseException {
         Optional<BattleSentenceBlame> battleSentenceBlameOptional = battleSentenceBlameRepository.findByBattleSentenceIdAndUserIdAndStatus(battleSentenceId, userId, BattleSentenceBlame.Status.A);
         UserAccount userAccount = userService.getUser(userId);
         BattleSentence battleSentence = battleService.getBattleSentence(battleSentenceId);
@@ -63,7 +63,7 @@ public class BlameServiceImpl implements BlameService {
     }
 
     @Override
-    public boolean sentenceBlame(long userId, long sentenceId) throws BaseException {
+    public boolean sentenceBlame(Long userId, Long sentenceId) throws BaseException {
         Optional<SentenceBlame> sentenceBlameOptional = sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentenceId, userId, SentenceBlame.Status.A);
         UserAccount userAccount = userService.getUser(userId);
         Sentence sentence = sentenceService.getSentence(sentenceId);
@@ -96,7 +96,7 @@ public class BlameServiceImpl implements BlameService {
     }
 
     @Override
-    public boolean getSentenceSelfBlame(long userId, Long id) {
+    public boolean getSentenceSelfBlame(Long userId, Long id) {
         return sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(id,userId,SentenceBlame.Status.A).isPresent();
     }
 }

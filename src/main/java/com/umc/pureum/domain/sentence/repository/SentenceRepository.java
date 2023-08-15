@@ -29,13 +29,7 @@ public interface SentenceRepository extends JpaRepository<Sentence, Long> {
     @EntityGraph(attributePaths = {"user","keyword","keyword.word"})
     List<Sentence> findByUserIdAndStatus(Long userId, String status);
 
-    Optional<Sentence> findByIdAndStatus(long sentenceId, String a);
+    Optional<Sentence> findByIdAndStatus(Long sentenceId, String a);
 
-    List<Sentence> findByUserIdAndStatusOrderByIdDesc(long userId, String a, PageRequest pageRequest);
-
-    List<Sentence> findByKeywordIdAndStatusOrderByIdDesc(long wordId, String a, PageRequest of);
-
-    List<Sentence> findByKeywordIdAndStatus(long wordId, String a, PageRequest likeCount);
-
-    List<Sentence> findByKeywordIdAndStatusNot(long wordId, String d, PageRequest likeCount);
+    List<Sentence> findByKeywordIdAndStatus(Long wordId, String status, PageRequest request);
 }
