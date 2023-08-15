@@ -292,7 +292,11 @@ public class BattleService {
             throw new BaseException(INVALID_USER);
         }
 
-        GetBattleInfoRes battleInfo = battleRepository.findInfoByBattleId(battleIdx).stream().findAny().get();
+        Optional<GetBattleInfoRes> battle = battleRepository.findInfoByBattleId(battleIdx);
+        if(battle.isEmpty()) {
+            throw new BaseException(Get_BATTLE_RUN_STATUS);
+        }
+        GetBattleInfoRes battleInfo = battle.get();
 
         // 대결 상태 확인
         if (battleInfo.getBattleStatus().equals(BattleStatus.W) || battleInfo.getBattleStatus().equals(BattleStatus.A)) {
@@ -305,11 +309,10 @@ public class BattleService {
             GetBattleSentenceInterface challengerSentenceInfo = battleSentenceRepository.findInfoByBattleIdAndUserId(battleIdx, challengerId).stream().findAny().get();
 
             Long challengerSentenceId = challengerSentenceInfo.getBattleSentenceId();
-
             String remainDuration = "D-";
 
             if (battleInfo.getDuration() - Long.valueOf(differ).intValue() > 0) {
-                remainDuration = remainDuration + Integer.toString(battleInfo.getDuration() - Long.valueOf(differ).intValue());
+                remainDuration = remainDuration + (battleInfo.getDuration() - Long.valueOf(differ).intValue());
             } else if (battleInfo.getDuration() - Long.valueOf(differ).intValue() == 0) {
                 remainDuration = "D-DAY";
             } else {
@@ -329,11 +332,9 @@ public class BattleService {
             );
 
         } else if (battleInfo.getBattleStatus().equals(BattleStatus.I)) {
-
             Timestamp updateAt = battleInfo.getUpdateAt();
             LocalDateTime currentLocalDateTime = LocalDateTime.now();
             long differ = (Timestamp.valueOf(currentLocalDateTime).getTime() - updateAt.getTime()) / (24 * 60 * 60 * 1000);
-
 
             Long challengedId = battleInfo.getChallengedId();
             Long challengerId = battleInfo.getChallengerId();
@@ -344,11 +345,10 @@ public class BattleService {
             Long challengedSentenceId = challengedSentenceInfo.getBattleSentenceId();
             Long challengerSentenceId = challengerSentenceInfo.getBattleSentenceId();
 
-
             String remainDuration = "D-";
 
             if (battleInfo.getDuration() - Long.valueOf(differ).intValue() > 0) {
-                remainDuration = remainDuration + Integer.toString(battleInfo.getDuration() - Long.valueOf(differ).intValue());
+                remainDuration = remainDuration + (battleInfo.getDuration() - Long.valueOf(differ).intValue());
             } else if (battleInfo.getDuration() - Long.valueOf(differ).intValue() == 0) {
                 remainDuration = "D-DAY";
             } else {
@@ -360,12 +360,12 @@ public class BattleService {
             boolean blamed;
             if (Objects.equals(challengedSentenceId, userId)) {
                 blamed = battleSentenceBlameRepository.findByBattleSentenceIdAndUserIdAndStatus(challengedSentenceInfo.getBattleSentenceId(), userId, BattleSentenceBlame.Status.A).isPresent();
-
             } else if (Objects.equals(challengerSentenceId, userId)) {
                 blamed = battleSentenceBlameRepository.findByBattleSentenceIdAndUserIdAndStatus(challengerSentenceInfo.getBattleSentenceId(), userId, BattleSentenceBlame.Status.A).isPresent();
             } else {
                 throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
             }
+
             return new ReturnRunBattleRes(battleInfo.getBattleId(), battleInfo.getKeywordId(), battleInfo.getKeyword(), remainDuration,
                     battleInfo.getChallengedId(), battleInfo.getChallengedNickname(), battleInfo.getChallengedProfileImg(),
                     battleInfo.getChallengerId(), battleInfo.getChallengerNickname(), battleInfo.getChallengerProfileImg(),
@@ -373,9 +373,7 @@ public class BattleService {
                     challengedSentenceInfo.getBattleSentenceId(), challengedSentenceInfo.getBattleSentence(),
                     challengerSentenceInfo.getBattleSentenceId(), challengerSentenceInfo.getBattleSentence(),
                     challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
-                    challengedLikeInterface.getIsLike(), challengerLikeInterface.getIsLike(), blamed
-            );
-
+                    challengedLikeInterface.getIsLike(), challengerLikeInterface.getIsLike(), blamed);
         } else {
             throw new BaseException(GET_BATTLE_FINISH_STATUS);
         }

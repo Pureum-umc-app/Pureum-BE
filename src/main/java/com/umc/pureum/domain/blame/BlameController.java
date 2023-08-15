@@ -32,7 +32,7 @@ public class BlameController {
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다.")
     })
     @PostMapping(value = "/battle-sentence/{battleSentenceId}")
-    public ResponseEntity<BaseResponse<String>> battleSentenceBlame(@PathVariable long battleSentenceId) {
+    public ResponseEntity<BaseResponse<String>> battleSentenceBlame(@PathVariable Long battleSentenceId) {
         try {
             Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
             long userId = Long.parseLong(loggedInUser.getName());
@@ -57,10 +57,10 @@ public class BlameController {
             @ApiResponse(code = 2034, message = "존재하지 않는 회원입니다.")
     })
     @PostMapping(value = "/sentence/{sentenceId}")
-    public ResponseEntity<BaseResponse<String>> sentenceBlame(@PathVariable long sentenceId) {
+    public ResponseEntity<BaseResponse<String>> sentenceBlame(@PathVariable Long sentenceId) {
         try {
             Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
-            long userId = Long.parseLong(loggedInUser.getName());
+            Long userId = Long.parseLong(loggedInUser.getName());
             if (blameService.sentenceBlame(userId, sentenceId)) {
                 return ResponseEntity.status(HttpStatus.OK).body(new BaseResponse<>("신고 되었습니다."));
             } else {

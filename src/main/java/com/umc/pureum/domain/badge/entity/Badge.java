@@ -3,6 +3,7 @@ package com.umc.pureum.domain.badge.entity;
 
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
+import com.umc.pureum.global.entity.Status;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,8 @@ public class Badge extends BaseEntity {
     private int badge;
 
     @ColumnDefault("A")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     public Badge(UserAccount user, int badge) {
         this.user = user;

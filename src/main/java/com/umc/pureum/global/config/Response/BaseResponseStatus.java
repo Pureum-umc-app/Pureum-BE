@@ -69,6 +69,8 @@ public enum BaseResponseStatus {
     POST_INVALID_DURATION(false, 2058, "유효하지 않은 기간입니다."),
     NOT_FOUND_BATTLE_SENTENCE(false, 2059, "배틀 문장을 찾을 수 없습니다."),
     NOT_FOUND_SENTENCE(false,2060,"문장을 찾을 수 없습니다."),
+    INVALID_BATTLE(false,2061,"존재하지 않는 대결입니다."),
+
 
 
     /**

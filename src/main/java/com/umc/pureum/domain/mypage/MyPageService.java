@@ -20,7 +20,6 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class MyPageService {
-    private final MyPageDao myPageDao;
     private final UserRepository userRepository;
     private final S3Service s3Service;
     private final SentenceRepository sentenceRepository;
@@ -35,8 +34,7 @@ public class MyPageService {
     // 키워드 단어 가져오기
     public String getKeyword(Long sentenceId){
         Optional<Sentence> sentence = sentenceRepository.findById(sentenceId);
-        String word = sentence.get().getKeyword().getWord().getWord();
-        return word;
+        return sentence.get().getKeyword().getWord().getWord();
     }
 
     // 문장 삭제(테이블에서 없애는 것이 아니라 상태만 바꿈)

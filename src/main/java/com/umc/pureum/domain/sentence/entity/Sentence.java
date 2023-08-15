@@ -4,10 +4,8 @@ import com.sun.istack.NotNull;
 import com.umc.pureum.domain.blame.entity.SentenceBlame;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
-
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -30,23 +28,18 @@ public class Sentence extends BaseEntity {
     @JoinColumn(name = "word_id")
     private Keyword keyword;
 
-    @OneToMany(mappedBy = "sentence")
-    @Builder.Default
-    @ToString.Exclude
-    private List<SentenceLike> sentenceLikes = new ArrayList<>();
-    @NotNull
     private String status;
+
     @OneToMany(mappedBy = "sentence")
     @Builder.Default
     @ToString.Exclude
     private List<SentenceBlame> sentenceBlameList = new ArrayList<>();
-    @Formula("(select count(*) from sentence_like where sentence_like.sentence_id=id and sentence_like.status='A')")
-    private int likeCount;
-    public Sentence(UserAccount userAccount, String sentence, Keyword keyword, String sentenceStatus) {
+
+    public Sentence(UserAccount userAccount, String sentence, Keyword keyword, String status) {
         this.user = userAccount;
         this.sentence = sentence;
         this.keyword = keyword;
-        this.status = sentenceStatus;
+        this.status = status;
     }
 
     // 문장 수정
@@ -55,8 +48,8 @@ public class Sentence extends BaseEntity {
     }
 
     // 문장 삭제
-    public void DeleteSentence(String sentenceStatus){
-        this.status = sentenceStatus;
+    public void DeleteSentence(String status){
+        this.status = status;
     }
 
     public void addSentenceBlame(SentenceBlame sentenceBlame) {

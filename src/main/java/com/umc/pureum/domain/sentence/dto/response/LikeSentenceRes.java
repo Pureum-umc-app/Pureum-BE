@@ -14,10 +14,10 @@ public class LikeSentenceRes {
     private Long sentence_like_id;
 
     @ApiModelProperty(example = "A")
-    private String status;
+    private Status status;
 
     @Builder
-    public LikeSentenceRes(Long sentence_like_id, String status) {
+    public LikeSentenceRes(Long sentence_like_id, Status status) {
         this.sentence_like_id = sentence_like_id;
         this.status = status;
     }

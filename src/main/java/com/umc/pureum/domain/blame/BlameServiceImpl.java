@@ -30,7 +30,7 @@ public class BlameServiceImpl implements BlameService {
     private final BattleSentenceBlameRepository battleSentenceBlameRepository;
     private final SentenceBlameRepository sentenceBlameRepository;
     @Override
-    public boolean battleSentenceBlame(long userId, long battleSentenceId) throws BaseException {
+    public boolean battleSentenceBlame(Long userId, Long battleSentenceId) throws BaseException {
         Optional<BattleSentenceBlame> battleSentenceBlameOptional = battleSentenceBlameRepository.findByBattleSentenceIdAndUserIdAndStatus(battleSentenceId, userId, BattleSentenceBlame.Status.A);
         UserAccount userAccount = userService.getUser(userId);
         BattleSentence battleSentence = battleService.getBattleSentence(battleSentenceId);
@@ -63,18 +63,18 @@ public class BlameServiceImpl implements BlameService {
     }
 
     @Override
-    public boolean sentenceBlame(long userId, long sentenceId) throws BaseException {
-        Optional<SentenceBlame> sentenceBlameOptional = sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentenceId, userId, SentenceBlame.Status.A);
+    public boolean sentenceBlame(Long userId, Long sentenceId) throws BaseException {
+        Optional<SentenceBlame> sentenceBlameOptional = sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(sentenceId, userId, Status.A);
         UserAccount userAccount = userService.getUser(userId);
         Sentence sentence = sentenceService.getSentence(sentenceId);
         boolean flag;
         if (sentenceBlameOptional.isPresent()) {
-            if(sentenceBlameOptional.get().getStatus().equals(SentenceBlame.Status.A)) {
-                sentenceBlameOptional.get().updateState(SentenceBlame.Status.D);
+            if(sentenceBlameOptional.get().getStatus().equals(Status.A)) {
+                sentenceBlameOptional.get().updateState(Status.D);
                 flag = false;
             }
             else {
-                sentenceBlameOptional.get().updateState(SentenceBlame.Status.A);
+                sentenceBlameOptional.get().updateState(Status.A);
                 flag = true;
             }
         }
@@ -82,21 +82,21 @@ public class BlameServiceImpl implements BlameService {
             SentenceBlame sentenceBlame = SentenceBlame.builder()
                     .sentence(sentence)
                     .user(userAccount)
-                    .status(SentenceBlame.Status.A)
+                    .status(Status.A)
                     .build();
             userAccount.addSentenceBlame(sentenceBlame);
             sentence.addSentenceBlame(sentenceBlame);
             sentenceBlameRepository.save(sentenceBlame);
             flag = true;
         }
-        List<SentenceBlame> sentenceBlameList =  sentenceBlameRepository.findBySentenceIdAndStatus(sentenceId,SentenceBlame.Status.A);
+        List<SentenceBlame> sentenceBlameList =  sentenceBlameRepository.findBySentenceIdAndStatus(sentenceId,Status.A);
         if(sentenceBlameList.size()>=10)
             sentence.updateStatus("D");
         return flag;
     }
 
     @Override
-    public boolean getSentenceSelfBlame(long userId, Long id) {
-        return sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(id,userId,SentenceBlame.Status.A).isPresent();
+    public boolean getSentenceSelfBlame(Long userId, Long id) {
+        return sentenceBlameRepository.findBySentenceIdAndUserIdAndStatus(id,userId,Status.A).isPresent();
     }
 }

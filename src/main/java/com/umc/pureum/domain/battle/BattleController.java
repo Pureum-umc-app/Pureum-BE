@@ -330,7 +330,7 @@ public class BattleController {
      * @param userId
      * @return
      */
-    @ApiOperation("대기 중인 대결 리스트 반환")
+    @ApiOperation("나의 대기 중인 대결 리스트 반환")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", paramType = "header", value = "서비스 자체 jwt 토큰", dataTypeClass = String.class),
             @ApiImplicitParam(name = "userId", paramType = "path", value = "유저 인덱스", dataTypeClass = Long.class)
@@ -513,14 +513,20 @@ public class BattleController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization",dataTypeClass=String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
     })
+    @ApiResponses({
+            @ApiResponse(code = 1000, message = "요청에 성공하였습니다."),
+            @ApiResponse(code = 2001, message = "JWT를 입력해주세요."),
+            @ApiResponse(code = 2002, message = "유효하지 않은 JWT입니다."),
+            @ApiResponse(code = 2004, message = "존재하지 않는 유저입니다."),
+            @ApiResponse(code = 2061, message = "존재하지 않는 대결입니다."),
+            @ApiResponse(code = 4000, message = "데이터베이스 연결에 실패하였습니다.")
+    })
     @ResponseBody
     @GetMapping("/run/{battleIdx}")
     public BaseResponse<ReturnRunBattleRes> returnRunBattle(@PathVariable Long battleIdx) {
-
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String UserId = loggedInUser.getName();
-
-        long userId = Long.parseLong(UserId);
+        Long userId = Long.parseLong(UserId);
 
         try {
             ReturnRunBattleRes returnRunBattleRes = battleService.returnRunBattle(battleIdx, userId);

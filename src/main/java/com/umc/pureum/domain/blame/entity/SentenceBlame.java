@@ -3,6 +3,7 @@ package com.umc.pureum.domain.blame.entity;
 import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.user.entity.UserAccount;
 import com.umc.pureum.global.entity.BaseEntity;
+import com.umc.pureum.global.entity.Status;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -40,7 +41,4 @@ public class SentenceBlame extends BaseEntity {
         this.sentence = sentence;
     }
 
-    public enum Status {
-        A,D
-    }
 }
