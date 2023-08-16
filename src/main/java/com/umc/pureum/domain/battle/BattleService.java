@@ -480,7 +480,6 @@ public class BattleService {
             LocalDateTime currentLocalDateTime = LocalDateTime.now();
             long differ = (Timestamp.valueOf(currentLocalDateTime).getTime() - updateAt.getTime()) / (24 * 60 * 60 * 1000);
 
-
             Long challengedId = battleInfo.getChallengedId();
             Long challengerId = battleInfo.getChallengerId();
 

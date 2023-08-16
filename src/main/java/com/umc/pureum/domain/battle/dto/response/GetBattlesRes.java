@@ -21,7 +21,6 @@ public class GetBattlesRes {
     private int isChallengedLike;
     private Long challengedLikeCnt;
     private String duration;
-    private Boolean blamed;
 
     @Builder
     public GetBattlesRes(Long battleId, Long keywordId, String keyword,
@@ -29,7 +28,7 @@ public class GetBattlesRes {
                          int isChallengerLike, Long challengerLikeCnt,
                          Long challengedId, String challengedNickname, String challengedProfileImg,
                          int isChallengedLike, Long challengedLikeCnt,
-                         String duration, Boolean blamed) {
+                         String duration) {
         this.battleId = battleId;
         this.keywordId = keywordId;
         this.keyword = keyword;
@@ -44,6 +43,5 @@ public class GetBattlesRes {
         this.isChallengedLike = isChallengedLike;
         this.challengedLikeCnt = challengedLikeCnt;
         this.duration = duration;
-        this.blamed = blamed;
     }
 }
