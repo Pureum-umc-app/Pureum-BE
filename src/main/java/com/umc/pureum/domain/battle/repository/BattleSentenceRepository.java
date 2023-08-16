@@ -27,10 +27,8 @@ public interface BattleSentenceRepository extends JpaRepository<BattleSentence, 
                     "from battle_sentence " +
                     "where battle_id  = :battleId and user_id = :userId and status ='A'"
     )
-    long findIdByBattleIdAndUserIdAndStatus(
-            @Param("battleId") Long battleId,
-            @Param("userId") Long userId);
 
+    Long findIdByBattleIdAndUserIdAndStatus(@Param("battleId") Long battleId, @Param("userId") Long userId);
     @Query("select b.id as battleSentenceId , b.sentence as battleSentence \n" +
             "from BattleSentence b \n" +
             "where b.battle.id = :battleId" +
