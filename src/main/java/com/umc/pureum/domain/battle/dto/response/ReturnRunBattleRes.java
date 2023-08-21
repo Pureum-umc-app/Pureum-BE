@@ -25,14 +25,14 @@ public class ReturnRunBattleRes {
 
     private Long challengedSentenceId;
     private String challengedSentence;
+    private Boolean challengedSentenceBlamed;
     private Long challengerSentenceId;
     private String challengerSentence;
-
+    private Boolean challengerSentenceBlamed;
     private Long challengedLikeCnt;
     private Long challengerLikeCnt;
 
     private int challengedLike;
     private int challengerLike;
 
-    private Boolean blamed;
 }
