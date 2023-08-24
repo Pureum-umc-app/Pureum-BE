@@ -171,7 +171,7 @@ public class SentenceService {
     }
 
     public Sentence getSentence(Long sentenceId) throws BaseException {
-        return sentenceRepository.findByIdAndStatus(sentenceId,"A").orElseThrow(() -> new BaseException(NOT_FOUND_SENTENCE));
+        return sentenceRepository.findByIdAndStatus(sentenceId,"O").orElseThrow(() -> new BaseException(NOT_FOUND_SENTENCE));
     }
 }
 
