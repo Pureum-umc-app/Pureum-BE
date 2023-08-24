@@ -602,7 +602,7 @@ public class BattleController {
      * 대결 정보 반환 API (대기 중, 진행 중)
      * [GET] /battles/run/my/{battleIdx}
      */
-    @ApiOperation("대결 정보 반환 API (대기 중, 진행 중)")
+    @ApiOperation("내 대결 정보 반환 API (대기 중, 진행 중)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization",dataTypeClass=String.class, paramType = "header", value = "서비스 자체 jwt 토큰")
     })

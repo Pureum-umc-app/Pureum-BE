@@ -467,7 +467,6 @@ public class BattleService {
 
         // 대결 상태 확인
         if (battleInfo.getBattleStatus().equals(BattleStatus.W) || battleInfo.getBattleStatus().equals(BattleStatus.A) || battleInfo.getBattleStatus().equals(BattleStatus.I)) {
-
             Timestamp updateAt = battleInfo.getUpdateAt();
             LocalDateTime currentLocalDateTime = LocalDateTime.now();
             long differ = (Timestamp.valueOf(currentLocalDateTime).getTime() - updateAt.getTime()) / (24 * 60 * 60 * 1000);
@@ -492,7 +491,7 @@ public class BattleService {
                 throw new BaseException(GET_BATTLE_FINISH_STATUS);
             }
             boolean blamed;
-            if (userId == challengedId) {
+            if (Objects.equals(userId, challengedId)) {
 
                 GetBattleLikeInterface challengedLikeInterface = likeRepository.findByUserId(challengedId, challengedSentenceId).stream().findAny().get();
                 GetBattleLikeInterface challengerLikeInterface = likeRepository.findByUserId(challengerId, challengerSentenceId).stream().findAny().get();
@@ -513,7 +512,7 @@ public class BattleService {
                         challengedLikeInterface.getLikeCnt(), challengerLikeInterface.getLikeCnt(),
                         challengedLikeInterface.getIsLike(), challengerLikeInterface.getIsLike(),blamed
                 );
-            } else if (userId == challengerId) {
+            } else if (Objects.equals(userId, challengerId)) {
                 if (Objects.equals(challengedSentenceId, userId)) {
                     blamed = battleSentenceBlameRepository.findByBattleSentenceIdAndUserIdAndStatus(challengedSentenceInfo.getBattleSentenceId(), userId, BattleSentenceBlame.Status.A).isPresent();
 
