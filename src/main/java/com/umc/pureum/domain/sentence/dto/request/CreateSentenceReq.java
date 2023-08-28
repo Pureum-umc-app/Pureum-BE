@@ -17,6 +17,10 @@ public class CreateSentenceReq {
     @ApiModelProperty(example = "hello")
     private String sentence;
 
-    @ApiModelProperty(example = "A")
+    @ApiModelProperty(example = "O")
     private String status;
+
+    public CreateSentenceReq() {
+
+    }
 }
