@@ -7,6 +7,7 @@ import com.umc.pureum.domain.sentence.entity.Sentence;
 import com.umc.pureum.domain.sentence.repository.SentenceLikeRepository;
 import com.umc.pureum.domain.sentence.repository.SentenceRepository;
 import com.umc.pureum.global.config.Response.BaseException;
+import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,7 @@ public class MyPageProvider {
                         .sentenceId(s.getId())
                         .word(s.getKeyword().getWord().getWord())
                         .sentence(s.getSentence())
-                        .countLike(sentenceLikeRepository.findBySentenceIdAndStatusNot(s.getId(),"D").size())
+                        .countLike(sentenceLikeRepository.findBySentenceIdAndStatusNot(s.getId(), Status.D).size())
                         .status(s.getStatus().toString()).build())
                 .collect(Collectors.toList());
         return new GetMySentencesRes(mySentences.size(), myOpenSentences.size(), collect);
