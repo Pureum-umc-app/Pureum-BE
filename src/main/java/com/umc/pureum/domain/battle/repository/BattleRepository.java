@@ -179,4 +179,6 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
     Optional<GetBattleInfoRes> findInfoByBattleId(@Param("battleId") Long battleId);
 
     List<Battle> findByChallengerIdOrChallengedId(long userId, long userId1);
+
+    Optional<Battle> findByIdAndStatus(Long battleIdx, BattleStatus battleStatus);
 }

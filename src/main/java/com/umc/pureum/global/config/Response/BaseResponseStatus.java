@@ -96,7 +96,7 @@ public enum BaseResponseStatus {
     PASSWORD_ENCRYPTION_ERROR(false, 4011, "비밀번호 암호화에 실패하였습니다."),
     PASSWORD_DECRYPTION_ERROR(false, 4012, "비밀번호 복호화에 실패하였습니다."),
 
-    FCM_ERROR(false, 4020, "FCM 에러");
+    FCM_ERROR(false, 4020, "FCM 에러"), NOT_FOUND_WAIT_BATTLE(false,4013 ,"대기중인 대결을 찾을 수 없습니다." );
     // 5000 : 필요시 만들어서 쓰세요
     // 6000 : 필요시 만들어서 쓰세요
 
