@@ -17,13 +17,13 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 
 public class Battle extends BaseEntity {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenger_id")
     private UserAccount challenger;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "challenged_id")
     private UserAccount challenged;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "battle_word_id")
     private BattleWord word;
     private int duration;
