@@ -12,27 +12,30 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
-    protected ResponseEntity<BaseException> handleCustomException(final BaseException e) {
+    protected ResponseEntity<ErrorDTO> handleCustomException(final BaseException e) {
         log.error("handleCustomException: {}", e.getStatus());
+        final ErrorDTO errorDTO = new ErrorDTO(e);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new BaseException(e.getStatus()));
+                .body(errorDTO);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    protected ResponseEntity<BaseException> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException e) {
+    protected ResponseEntity<ErrorDTO> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException e) {
         log.error("handleHttpRequestMethodNotSupportedException: {}", e.getMessage());
+        final ErrorDTO errorDTO = new ErrorDTO(BaseResponseStatus.METHOD_NOT_ALLOWED);
         return ResponseEntity
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
-                .body(new BaseException(BaseResponseStatus.NOT_ALLOW_METHOD));
+                .body(errorDTO);
     }
 
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<BaseException> handleException(final Exception e) {
+    protected ResponseEntity<ErrorDTO> handleException(final Exception e) {
         log.error("handleException: {}", e.getMessage());
+        final ErrorDTO errorDTO = new ErrorDTO(BaseResponseStatus.SERVER_ERROR);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new BaseException(BaseResponseStatus.INTERNAL_SERVER_ERROR));
+                .body(errorDTO);
     }
 
 }

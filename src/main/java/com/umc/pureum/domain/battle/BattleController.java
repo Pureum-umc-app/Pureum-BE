@@ -59,21 +59,15 @@ public class BattleController {
 
         long userId = Long.parseLong(UserId);
 
-        try {
             // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
-            if (userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()) {
+            if (!battleService.equalsBattleUserId(userId,request.getBattleId())) {
                 return new BaseResponse<>(INVALID_USER_JWT);
-            } else if (!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())) {
-                return new BaseResponse<>(INVALID_USER);
             } else {
                 // 대결 상태 저장
                 BattleStatusRes battleStatusRes = battleService.accept(request);
                 return new BaseResponse<>(battleStatusRes);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
-        }
+
 
     }
 
