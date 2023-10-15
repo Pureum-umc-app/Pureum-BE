@@ -59,14 +59,14 @@ public class BattleController {
 
         long userId = Long.parseLong(UserId);
 
-            // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
-            if (!battleService.equalsBattleUserId(userId,request.getBattleId())) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            } else {
-                // 대결 상태 저장
-                BattleStatusRes battleStatusRes = battleService.accept(request);
-                return new BaseResponse<>(battleStatusRes);
-            }
+        // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
+        if (!battleService.equalsBattleUserId(userId, request.getBattleId())) {
+            return new BaseResponse<>(INVALID_USER_JWT);
+        } else {
+            // 대결 상태 저장
+            BattleStatusRes battleStatusRes = battleService.accept(request);
+            return new BaseResponse<>(battleStatusRes);
+        }
 
 
     }
@@ -89,20 +89,13 @@ public class BattleController {
 
         long userId = Long.parseLong(UserId);
 
-        try {
-            // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
-            if (userId != battleDao.findOne(request.getBattleId()).getChallenged().getId()) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-            } else if (!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus())) {
-                return new BaseResponse<>(INVALID_USER);
-            } else {
-                // 대결 상태 저장
-                BattleStatusRes battleStatusRes = battleService.reject(request);
-                return new BaseResponse<>(battleStatusRes);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
+        // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
+        if (!battleService.equalsBattleUserId(userId, request.getBattleId())) {
+            return new BaseResponse<>(INVALID_USER_JWT);
+        } else {
+            // 대결 상태 저장
+            BattleStatusRes battleStatusRes = battleService.reject(request);
+            return new BaseResponse<>(battleStatusRes);
         }
 
     }
@@ -125,24 +118,12 @@ public class BattleController {
 
         long userId = Long.parseLong(UserId);
 
-        try {
-            // springsecurity 로 찾은 userId 랑 request 로 받은 battle 에서 battle 받은 사람의 userId 비교
-            if (userId != battleDao.findOne(request.getBattleId()).getChallenged().getId() &&
-                    userId != battleDao.findOne(request.getBattleId()).getChallenger().getId()) {
-                return new BaseResponse<>(INVALID_USER_JWT);
-
-            } else if (!"A".equals(battleDao.findOne(request.getBattleId()).getChallenged().getStatus()) &&
-                    !"A".equals(battleDao.findOne(request.getBattleId()).getChallenger().getStatus())) {
-
-                return new BaseResponse<>(INVALID_USER);
-            } else {
-                // 대결 상태 저장
-                BattleStatusRes battleStatusRes = battleService.cancel(request);
-                return new BaseResponse<>(battleStatusRes);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new BaseResponse<>(DATABASE_ERROR);
+        if (!battleService.equalsBattleUserId(userId, request.getBattleId())) {
+            return new BaseResponse<>(INVALID_USER_JWT);
+        } else {
+            // 대결 상태 저장
+            BattleStatusRes battleStatusRes = battleService.cancel(request);
+            return new BaseResponse<>(battleStatusRes);
         }
 
     }
@@ -650,8 +631,8 @@ public class BattleController {
             return new BaseResponse<>(INVALID_USER);
         }
         // battle 값 return
-            GetWaitMyBattleInfoResponse getWaitMyBattleInfoResponse = battleService.getWaitMyBattleInfo(userId, battleIdx);
-            return new BaseResponse<>(getWaitMyBattleInfoResponse);
+        GetWaitMyBattleInfoResponse getWaitMyBattleInfoResponse = battleService.getWaitMyBattleInfo(userId, battleIdx);
+        return new BaseResponse<>(getWaitMyBattleInfoResponse);
 
 
     }

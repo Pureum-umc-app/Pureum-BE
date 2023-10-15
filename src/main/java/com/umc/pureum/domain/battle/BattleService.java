@@ -120,7 +120,7 @@ public class BattleService {
     public BattleStatusRes reject(BattleStatusReq request) throws BaseException {
 
         // request 로 받은 battleId 로 battle 찾기
-        Battle battle = battleDao.findOne(request.getBattleId());
+        Battle battle = battleRepository.findByIdAndStatus(request.getBattleId(),BattleStatus.W).orElseThrow(()->new BaseException(NOT_FOUND_WAIT_BATTLE));
 
         // battle 상태를 거절로 바꾸기
         battle.setStatus(BattleStatus.D);
@@ -140,7 +140,7 @@ public class BattleService {
     public BattleStatusRes cancel(BattleStatusReq request) throws BaseException {
 
         // request 로 받은 battleId 로 battle 찾기
-        Battle battle = battleDao.findOne(request.getBattleId());
+        Battle battle = battleRepository.findByIdAndStatus(request.getBattleId(),BattleStatus.W).orElseThrow(()->new BaseException(NOT_FOUND_WAIT_BATTLE));
 
         // battle 상태를 수락 완료로 바꾸기
         battle.setStatus(BattleStatus.D);
