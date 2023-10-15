@@ -20,7 +20,6 @@ import com.umc.pureum.global.config.Response.BaseException;
 import com.umc.pureum.global.config.Response.BaseResponseStatus;
 import com.umc.pureum.global.entity.Status;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -31,9 +30,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static com.umc.pureum.global.config.Response.BaseResponseStatus.*;
 import static com.umc.pureum.global.entity.Status.A;
@@ -110,7 +106,7 @@ public class BattleService {
     public BattleStatusRes accept(BattleStatusReq request) {
 
         // request 로 받은 battleId 로 battle 찾기
-        Battle battle = battleDao.findOne(request.getBattleId());
+        Battle battle = battleRepository.findByIdAndStatus(request.getBattleId(),BattleStatus.W).orElseThrow(()->new BaseException(NOT_FOUND_WAIT_BATTLE));
 
         // battle 상태를 수락 완료로 바꾸기
         battle.setStatus(BattleStatus.A);
@@ -124,7 +120,7 @@ public class BattleService {
     public BattleStatusRes reject(BattleStatusReq request) throws BaseException {
 
         // request 로 받은 battleId 로 battle 찾기
-        Battle battle = battleDao.findOne(request.getBattleId());
+        Battle battle = battleRepository.findByIdAndStatus(request.getBattleId(),BattleStatus.W).orElseThrow(()->new BaseException(NOT_FOUND_WAIT_BATTLE));
 
         // battle 상태를 거절로 바꾸기
         battle.setStatus(BattleStatus.D);
@@ -144,7 +140,7 @@ public class BattleService {
     public BattleStatusRes cancel(BattleStatusReq request) throws BaseException {
 
         // request 로 받은 battleId 로 battle 찾기
-        Battle battle = battleDao.findOne(request.getBattleId());
+        Battle battle = battleRepository.findByIdAndStatus(request.getBattleId(),BattleStatus.W).orElseThrow(()->new BaseException(NOT_FOUND_WAIT_BATTLE));
 
         // battle 상태를 수락 완료로 바꾸기
         battle.setStatus(BattleStatus.D);
@@ -760,5 +756,10 @@ public class BattleService {
                 .word(battle.getWord().getWord().getWord())
                 .wordMean(battle.getWord().getWord().getMeaning()).build();
         return getWaitMyBattleInfoResponse;
+    }
+
+    public boolean equalsBattleUserId(long userId, Long battleId) {
+        Battle battle = battleRepository.findByIdAndStatus(battleId,BattleStatus.W).orElseThrow(()-> new BaseException(INVALID_BATTLE));
+        return userId==battle.getChallenged().getId();
     }
 }
