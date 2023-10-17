@@ -118,7 +118,7 @@ public class BattleController {
 
         long userId = Long.parseLong(UserId);
 
-        if (!battleService.equalsBattleUserId(userId, request.getBattleId())) {
+        if (!battleService.equalsBattleChallengerId(userId, request.getBattleId())) {
             return new BaseResponse<>(INVALID_USER_JWT);
         } else {
             // 대결 상태 저장
