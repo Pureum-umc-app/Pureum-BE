@@ -48,7 +48,7 @@ public class BattleProvider {
 
         // 배틀 정보를 받아옴
         PageRequest request = PageRequest.of(page, limit);
-        List<GetBattlesInterface> battles = battleRepository.findAllBattles(BattleStatus.I, request);
+        List<GetBattlesInterface> battles = battleRepository.findAllBattles(BattleStatus.A, request);
 
         // 좋아요 정보를 추가해서 배열을 만들어줌
         if (!battles.isEmpty()) {
