@@ -214,7 +214,7 @@ public class BattleService {
         battleSentenceDao.save(battleSentence);
 
         // battle status 바꾸기
-        battle.setStatus(BattleStatus.I);
+        battle.setStatus(BattleStatus.A);
 
         /*
         try {
@@ -294,7 +294,7 @@ public class BattleService {
         GetBattleInfoRes battleInfo = battle.get();
 
         // 대결 상태 확인
-        if (battleInfo.getBattleStatus().equals(BattleStatus.W) || battleInfo.getBattleStatus().equals(BattleStatus.A)) {
+        if (battleInfo.getBattleStatus().equals(BattleStatus.W)) {
             Timestamp updateAt = battleInfo.getUpdateAt();
             LocalDateTime currentLocalDateTime = LocalDateTime.now();
             long differ = (Timestamp.valueOf(currentLocalDateTime).getTime() - updateAt.getTime()) / (24 * 60 * 60 * 1000);
@@ -326,7 +326,7 @@ public class BattleService {
                     0, challengerLikeInterface.getIsLike()
             );
 
-        } else if (battleInfo.getBattleStatus().equals(BattleStatus.I)) {
+        } else if (battleInfo.getBattleStatus().equals(BattleStatus.A)) {
             Timestamp updateAt = battleInfo.getUpdateAt();
             LocalDateTime currentLocalDateTime = LocalDateTime.now();
             long differ = (Timestamp.valueOf(currentLocalDateTime).getTime() - updateAt.getTime()) / (24 * 60 * 60 * 1000);
